@@ -14,7 +14,10 @@ export const TaskItemSnoozedBadge = ({ taskId }: { taskId: string }) => {
       Snoozed until {formatTime(new Date(until))}
       <button
         type="button"
-        onClick={e => { e.stopPropagation(); clearSnoozed(taskId); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          clearSnoozed(taskId);
+        }}
         className="ml-0.5 rounded hover:bg-amber-200/60 dark:hover:bg-amber-800/60"
         aria-label="Cancel snooze"
       >
