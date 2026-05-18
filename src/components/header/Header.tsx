@@ -12,6 +12,7 @@ import { HeaderViewMenuCheckbox } from '$components/header/HeaderViewMenuCheckbo
 import { Tooltip } from '$components/Tooltip';
 import { DEFAULT_SORT_CONFIG, JUST_NOW_SYNC_TEXT_MS_THRESHOLD, SORT_OPTIONS } from '$constants';
 import { useModalState } from '$context/modalStateContext';
+import { useAccounts } from '$hooks/queries/useAccounts';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import {
   useSetSearchQuery,
@@ -21,7 +22,6 @@ import {
   useSetSortConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
-import { useAccounts } from '$hooks/queries/useAccounts';
 import { useEscapeKey } from '$hooks/ui/useEscapeKey';
 import type { SortDirection, SortMode } from '$types';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
@@ -53,8 +53,11 @@ const getSyncTooltip = (
   if (disableSync) return 'Add an account to be able to use sync';
   if (isOffline) return 'Cannot sync while offline';
   if (isSyncing) {
-    const progress = syncingCalendarName && syncProgress ? ` (${syncProgress.current}/${syncProgress.total})` : '';
-    return syncingCalendarName ? `Syncing ${syncingCalendarName}...${progress}` : 'Sync in progress...';
+    const progress =
+      syncingCalendarName && syncProgress ? ` (${syncProgress.current}/${syncProgress.total})` : '';
+    return syncingCalendarName
+      ? `Syncing ${syncingCalendarName}...${progress}`
+      : 'Sync in progress...';
   }
   if (lastSyncTime) {
     const when = formatDistanceToNow(lastSyncTime, { addSuffix: true });
@@ -129,7 +132,8 @@ export const Header = ({
   const syncShortcut = `${metaKey}${modifierJoiner}R`;
 
   const syncingCalendarName = syncingCalendarId
-    ? (accounts.flatMap((a) => a.calendars).find((c) => c.id === syncingCalendarId)?.displayName ?? null)
+    ? (accounts.flatMap((a) => a.calendars).find((c) => c.id === syncingCalendarId)?.displayName ??
+      null)
     : null;
 
   // Track when sync completes and show "just now" for 3 seconds
