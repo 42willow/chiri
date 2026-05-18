@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { toastManager } from '$hooks/ui/useToast';
-import { initDeepLink, registerDeepLinkHandler, unregisterDeepLinkHandler } from '$lib/deep-link';
+import { initDeepLink, registerDeepLinkHandler, unregisterDeepLinkHandler } from '$lib/deepLink';
 import { loggers } from '$lib/logger';
 
 const log = loggers.http;

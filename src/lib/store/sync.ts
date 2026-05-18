@@ -14,7 +14,7 @@ import { addCalendar, deleteCalendar, updateCalendar } from '$lib/store/calendar
 import { createTag, getAllTags, updateTag } from '$lib/store/tags';
 import { createTask, getTasksByCalendar, removeLocalTask, updateTask } from '$lib/store/tasks';
 import { getUIState, setAllTasksView } from '$lib/store/ui';
-import { getErrorMessage } from '$lib/tauri-http';
+import { getErrorMessage } from '$lib/tauriHttp';
 import type { Calendar, Task } from '$types';
 import { generateTagColor, resolveEffectiveTheme } from '$utils/color';
 

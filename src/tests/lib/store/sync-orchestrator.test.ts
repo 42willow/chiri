@@ -116,7 +116,7 @@ vi.mock('$lib/queryClient', () => ({
   },
 }));
 
-vi.mock('$lib/tauri-http', () => ({ getErrorMessage: (e: unknown) => String(e) }));
+vi.mock('$lib/tauriHttp', () => ({ getErrorMessage: (e: unknown) => String(e) }));
 
 vi.mock('$utils/color', () => ({
   generateTagColor: vi.fn(() => '#000'),

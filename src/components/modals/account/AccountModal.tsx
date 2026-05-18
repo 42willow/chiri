@@ -21,7 +21,7 @@ import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
-import { isCertError, tauriRequest } from '$lib/tauri-http';
+import { isCertError, tauriRequest } from '$lib/tauriHttp';
 import type { Account, Calendar, ServerType } from '$types';
 import { generateUUID, isVikunjaServer } from '$utils/misc';
 import type { CalDAVConfig } from '$utils/mobileconfig';
@@ -583,7 +583,9 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
               </div>
               <div className="min-w-0">
                 <div className="text-sm font-semibold text-surface-800 dark:text-surface-200">
-                  {OAUTH_SERVER_TYPES.has(serverType) ? 'Log in with OAuth' : 'Login via server URL'}
+                  {OAUTH_SERVER_TYPES.has(serverType)
+                    ? 'Log in with OAuth'
+                    : 'Login via server URL'}
                 </div>
                 <div className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
                   Authenticate through your browser

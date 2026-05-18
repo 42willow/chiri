@@ -27,7 +27,7 @@
 import type { Connection } from '$lib/caldav/connection';
 import { cleanEtag, log, makeAbsoluteUrl, normalizeUrl } from '$lib/caldav/utils';
 import { taskToVTodo, vtodoToTask } from '$lib/ical/vtodo';
-import { del, parseMultiStatus, propfind, put, report } from '$lib/tauri-http';
+import { del, parseMultiStatus, propfind, put, report } from '$lib/tauriHttp';
 import type { Calendar, Task } from '$types';
 
 export const fetchTasks = async (

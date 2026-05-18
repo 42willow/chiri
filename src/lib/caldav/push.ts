@@ -12,7 +12,7 @@
 
 import type { Connection } from '$lib/caldav/connection';
 import { log } from '$lib/caldav/utils';
-import { type CalDAVCredentials, propfind, tauriRequest } from '$lib/tauri-http';
+import { type CalDAVCredentials, propfind, tauriRequest } from '$lib/tauriHttp';
 import type {
   PushCapabilities,
   PushRegistration,
