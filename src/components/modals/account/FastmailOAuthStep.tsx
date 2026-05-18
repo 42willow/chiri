@@ -1,18 +1,18 @@
+import { useQueryClient } from '@tanstack/react-query';
 import Loader2 from 'lucide-react/icons/loader-2';
 import { useState } from 'react';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
-import { CalDAVClient } from '$lib/caldav';
 import {
   FASTMAIL_CALDAV_URL,
+  type FastmailTokens,
   startFastmailOAuth,
   usernameFromPrincipalUrl,
-  type FastmailTokens,
-} from '$lib/fastmail-auth';
+} from '$lib/auth/fastmail';
+import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
-import { useQueryClient } from '@tanstack/react-query';
 
 const log = loggers.account;
 
@@ -103,7 +103,10 @@ export const FastmailOAuthStep = ({ onSuccess }: FastmailOAuthStepProps) => {
                     createTask({ ...remoteTask, tags: tagIds });
                   }
                 } catch (e) {
-                  log.error(`[FastmailOAuth] Failed to fetch tasks for ${calendar.displayName}:`, e);
+                  log.error(
+                    `[FastmailOAuth] Failed to fetch tasks for ${calendar.displayName}:`,
+                    e,
+                  );
                 }
               }
 

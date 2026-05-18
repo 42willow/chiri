@@ -351,7 +351,7 @@ export const reconnect = async (account: Account): Promise<void> => {
 
       if (now >= expiresAt - bufferMs && account.refreshToken) {
         // lazy import to avoid a circular-dependency chain at module init time
-        const { refreshFastmailToken } = await import('$lib/fastmail-auth');
+        const { refreshFastmailToken } = await import('$lib/auth/fastmail');
         const { updateAccount } = await import('$lib/store/accounts');
         try {
           const fresh = await refreshFastmailToken(account.refreshToken);

@@ -1,6 +1,6 @@
+import { deleteAppPassword as deleteNextcloudAppPassword } from '$lib/auth/nextcloud';
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
-import { deleteAppPassword as deleteNextcloudAppPassword } from '$lib/nextcloud-auth';
 import { dataStore } from '$lib/store';
 import type { Account } from '$types';
 import { generateUUID } from '$utils/misc';

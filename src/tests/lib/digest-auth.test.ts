@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildDigestAuth, parseDigestChallenge } from '$lib/digest-auth';
+import { buildDigestAuth, parseDigestChallenge } from '$lib/auth/digest';
 
 describe('parseDigestChallenge', () => {
   it('parses a minimal Digest challenge', () => {

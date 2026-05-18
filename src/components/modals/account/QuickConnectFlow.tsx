@@ -4,15 +4,15 @@ import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
 import { useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
-import { CalDAVClient } from '$lib/caldav';
-import { loggers } from '$lib/logger';
 import {
   cancelNextcloudLogin,
   initiateNextcloudLogin,
   normalizeNextcloudUrl,
   validateNextcloudServer,
-} from '$lib/nextcloud-auth';
-import { normalizeRusticalUrl, validateRusticalServer } from '$lib/rustical-auth';
+} from '$lib/auth/nextcloud';
+import { normalizeRusticalUrl, validateRusticalServer } from '$lib/auth/rustical';
+import { CalDAVClient } from '$lib/caldav';
+import { loggers } from '$lib/logger';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.account;

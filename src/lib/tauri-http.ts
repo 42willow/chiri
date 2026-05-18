@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core';
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
-import { buildDigestAuth, parseDigestChallenge } from '$lib/digest-auth';
+import { buildDigestAuth, parseDigestChallenge } from '$lib/auth/digest';
 import { loggers } from '$lib/logger';
 
 const log = loggers.http;
