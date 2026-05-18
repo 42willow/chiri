@@ -386,14 +386,14 @@ export const TaskDefaultsSettings = () => {
 
         <div className="p-4">
           <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">Tags</p>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             {selectedTags.map((tag) => {
               if (!tag) return null;
               const TagIcon = getIconByName(tag.icon || 'tag');
               return (
                 <span
                   key={tag.id}
-                  className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-sm border text-xs font-medium group"
+                  className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-sm border text-xs font-medium leading-none group"
                   style={{
                     borderColor: tag.color,
                     backgroundColor: `${tag.color}15`,
@@ -419,7 +419,7 @@ export const TaskDefaultsSettings = () => {
             <button
               type="button"
               onClick={() => setShowTagPicker(true)}
-              className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs leading-none bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
             >
               <Plus className="w-3 h-3" />
               Add tag
@@ -470,7 +470,7 @@ export const TaskDefaultsSettings = () => {
           {availableReminderOptions.length > 0 && (
             <button
               type="button"
-              className={`inline-flex items-center gap-1 px-2 py-1 text-xs bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${defaultReminders.length > 0 ? 'mt-3' : ''}`}
+              className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs leading-none bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${defaultReminders.length > 0 ? 'mt-3' : ''}`}
               onClick={() => {
                 setEditingReminderOffset(null);
                 setShowReminderPicker(true);
