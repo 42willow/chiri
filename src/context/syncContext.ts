@@ -10,6 +10,7 @@ interface SyncState {
   syncProgress: SyncProgress | null;
   isSyncing: boolean;
   lastSyncTime: Date | null;
+  lastSyncSource: string | null;
   lastSyncError: string | null;
 }
 
@@ -18,6 +19,7 @@ interface SyncActions {
   setSyncProgress: (progress: SyncProgress | null) => void;
   setIsSyncing: (syncing: boolean) => void;
   setLastSyncTime: (time: Date | null) => void;
+  setLastSyncSource: (source: string | null) => void;
   setLastSyncError: (error: string | null) => void;
   registerInitialSyncCallback: (callback: () => void) => void;
 }

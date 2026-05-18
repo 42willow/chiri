@@ -11,6 +11,7 @@ export const SyncProvider = ({ children }: { children: ReactNode }) => {
   const [syncProgress, setSyncProgressState] = useState<{ current: number; total: number } | null>(null);
   const [isSyncing, setIsSyncingState] = useState(false);
   const [lastSyncTime, setLastSyncTimeState] = useState<Date | null>(null);
+  const [lastSyncSource, setLastSyncSourceState] = useState<string | null>(null);
   const [lastSyncError, setLastSyncErrorState] = useState<string | null>(null);
   const initialSyncCallbackRef = useRef<(() => void) | null>(null);
   const initialSyncTriggeredRef = useRef(false);
@@ -29,6 +30,10 @@ export const SyncProvider = ({ children }: { children: ReactNode }) => {
 
   const setLastSyncTime = useCallback((time: Date | null) => {
     setLastSyncTimeState(time);
+  }, []);
+
+  const setLastSyncSource = useCallback((source: string | null) => {
+    setLastSyncSourceState(source);
   }, []);
 
   const setLastSyncError = useCallback((error: string | null) => {
@@ -74,11 +79,13 @@ export const SyncProvider = ({ children }: { children: ReactNode }) => {
     syncProgress,
     isSyncing,
     lastSyncTime,
+    lastSyncSource,
     lastSyncError,
     setSyncingCalendarId,
     setSyncProgress,
     setIsSyncing,
     setLastSyncTime,
+    setLastSyncSource,
     setLastSyncError,
     registerInitialSyncCallback,
   };

@@ -26,6 +26,16 @@ import { useEscapeKey } from '$hooks/ui/useEscapeKey';
 import type { SortDirection, SortMode } from '$types';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 
+const SYNC_SOURCE_LABELS: Record<string, string> = {
+  'header-sync-button': 'manually',
+  'tray-sync': 'manually',
+  'keyboard-shortcut': 'manually',
+  'app-menu': 'manually',
+  'auto-interval': 'automatically',
+  'startup-initial': 'on startup',
+  'auto-reconnect': 'on reconnect',
+};
+
 // Extracted helper: get sync button tooltip content
 const getSyncTooltip = (
   disableSync: boolean,
@@ -36,6 +46,7 @@ const getSyncTooltip = (
   syncShortcut: string,
   syncingCalendarName: string | null,
   syncProgress: { current: number; total: number } | null,
+  lastSyncSource: string | null,
 ): string => {
   if (disableSync) return 'Add an account to be able to use sync';
   if (isOffline) return 'Cannot sync while offline';
@@ -43,8 +54,12 @@ const getSyncTooltip = (
     const progress = syncingCalendarName && syncProgress ? ` (${syncProgress.current}/${syncProgress.total})` : '';
     return syncingCalendarName ? `Syncing ${syncingCalendarName}...${progress}` : 'Sync in progress...';
   }
-  if (lastSyncTime && showJustNow) return 'Last synced just now';
-  if (lastSyncTime) return `Last synced ${formatDistanceToNow(lastSyncTime, { addSuffix: true })}`;
+  if (lastSyncTime) {
+    const when = formatDistanceToNow(lastSyncTime, { addSuffix: true });
+    const sourceLabel = lastSyncSource ? SYNC_SOURCE_LABELS[lastSyncSource] : null;
+    const suffix = showJustNow ? 'just now' : when;
+    return sourceLabel ? `Last synced ${suffix} ${sourceLabel}` : `Last synced ${suffix}`;
+  }
   return `Sync with server (${syncShortcut})`;
 };
 
@@ -72,6 +87,7 @@ interface HeaderProps {
   syncProgress?: { current: number; total: number } | null;
   isOffline?: boolean;
   lastSyncTime?: Date | null;
+  lastSyncSource?: string | null;
   onSync?: () => void;
   disableSync?: boolean;
 }
@@ -82,6 +98,7 @@ export const Header = ({
   syncProgress = null,
   isOffline = false,
   lastSyncTime,
+  lastSyncSource = null,
   onSync,
   disableSync = false,
 }: HeaderProps) => {
@@ -207,6 +224,7 @@ export const Header = ({
                 syncShortcut,
                 syncingCalendarName,
                 syncProgress,
+                lastSyncSource,
               )}
               position="bottom"
             >

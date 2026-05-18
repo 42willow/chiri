@@ -68,6 +68,8 @@ export const useSyncQuery = () => {
     setIsSyncing,
     lastSyncTime,
     setLastSyncTime,
+    lastSyncSource,
+    setLastSyncSource,
     lastSyncError,
     setLastSyncError,
     registerInitialSyncCallback,
@@ -161,6 +163,7 @@ export const useSyncQuery = () => {
         activeSyncRun = null;
         setIsSyncing(false);
         setLastSyncTime(new Date());
+        setLastSyncSource(syncTrigger.source);
       }
     },
     [
@@ -171,6 +174,7 @@ export const useSyncQuery = () => {
       setIsSyncing,
       setLastSyncError,
       setLastSyncTime,
+      setLastSyncSource,
     ],
   );
 
@@ -248,6 +252,7 @@ export const useSyncQuery = () => {
     isOffline,
     lastSyncError,
     lastSyncTime,
+    lastSyncSource,
     syncAll,
     syncCalendar,
     pushTask,
