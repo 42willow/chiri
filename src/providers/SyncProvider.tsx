@@ -8,6 +8,7 @@ const log = loggers.sync;
 
 export const SyncProvider = ({ children }: { children: ReactNode }) => {
   const [syncingCalendarId, setSyncingCalendarIdState] = useState<string | null>(null);
+  const [syncProgress, setSyncProgressState] = useState<{ current: number; total: number } | null>(null);
   const [isSyncing, setIsSyncingState] = useState(false);
   const [lastSyncTime, setLastSyncTimeState] = useState<Date | null>(null);
   const [lastSyncError, setLastSyncErrorState] = useState<string | null>(null);
@@ -16,6 +17,10 @@ export const SyncProvider = ({ children }: { children: ReactNode }) => {
 
   const setSyncingCalendarId = useCallback((id: string | null) => {
     setSyncingCalendarIdState(id);
+  }, []);
+
+  const setSyncProgress = useCallback((progress: { current: number; total: number } | null) => {
+    setSyncProgressState(progress);
   }, []);
 
   const setIsSyncing = useCallback((syncing: boolean) => {
@@ -66,10 +71,12 @@ export const SyncProvider = ({ children }: { children: ReactNode }) => {
 
   const value: SyncStore = {
     syncingCalendarId,
+    syncProgress,
     isSyncing,
     lastSyncTime,
     lastSyncError,
     setSyncingCalendarId,
+    setSyncProgress,
     setIsSyncing,
     setLastSyncTime,
     setLastSyncError,

@@ -62,6 +62,8 @@ export const useSyncQuery = () => {
   const {
     syncingCalendarId,
     setSyncingCalendarId,
+    syncProgress,
+    setSyncProgress,
     isSyncing,
     setIsSyncing,
     lastSyncTime,
@@ -147,7 +149,7 @@ export const useSyncQuery = () => {
       setLastSyncError(null);
 
       try {
-        await performFullSync(queryClient, setSyncingCalendarId);
+        await performFullSync(queryClient, setSyncingCalendarId, setSyncProgress);
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Sync failed';
         setLastSyncError(message);
@@ -164,6 +166,7 @@ export const useSyncQuery = () => {
     [
       queryClient,
       setSyncingCalendarId,
+      setSyncProgress,
       isOfflineRef,
       setIsSyncing,
       setLastSyncError,
@@ -241,6 +244,7 @@ export const useSyncQuery = () => {
   return {
     isSyncing,
     syncingCalendarId,
+    syncProgress,
     isOffline,
     lastSyncError,
     lastSyncTime,

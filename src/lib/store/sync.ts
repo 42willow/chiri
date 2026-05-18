@@ -523,6 +523,7 @@ export const syncCalendarTasks = async (
 export const performFullSync = async (
   queryClient: QueryClient,
   setSyncingCalendarId: (id: string | null) => void,
+  setSyncProgress: (progress: { current: number; total: number } | null) => void,
 ) => {
   const failedAccountIds = await reconnectAccounts();
 
@@ -556,11 +557,20 @@ export const performFullSync = async (
   // re-fetch accounts after calendar sync (calendars may have been added/removed)
   freshAccounts = getAllAccounts();
 
+  // build flat list of calendars to sync for progress tracking
+  const calendarsToSync = freshAccounts
+    .filter((a) => getAccountById(a.id) && !failedAccountIds.has(a.id))
+    .flatMap((a) => a.calendars);
+  const total = calendarsToSync.length;
+
   // sync tasks for each calendar
+  let current = 0;
   for (const account of freshAccounts) {
     if (!getAccountById(account.id)) continue;
     if (failedAccountIds.has(account.id)) continue;
     for (const calendar of account.calendars) {
+      current += 1;
+      setSyncProgress({ current, total });
       try {
         await syncCalendarTasks(calendar.id, queryClient, setSyncingCalendarId);
       } catch (error) {
@@ -580,6 +590,8 @@ export const performFullSync = async (
       }
     }
   }
+
+  setSyncProgress(null);
 };
 
 export const pushTaskToServer = async (task: Task, queryClient: QueryClient) => {

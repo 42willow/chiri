@@ -21,6 +21,7 @@ import {
   useSetSortConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
+import { useAccounts } from '$hooks/queries/useAccounts';
 import { useEscapeKey } from '$hooks/ui/useEscapeKey';
 import type { SortDirection, SortMode } from '$types';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
@@ -33,10 +34,15 @@ const getSyncTooltip = (
   lastSyncTime: Date | null | undefined,
   showJustNow: boolean,
   syncShortcut: string,
+  syncingCalendarName: string | null,
+  syncProgress: { current: number; total: number } | null,
 ): string => {
   if (disableSync) return 'Add an account to be able to use sync';
   if (isOffline) return 'Cannot sync while offline';
-  if (isSyncing) return 'Sync in progress...';
+  if (isSyncing) {
+    const progress = syncingCalendarName && syncProgress ? ` (${syncProgress.current}/${syncProgress.total})` : '';
+    return syncingCalendarName ? `Syncing ${syncingCalendarName}...${progress}` : 'Sync in progress...';
+  }
   if (lastSyncTime && showJustNow) return 'Last synced just now';
   if (lastSyncTime) return `Last synced ${formatDistanceToNow(lastSyncTime, { addSuffix: true })}`;
   return `Sync with server (${syncShortcut})`;
@@ -62,6 +68,8 @@ const getSyncButtonClass = (
 
 interface HeaderProps {
   isSyncing?: boolean;
+  syncingCalendarId?: string | null;
+  syncProgress?: { current: number; total: number } | null;
   isOffline?: boolean;
   lastSyncTime?: Date | null;
   onSync?: () => void;
@@ -70,12 +78,15 @@ interface HeaderProps {
 
 export const Header = ({
   isSyncing = false,
+  syncingCalendarId = null,
+  syncProgress = null,
   isOffline = false,
   lastSyncTime,
   onSync,
   disableSync = false,
 }: HeaderProps) => {
   const { data: uiState } = useUIState();
+  const { data: accounts = [] } = useAccounts();
   const setSearchQueryMutation = useSetSearchQuery();
   const setSortConfigMutation = useSetSortConfig();
   const setShowCompletedTasksMutation = useSetShowCompletedTasks();
@@ -97,6 +108,10 @@ export const Header = ({
   const modifierJoiner = getModifierJoiner();
   const searchShortcut = `${metaKey}${modifierJoiner}F`;
   const syncShortcut = `${metaKey}${modifierJoiner}R`;
+
+  const syncingCalendarName = syncingCalendarId
+    ? (accounts.flatMap((a) => a.calendars).find((c) => c.id === syncingCalendarId)?.displayName ?? null)
+    : null;
 
   // Track when sync completes and show "just now" for 3 seconds
   useEffect(() => {
@@ -190,6 +205,8 @@ export const Header = ({
                 lastSyncTime,
                 showJustNow,
                 syncShortcut,
+                syncingCalendarName,
+                syncProgress,
               )}
               position="bottom"
             >
