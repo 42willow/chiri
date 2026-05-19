@@ -79,6 +79,7 @@ interface SettingsState {
   onboardingCompleted: boolean;
   expandedAccountIds: string[];
   defaultAccountsExpanded: boolean;
+  localSectionCollapsed: boolean;
   accountsSectionCollapsed: boolean;
   tagsSectionCollapsed: boolean;
   systemTrayRestartNeeded: boolean;
@@ -161,6 +162,7 @@ interface SettingsActions {
   setExpandedAccountIds: (accountIds: string[]) => void;
   toggleAccountExpanded: (accountId: string) => void;
   setDefaultAccountsExpanded: (expanded: boolean) => void;
+  toggleLocalSectionCollapsed: () => void;
   toggleAccountsSectionCollapsed: () => void;
   toggleTagsSectionCollapsed: () => void;
   setEnableSystemTray: (enabled: boolean) => void;
@@ -240,6 +242,7 @@ const defaultState: SettingsState = {
   onboardingCompleted: false,
   expandedAccountIds: [],
   defaultAccountsExpanded: true,
+  localSectionCollapsed: false,
   accountsSectionCollapsed: false,
   tagsSectionCollapsed: false,
   enableSystemTray: true,
@@ -551,6 +554,8 @@ export const settingsStore = {
   },
   setDefaultAccountsExpanded: (defaultAccountsExpanded: boolean) =>
     setState({ defaultAccountsExpanded }),
+  toggleLocalSectionCollapsed: () =>
+    setState({ localSectionCollapsed: !state.localSectionCollapsed }),
   toggleAccountsSectionCollapsed: () =>
     setState({ accountsSectionCollapsed: !state.accountsSectionCollapsed }),
   toggleTagsSectionCollapsed: () => setState({ tagsSectionCollapsed: !state.tagsSectionCollapsed }),
@@ -667,6 +672,7 @@ export const settingsStore = {
         'onboardingCompleted',
         'expandedAccountIds',
         'defaultAccountsExpanded',
+        'localSectionCollapsed',
         'accountsSectionCollapsed',
         'tagsSectionCollapsed',
         'enableSystemTray',

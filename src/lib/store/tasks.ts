@@ -242,8 +242,8 @@ export const createTask = (taskData: Partial<Task>) => {
     defaultCalendarId,
   );
 
-  // Determine if this is a local-only task (no calendar/account assigned)
-  const isLocalOnly = !calendarId || !accountId;
+  const targetAccount = accountId ? data.accounts.find((a) => a.id === accountId) : undefined;
+  const isLocalOnly = !calendarId || !accountId || !targetAccount?.caldav;
 
   // Calculate sort order using Apple epoch format
   const maxSortOrder =
@@ -314,7 +314,6 @@ export const updateTask = (id: string, updates: Partial<Task>) => {
   // old calendar URL and clear href/etag so the task is created fresh in the new
   // calendar. CalDAV addresses tasks by URL, so a plain PUT to the old href just
   // updates the task in the old calendar. the move never happens server-side
-  // see the calendar-move issue
   const existingTask = data.tasks.find((t) => t.id === id);
   let pendingDeletions = data.pendingDeletions;
   if (
@@ -333,6 +332,14 @@ export const updateTask = (id: string, updates: Partial<Task>) => {
       log.error('Failed to persist pending deletion for calendar move:', e),
     );
     updates = { ...updates, href: undefined, etag: undefined };
+  }
+
+  // set localOnly based on whether the target account is local or caldav
+  if (updates.accountId !== undefined && updates.accountId !== existingTask?.accountId) {
+    const targetAccount = data.accounts.find((a) => a.id === updates.accountId);
+    if (targetAccount) {
+      updates = { ...updates, localOnly: !targetAccount.caldav, synced: false };
+    }
   }
 
   const tasks = data.tasks.map((task) => {

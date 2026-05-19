@@ -30,43 +30,48 @@ export const SidebarCalendarContextMenu = ({
   onExportCalendar,
   onDeleteCalendar,
 }: SidebarCalendarContextMenuProps) => {
+  const account = accounts.find((a) => a.id === accountId);
+  const isLocal = !account?.caldav;
   const isSyncing = syncingCalendarId === calendarId;
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => {
-          onClose();
-          const account = accounts.find((a) => a.id === accountId);
-          const calendar = account?.calendars.find((c) => c.id === calendarId);
-          syncCalendar(calendarId).catch((error) => {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            toastManager.error(
-              `Calendar sync failed: ${calendar?.displayName || 'Unknown'}`,
-              errorMessage,
-              `sync-error-calendar-${calendarId}`,
-              {
-                label: 'Edit Account',
-                onClick: () => {
-                  emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId: account?.id });
-                },
-              },
-            );
-          });
-        }}
-        disabled={isSyncing}
-        className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-          isSyncing
-            ? 'text-surface-400 dark:text-surface-500 cursor-not-allowed'
-            : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
-        }`}
-      >
-        <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-        {isSyncing ? 'Syncing...' : 'Sync'}
-      </button>
+      {!isLocal && (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              onClose();
+              const calendar = account?.calendars.find((c) => c.id === calendarId);
+              syncCalendar(calendarId).catch((error) => {
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                toastManager.error(
+                  `Calendar sync failed: ${calendar?.displayName || 'Unknown'}`,
+                  errorMessage,
+                  `sync-error-calendar-${calendarId}`,
+                  {
+                    label: 'Edit Account',
+                    onClick: () => {
+                      emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId: account?.id });
+                    },
+                  },
+                );
+              });
+            }}
+            disabled={isSyncing}
+            className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              isSyncing
+                ? 'text-surface-400 dark:text-surface-500 cursor-not-allowed'
+                : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
+            }`}
+          >
+            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Sync'}
+          </button>
 
-      <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-t border-surface-200 dark:border-surface-700" />
+        </>
+      )}
 
       <button
         type="button"

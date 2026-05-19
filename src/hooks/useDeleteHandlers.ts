@@ -87,24 +87,28 @@ export const useDeleteHandlers = () => {
         ? `${account?.caldav?.serverUrl.replace(/\/$/, '')}/projects/${projectId}/settings/delete`
         : undefined;
 
+    const isLocal = !account?.caldav;
+    const deleteMessage = isLocal
+      ? 'Are you sure? This calendar and all its tasks will be permanently deleted.'
+      : 'Are you sure? This calendar and all its tasks will be deleted from the server.';
+    const vikunjaNotice = isVikunja
+      ? {
+          message: "Vikunja doesn't support deleting projects via CalDAV.",
+          link: vikunjaDeleteUrl
+            ? { label: 'Delete it in Vikunja', href: vikunjaDeleteUrl }
+            : undefined,
+          suffix: ', then sync.',
+        }
+      : undefined;
+
     if (isVikunja || confirmBeforeDeleteCalendar) {
       const confirmed = await confirm({
         title: 'Delete calendar',
         subtitle: calendar?.displayName,
-        message: isVikunja
-          ? undefined
-          : 'Are you sure? This calendar and all its tasks will be deleted from the server.',
+        message: isVikunja ? undefined : deleteMessage,
         confirmLabel: 'Delete',
         destructive: true,
-        notice: isVikunja
-          ? {
-              message: "Vikunja doesn't support deleting projects via CalDAV.",
-              link: vikunjaDeleteUrl
-                ? { label: 'Delete it in Vikunja', href: vikunjaDeleteUrl }
-                : undefined,
-              suffix: ', then sync.',
-            }
-          : undefined,
+        notice: vikunjaNotice,
         disableConfirm: isVikunja,
       });
       if (!confirmed) return;
@@ -116,9 +120,11 @@ export const useDeleteHandlers = () => {
     // Check if this is the active calendar
     const isActiveCalendar = activeCalendarId === calendarId;
 
-    // Delete calendar from server
+    // Delete calendar from server (skip for local accounts)
     try {
-      await CalDAVClient.getForAccount(accountId).deleteCalendar(calendarId);
+      if (account?.caldav) {
+        await CalDAVClient.getForAccount(accountId).deleteCalendar(calendarId);
+      }
       // Delete calendar and its tasks from local state
       storeDeleteCalendar(accountId, calendarId);
 

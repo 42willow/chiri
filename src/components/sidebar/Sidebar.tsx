@@ -9,10 +9,11 @@ import { SidebarCollapsedView } from '$components/sidebar/SidebarCollapsedView';
 import { SidebarContextMenu } from '$components/sidebar/SidebarContextMenu';
 import { SidebarFooter } from '$components/sidebar/SidebarFooter';
 import { SidebarHeader } from '$components/sidebar/SidebarHeader';
+import { SidebarLocalList } from '$components/sidebar/SidebarLocalList';
 import { SidebarTagsList } from '$components/sidebar/SidebarTagsList';
 import { useModalState } from '$context/modalStateContext';
 import { settingsStore } from '$context/settingsContext';
-import { useAccounts } from '$hooks/queries/useAccounts';
+import { useAccounts, useCreateAccount } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
 import { useTags } from '$hooks/queries/useTags';
 import { useTasks } from '$hooks/queries/useTasks';
@@ -55,6 +56,8 @@ export const Sidebar = ({
   onUpdateClick,
 }: SidebarProps) => {
   const { data: accounts = [] } = useAccounts();
+  const localAccounts = useMemo(() => accounts.filter((a) => !a.caldav), [accounts]);
+  const caldavAccounts = useMemo(() => accounts.filter((a) => a.caldav), [accounts]);
   const { data: tags = [] } = useTags();
   const { data: uiState } = useUIState();
   const { data: tasks = [] } = useTasks();
@@ -66,6 +69,7 @@ export const Sidebar = ({
 
   const { handleDeleteAccount, handleDeleteTag, handleDeleteCalendar } = useDeleteHandlers();
   const { syncCalendar, syncingCalendarId } = useSyncQuery();
+  const createAccountMutation = useCreateAccount();
 
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
@@ -75,8 +79,10 @@ export const Sidebar = ({
     defaultAccountsExpanded,
     toggleAccountExpanded,
     setExpandedAccountIds,
+    localSectionCollapsed,
     accountsSectionCollapsed,
     tagsSectionCollapsed,
+    toggleLocalSectionCollapsed,
     toggleAccountsSectionCollapsed,
     toggleTagsSectionCollapsed,
   } = useSettingsStore();
@@ -215,6 +221,17 @@ export const Sidebar = ({
   // register for global context menu close
   useGlobalContextMenuClose(handleCloseContextMenu, contextMenu !== null);
 
+  const handleAddLocalCalendar = useCallback(async () => {
+    let localAccount = accounts.find((a) => !a.caldav);
+    if (!localAccount) {
+      localAccount = await createAccountMutation.mutateAsync({
+        name: 'Local',
+        caldav: null,
+      });
+    }
+    setShowCreateCalendarModal(localAccount.id);
+  }, [accounts, createAccountMutation]);
+
   const getTotalActiveTaskCount = () =>
     tasks.filter((t) => t.status !== 'completed' && t.status !== 'cancelled').length;
 
@@ -264,8 +281,25 @@ export const Sidebar = ({
                 <span className="text-xs">{getTotalActiveTaskCount()}</span>
               </button>
 
+              <SidebarLocalList
+                accounts={localAccounts}
+                tasks={tasks}
+                activeCalendarId={activeCalendarId}
+                contextMenu={contextMenu}
+                isAnyModalOpen={isAnyModalOpen}
+                collapsed={localSectionCollapsed}
+                onToggle={toggleLocalSectionCollapsed}
+                onContextMenu={handleContextMenu}
+                onSelectCalendar={(accountId, calendarId) => {
+                  setActiveAccountMutation.mutate(accountId);
+                  setActiveCalendarMutation.mutate(calendarId);
+                }}
+                onOpenImport={onOpenImport}
+                onAddCalendar={handleAddLocalCalendar}
+              />
+
               <SidebarAccountsList
-                accounts={accounts}
+                accounts={caldavAccounts}
                 tasks={tasks}
                 expandedAccounts={expandedAccounts}
                 activeCalendarId={activeCalendarId}
@@ -322,6 +356,7 @@ export const Sidebar = ({
             activeTagId={activeTagId}
             contextMenu={contextMenu}
             showCollapsedContent={showCollapsedContent}
+            localSectionCollapsed={localSectionCollapsed}
             accountsSectionCollapsed={accountsSectionCollapsed}
             tagsSectionCollapsed={tagsSectionCollapsed}
             updateAvailable={updateAvailable}

@@ -46,8 +46,9 @@ export const useTray = ({ isSyncing, lastSyncTime, onSyncRequest }: UseTrayOptio
   }, [isSyncing, lastSyncTime, timeFormat]);
 
   useEffect(() => {
-    invoke('update_tray_sync_enabled', { enabled: accounts.length > 0 }).catch((err) => {
+    const hasCaldav = accounts.some((a) => a.caldav);
+    invoke('update_tray_sync_enabled', { enabled: hasCaldav }).catch((err) => {
       console.error('Failed to update sync button state:', err);
     });
-  }, [accounts.length]);
+  }, [accounts]);
 };

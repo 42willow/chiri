@@ -94,6 +94,7 @@ export const createMacMenu = async (options?: {
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
   accounts?: MenuAccount[];
+  caldavAccountCount?: number;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
 }) => {
@@ -104,6 +105,7 @@ export const createMacMenu = async (options?: {
   const shortcuts = options?.shortcuts;
   const accounts = options?.accounts ?? [];
   const hasAccounts = accounts.length > 0;
+  const hasCaldavAccounts = (options?.caldavAccountCount ?? accounts.length) > 0;
   const isSyncing = options?.isSyncing ?? false;
   const isEditorOpen = options?.isEditorOpen ?? false;
 
@@ -407,7 +409,7 @@ export const createMacMenu = async (options?: {
     id: 'sync',
     text: 'Sync',
     accelerator: getAcceleratorById(shortcuts, 'sync') ?? 'CmdOrCtrl+R',
-    enabled: hasAccounts && !isSyncing,
+    enabled: hasCaldavAccounts && !isSyncing,
     action: () => {
       emit(MENU_EVENTS.SYNC);
     },
@@ -615,6 +617,7 @@ export const initAppMenu = async (options?: {
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
   accounts?: MenuAccount[];
+  caldavAccountCount?: number;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
 }) => {
@@ -643,6 +646,7 @@ export const rebuildAppMenu = async (options?: {
   sortDirection?: SortDirection;
   shortcuts?: KeyboardShortcut[];
   accounts?: MenuAccount[];
+  caldavAccountCount?: number;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
 }) => {

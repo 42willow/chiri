@@ -138,8 +138,8 @@ export const useSyncQuery = () => {
         return;
       }
 
-      if (getAllAccounts().length === 0) {
-        log.info('Skipping sync - no accounts configured', { requestedBy: syncTrigger });
+      if (!getAllAccounts().some((a) => a.caldav)) {
+        log.info('Skipping sync - no CalDAV accounts configured', { requestedBy: syncTrigger });
         return;
       }
 
@@ -214,7 +214,7 @@ export const useSyncQuery = () => {
 
     const accounts = getAllAccounts();
     // Set up new interval if autosync is enabled
-    if (autoSync && syncInterval > 0 && accounts.length > 0) {
+    if (autoSync && syncInterval > 0 && accounts.some((a) => a.caldav)) {
       autoSyncIntervalRef.current = setInterval(
         () => {
           if (!isOffline && !isSyncing) {

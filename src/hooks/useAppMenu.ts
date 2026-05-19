@@ -27,6 +27,8 @@ export const useAppMenu = (isSyncing?: boolean) => {
     [accounts],
   );
 
+  const caldavAccountCount = useMemo(() => accounts.filter((a) => a.caldav).length, [accounts]);
+
   // update lightweight state (sort, filters, sync, editor) without a full rebuild
   useEffect(() => {
     if (skipMenu) return;
@@ -36,7 +38,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
       (uiState?.isEditorOpen ?? false) && (uiState?.selectedTaskId ?? null) !== null;
 
     updateMenuState({
-      accountCount: accounts.length,
+      accountCount: caldavAccountCount,
       showCompleted: uiState?.showCompletedTasks ?? true,
       showUnstarted: uiState?.showUnstartedTasks ?? true,
       sortMode,
@@ -45,7 +47,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
       isEditorOpen,
     });
   }, [
-    accounts.length,
+    caldavAccountCount,
     uiState?.showCompletedTasks,
     uiState?.showUnstartedTasks,
     uiState?.sortConfig?.mode,
@@ -71,12 +73,14 @@ export const useAppMenu = (isSyncing?: boolean) => {
       sortDirection,
       shortcuts: keyboardShortcuts,
       accounts: menuAccounts,
+      caldavAccountCount,
       isSyncing: isSyncing ?? false,
       isEditorOpen,
     });
   }, [
     keyboardShortcuts,
     menuAccounts,
+    caldavAccountCount,
     uiState?.showCompletedTasks,
     uiState?.showUnstartedTasks,
     uiState?.sortConfig?.mode,

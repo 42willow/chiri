@@ -129,81 +129,79 @@ export const SidebarAccountsList = ({
   });
 
   return (
-    <div>
-      <div className="relative">
-        {/* biome-ignore lint/a11y/useSemanticElements: Section header toggle div contains icon+text layout that button element can't replicate */}
-        <div
-          onClick={onToggleAccountsSection}
-          onKeyDown={(e) => e.key === 'Enter' && onToggleAccountsSection()}
-          onContextMenu={(e) => onContextMenu(e, 'accounts-section', 'accounts')}
-          role="button"
-          tabIndex={0}
-          aria-expanded={!accountsSectionCollapsed}
-          className="flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-        >
-          <div className="flex items-center gap-1.5">
-            <ChevronDown
-              className={`w-4 h-4 text-surface-400 motion-safe:transition-transform motion-safe:duration-200 ${accountsSectionCollapsed ? '-rotate-90' : 'rotate-0'}`}
-            />
-            <span className="text-sm font-semibold text-surface-500 dark:text-surface-400">
-              Accounts
-            </span>
-          </div>
-
-          <div className="flex items-center gap-1">
-            <Tooltip content="Import tasks" position="top">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenImport?.();
-                }}
-                className={`p-1 rounded-sm ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
-              >
-                <Import className="w-4 h-4" />
-              </button>
-            </Tooltip>
-
-            <Tooltip content="List order" position="top">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowSortMenu((v) => !v);
-                }}
-                className={`p-1 rounded transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                  showSortMenu
-                    ? 'bg-surface-300 dark:bg-surface-600 text-surface-700 dark:text-surface-200'
-                    : `text-surface-500 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''}`
-                }`}
-              >
-                <ArrowUpDown className="w-4 h-4" />
-              </button>
-            </Tooltip>
-
-            <Tooltip content="Add account" position="top">
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onAddAccount();
-                }}
-                className={`p-1 rounded-sm ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
-              >
-                <Plus className="w-4 h-4" />
-              </button>
-            </Tooltip>
-          </div>
+    <div className="relative">
+      {/* biome-ignore lint/a11y/useSemanticElements: Section header toggle div contains icon+text layout that button element can't replicate */}
+      <div
+        onClick={onToggleAccountsSection}
+        onKeyDown={(e) => e.key === 'Enter' && onToggleAccountsSection()}
+        onContextMenu={(e) => onContextMenu(e, 'accounts-section', 'accounts')}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!accountsSectionCollapsed}
+        className="flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+      >
+        <div className="flex items-center gap-1.5">
+          <ChevronDown
+            className={`w-4 h-4 text-surface-400 motion-safe:transition-transform motion-safe:duration-200 ${accountsSectionCollapsed ? '-rotate-90' : 'rotate-0'}`}
+          />
+          <span className="text-sm font-semibold text-surface-500 dark:text-surface-400">
+            Accounts
+          </span>
         </div>
 
-        {showSortMenu && (
-          <SidebarAccountsSortMenu
-            accountSortConfig={accountSortConfig}
-            calendarSortConfig={calendarSortConfig}
-            onClose={closeSortMenu}
-          />
-        )}
+        <div className="flex items-center gap-1">
+          <Tooltip content="Import tasks" position="top">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenImport?.();
+              }}
+              className={`p-1 rounded-sm ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+            >
+              <Import className="w-4 h-4" />
+            </button>
+          </Tooltip>
+
+          <Tooltip content="List order" position="top">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSortMenu((v) => !v);
+              }}
+              className={`p-1 rounded transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                showSortMenu
+                  ? 'bg-surface-300 dark:bg-surface-600 text-surface-700 dark:text-surface-200'
+                  : `text-surface-500 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''}`
+              }`}
+            >
+              <ArrowUpDown className="w-4 h-4" />
+            </button>
+          </Tooltip>
+
+          <Tooltip content="Add account" position="top">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddAccount();
+              }}
+              className={`p-1 rounded-sm ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+            >
+              <Plus className="w-4 h-4" />
+            </button>
+          </Tooltip>
+        </div>
       </div>
+
+      {showSortMenu && (
+        <SidebarAccountsSortMenu
+          accountSortConfig={accountSortConfig}
+          calendarSortConfig={calendarSortConfig}
+          onClose={closeSortMenu}
+        />
+      )}
 
       <div
         className={`grid motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${accountsSectionCollapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'}`}

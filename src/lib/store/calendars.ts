@@ -31,18 +31,20 @@ export const addCalendar = (accountId: string, calendarData: Partial<Calendar>) 
   const allCalendars = data.accounts.flatMap((acc) => acc.calendars);
   const isFirstCalendar = allCalendars.length === 0;
 
-  // Assign local-only tasks to this calendar if it's the first one
+  // Assign orphan tasks to this calendar if it's the first one
+  const account = data.accounts.find((a) => a.id === accountId);
+  const isLocal = !account?.caldav;
   let updatedTasks = data.tasks;
   if (isFirstCalendar) {
     updatedTasks = data.tasks.map((task) => {
       if (task.localOnly || !task.calendarId || !task.accountId) {
-        log.info(`Assigning local-only task "${task.title}" to calendar: ${calendar.displayName}`);
+        log.info(`Assigning orphan task "${task.title}" to calendar: ${calendar.displayName}`);
 
         const updatedTask: Task = {
           ...task,
           calendarId: calendar.id,
           accountId: accountId,
-          localOnly: false,
+          localOnly: isLocal,
           synced: false,
           modifiedAt: new Date(),
         } satisfies Task;
@@ -50,10 +52,10 @@ export const addCalendar = (accountId: string, calendarData: Partial<Calendar>) 
         db.updateTask(task.id, {
           calendarId: calendar.id,
           accountId: accountId,
-          localOnly: false,
+          localOnly: isLocal,
           synced: false,
           modifiedAt: new Date(),
-        }).catch((e) => log.error('Failed to update local task:', e));
+        }).catch((e) => log.error('Failed to update orphan task:', e));
 
         return updatedTask;
       }

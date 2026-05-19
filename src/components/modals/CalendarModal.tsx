@@ -87,16 +87,16 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
 
         let result = { failedProperties: [] as string[] };
 
-        if (Object.keys(serverUpdates).length > 0) {
+        if (Object.keys(serverUpdates).length > 0 && account?.caldav) {
           result = await CalDAVClient.getForAccount(accountId).updateCalendar(
             calendar.url,
             serverUpdates,
           );
         }
 
-        const account = accounts.find((a) => a.id === accountId);
-        if (account) {
-          const updatedCalendars = account.calendars.map((c) => {
+        const currentAccount = accounts.find((a) => a.id === accountId);
+        if (currentAccount) {
+          const updatedCalendars = currentAccount.calendars.map((c) => {
             if (c.id === calendar.id) {
               const updates: Partial<Calendar> = {};
               if (!result.failedProperties.includes('displayname')) {
@@ -121,13 +121,20 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
           setWarning(`Server doesn't support updating ${failedNames}. Other changes were saved.`);
           return;
         }
-      } else {
-        // create mode
+      } else if (account?.caldav) {
+        // create on server
         const newCalendar = await CalDAVClient.getForAccount(accountId).createCalendar(
           displayName,
           color,
         );
         addCalendarMutation.mutate({ accountId, calendarData: { ...newCalendar, icon, emoji } });
+      } else {
+        // local calendar. just write the DB row
+        const id = crypto.randomUUID();
+        addCalendarMutation.mutate({
+          accountId,
+          calendarData: { id, displayName, color, icon, emoji, url: `local://${id}` },
+        });
       }
 
       onClose();

@@ -231,7 +231,7 @@ export const Header = ({
                 syncingCalendarName,
                 syncProgress,
                 lastSyncSource,
-                accounts.length,
+                accounts.filter((a) => a.caldav).length,
               )}
               position="bottom"
             >

@@ -288,7 +288,7 @@ const App = () => {
           syncingCalendarId={syncingCalendarId}
           syncProgress={syncProgress}
           onSync={handleHeaderSync}
-          disableSync={accounts.length === 0}
+          disableSync={accounts.every((a) => !a.caldav)}
           isOffline={isOffline}
           lastSyncTime={lastSyncTime}
           lastSyncSource={lastSyncSource}

@@ -24,7 +24,8 @@ interface ConnectionsSettingsProps {
   accounts: Account[];
 }
 
-export const ConnectionsSettings = ({ accounts }: ConnectionsSettingsProps) => {
+export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettingsProps) => {
+  const accounts = allAccounts.filter((a) => a.caldav);
   const deleteAccountMutation = useDeleteAccount();
   const { confirm, close } = useConfirmDialog();
   const { confirmBeforeDeleteAccount } = useSettingsStore();

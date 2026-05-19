@@ -8,7 +8,9 @@ const log = loggers.sync;
 
 export const SyncProvider = ({ children }: { children: ReactNode }) => {
   const [syncingCalendarId, setSyncingCalendarIdState] = useState<string | null>(null);
-  const [syncProgress, setSyncProgressState] = useState<{ current: number; total: number } | null>(null);
+  const [syncProgress, setSyncProgressState] = useState<{ current: number; total: number } | null>(
+    null,
+  );
   const [isSyncing, setIsSyncingState] = useState(false);
   const [lastSyncTime, setLastSyncTimeState] = useState<Date | null>(null);
   const [lastSyncSource, setLastSyncSourceState] = useState<string | null>(null);
@@ -53,8 +55,8 @@ export const SyncProvider = ({ children }: { children: ReactNode }) => {
     const accounts = getAllAccounts();
     const syncOnStartup = settingsStore.getState().syncOnStartup;
 
-    if (accounts.length === 0) {
-      log.debug('Initial sync skipped - no accounts configured');
+    if (!accounts.some((a) => a.caldav)) {
+      log.debug('Initial sync skipped - no CalDAV accounts configured');
       return;
     }
 

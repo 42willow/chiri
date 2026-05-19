@@ -1,22 +1,45 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
-import { getAllAccounts } from '$lib/database/accounts';
+import { createAccount, getAllAccounts } from '$lib/database/accounts';
+import { addCalendar } from '$lib/database/calendars';
 import { getPendingDeletions } from '$lib/database/pendingDeletions';
 import { getAllTags } from '$lib/database/tags';
 import { getAllTasks } from '$lib/database/tasks';
 import { getUIState, setAllTasksView } from '$lib/database/ui';
 import { loggers } from '$lib/logger';
 import type { DataStore } from '$types/store';
+import { generateUUID } from '$utils/misc';
 
 const log = loggers.database;
 
+const bootstrapLocalAccount = async (conn: DatabasePlugin) => {
+  const accountId = generateUUID();
+  const calendarId = generateUUID();
+  const account = await createAccount(conn, {
+    id: accountId,
+    name: 'Local',
+    caldav: null,
+  });
+  await addCalendar(conn, accountId, {
+    id: calendarId,
+    displayName: 'Tasks',
+    url: `local://${calendarId}`,
+    icon: 'calendar',
+  });
+  const refreshed = await getAllAccounts(conn);
+  log.info('Bootstrapped local account with default calendar');
+  return refreshed.length > 0 ? refreshed : [account];
+};
+
 export const getSnapshot = async (conn: DatabasePlugin): Promise<DataStore> => {
-  const [tasks, tags, accounts, pendingDeletions, ui] = await Promise.all([
+  const [tasks, tags, rawAccounts, pendingDeletions, ui] = await Promise.all([
     getAllTasks(conn),
     getAllTags(conn),
     getAllAccounts(conn),
     getPendingDeletions(conn),
     getUIState(conn),
   ]);
+
+  const accounts = rawAccounts.length === 0 ? await bootstrapLocalAccount(conn) : rawAccounts;
 
   let cleanedUI = ui;
   let needsUpdate = false;

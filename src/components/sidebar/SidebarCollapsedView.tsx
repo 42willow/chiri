@@ -13,6 +13,7 @@ interface SidebarCollapsedViewProps {
   activeTagId: string | null;
   contextMenu: { type: string; id: string } | null;
   showCollapsedContent: boolean;
+  localSectionCollapsed: boolean;
   accountsSectionCollapsed: boolean;
   tagsSectionCollapsed: boolean;
   updateAvailable?: boolean;
@@ -36,6 +37,7 @@ export const SidebarCollapsedView = ({
   activeTagId,
   contextMenu,
   showCollapsedContent,
+  localSectionCollapsed,
   accountsSectionCollapsed,
   tagsSectionCollapsed,
   updateAvailable,
@@ -64,8 +66,10 @@ export const SidebarCollapsedView = ({
         </button>
       </Tooltip>
 
-      {!accountsSectionCollapsed &&
-        accounts.map((account) => {
+      {accounts
+        .filter((a) => !a.caldav && !localSectionCollapsed)
+        .concat(accounts.filter((a) => a.caldav && !accountsSectionCollapsed))
+        .map((account) => {
           if (account.calendars.length === 0) return null;
           return (
             <div key={account.id} className="flex flex-col items-center gap-1">
