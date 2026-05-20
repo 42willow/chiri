@@ -7,6 +7,7 @@ import { getIconByName } from '$constants/icons';
 import { useCreateTag, useTags, useUpdateTag } from '$hooks/queries/useTags';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
+import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 
 interface TagModalProps {
   tagId: string | null;
@@ -18,15 +19,19 @@ export const TagModal = ({ tagId, initialName, onClose }: TagModalProps) => {
   const { data: tags = [] } = useTags();
   const createTagMutation = useCreateTag();
   const updateTagMutation = useUpdateTag();
-  const { defaultTagColor, accentColor } = useSettingsStore();
+  const { defaultTagColor } = useSettingsStore();
   const colorPresets = useColorPresets();
-  const fallbackColor = colorPresets[0] ?? accentColor;
+  const resolveAccentColor = useAccentColorResolver();
+  const resolvedAccentColor = useResolvedAccentColor();
+  const fallbackColor = colorPresets[0] ?? resolvedAccentColor;
 
   const existingTag = tagId ? tags.find((t) => t.id === tagId) : null;
 
-  const resolvedDefaultTagColor = defaultTagColor === 'accent' ? accentColor : defaultTagColor;
+  const resolvedDefaultTagColor =
+    defaultTagColor === 'accent' ? resolvedAccentColor : resolveAccentColor(defaultTagColor);
+  const initialColor = resolveAccentColor(existingTag?.color ?? resolvedDefaultTagColor);
   const [name, setName] = useState(existingTag?.name || initialName || '');
-  const [color, setColor] = useState(existingTag?.color ?? resolvedDefaultTagColor);
+  const [color, setColor] = useState(initialColor);
   const [icon, setIcon] = useState(existingTag?.icon || 'tag');
   const [emoji, setEmoji] = useState(existingTag?.emoji || '');
 

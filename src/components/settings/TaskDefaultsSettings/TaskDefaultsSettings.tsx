@@ -19,6 +19,7 @@ import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
+import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { DefaultReminderOffset, TaskStatus } from '$types';
 import { rruleToText } from '$utils/recurrence';
 
@@ -75,7 +76,6 @@ export const TaskDefaultsSettings = () => {
     setDefaultStatus,
     defaultPercentComplete,
     setDefaultPercentComplete,
-    accentColor,
     defaultTags,
     setDefaultTags,
     defaultCalendarId,
@@ -97,6 +97,7 @@ export const TaskDefaultsSettings = () => {
     setDefaultTagColor,
   } = useSettingsStore();
   const colorPresets = useColorPresets();
+  const resolvedAccentColor = useResolvedAccentColor();
   const { data: accounts = [] } = useAccounts();
   const { data: tags = [] } = useTags();
   const [showTagPicker, setShowTagPicker] = useState(false);
@@ -312,7 +313,7 @@ export const TaskDefaultsSettings = () => {
           value={defaultCalendarColor}
           onChange={setDefaultCalendarColor}
           presets={colorPresets}
-          accentColor={accentColor}
+          accentColor={resolvedAccentColor}
         />
 
         <div className="border-t border-surface-200 dark:border-surface-700" />
@@ -379,7 +380,7 @@ export const TaskDefaultsSettings = () => {
           value={defaultTagColor}
           onChange={setDefaultTagColor}
           presets={colorPresets}
-          accentColor={accentColor}
+          accentColor={resolvedAccentColor}
         />
 
         <div className="border-t border-surface-200 dark:border-surface-700" />

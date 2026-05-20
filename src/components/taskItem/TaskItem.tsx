@@ -19,6 +19,7 @@ import {
 } from '$hooks/queries/useUIState';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useContextMenu } from '$hooks/ui/useContextMenu';
+import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
 import type { Account, Task } from '$types';
@@ -48,13 +49,9 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
   const setActiveTagMutation = useSetActiveTag();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveAccountMutation = useSetActiveAccount();
-  const {
-    accentColor,
-    taskListDensity,
-    taskBadgeVisibility,
-    taskBadgeOrder,
-    useAccentColorForCheckboxes,
-  } = useSettingsStore();
+  const { taskListDensity, taskBadgeVisibility, taskBadgeOrder, useAccentColorForCheckboxes } =
+    useSettingsStore();
+  const resolvedAccentColor = useResolvedAccentColor();
   const { contextMenu, handleContextMenu, handleCloseContextMenu, setContextMenu } =
     useContextMenu();
 
@@ -74,7 +71,7 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
     }
   }, [isSelected, isOverlay]);
 
-  const checkmarkColor = getContrastTextColor(accentColor);
+  const checkmarkColor = getContrastTextColor(resolvedAccentColor);
 
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
     id: task.id,

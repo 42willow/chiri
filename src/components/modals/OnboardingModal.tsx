@@ -20,6 +20,7 @@ import { useAccounts, useAddCalendar, useCreateAccount } from '$hooks/queries/us
 import { useNotificationContext } from '$hooks/store/useNotificationContext';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { usePlatform } from '$hooks/system/usePlatform';
+import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { DEFAULT_COLOR_SCHEME_ID } from '$types/color';
 import { resolveEffectiveTheme } from '$utils/color';
 import { isMacPlatform } from '$utils/platform';
@@ -48,7 +49,6 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
     setSyncOnStartup,
     checkForUpdatesAutomatically,
     setCheckForUpdatesAutomatically,
-    accentColor,
     setAccentColor,
     theme,
     setTheme,
@@ -62,6 +62,7 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
   const { data: accounts = [] } = useAccounts();
   const createAccountMutation = useCreateAccount();
   const addCalendarMutation = useAddCalendar();
+  const resolvedAccentColor = useResolvedAccentColor();
   const { isGNOME } = usePlatform();
   const isMac = isMacPlatform();
   const { permissionStatus, isCheckingPermission, requestPermission } = useNotificationContext();
@@ -131,7 +132,7 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
       calendarData: {
         id: calendarId,
         displayName: 'Tasks',
-        color: accentColor,
+        color: resolvedAccentColor,
         icon: 'calendar',
         emoji: '',
         url: `local://${calendarId}`,
@@ -351,7 +352,7 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
                           type="button"
                           onClick={() => setAccentColor(color.value)}
                           className={`w-8 h-8 rounded-full border-2 transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 ${
-                            accentColor === color.value
+                            resolvedAccentColor === color.value
                               ? 'border-surface-800 dark:border-white scale-110'
                               : 'border-transparent hover:scale-105'
                           }`}

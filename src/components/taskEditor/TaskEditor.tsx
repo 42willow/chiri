@@ -32,6 +32,7 @@ import { useSetEditorOpen } from '$hooks/queries/useUIState';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useEscapeKey } from '$hooks/ui/useEscapeKey';
 import { useModalEscapeKey } from '$hooks/ui/useModalEscapeKey';
+import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { useConfirmPermanentTaskDelete } from '$hooks/useConfirmPermanentTaskDelete';
 import { useConfirmTaskDelete } from '$hooks/useConfirmTaskDelete';
 import type { Task, TaskStatus } from '$types';
@@ -57,17 +58,17 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const { data: tags = [] } = useTags();
   const { data: accounts = [] } = useAccounts();
   const {
-    accentColor,
     notifications,
     timeFormat,
     editorFieldVisibility,
     editorFieldOrder,
     useAccentColorForCheckboxes,
   } = useSettingsStore();
+  const resolvedAccentColor = useResolvedAccentColor();
   const { confirmAndDelete } = useConfirmTaskDelete();
   const { confirmAndDeletePermanently } = useConfirmPermanentTaskDelete();
 
-  const checkmarkColor = getContrastTextColor(accentColor);
+  const checkmarkColor = getContrastTextColor(resolvedAccentColor);
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 

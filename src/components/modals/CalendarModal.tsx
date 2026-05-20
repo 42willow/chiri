@@ -11,6 +11,7 @@ import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useFocusTrap } from '$hooks/ui/useFocusTrap';
 import { useModalEscapeKey } from '$hooks/ui/useModalEscapeKey';
+import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { CalDAVClient } from '$lib/caldav';
 import type { Calendar } from '$types';
 
@@ -24,15 +25,20 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
   const { data: accounts = [] } = useAccounts();
   const addCalendarMutation = useAddCalendar();
   const updateAccountMutation = useUpdateAccount();
-  const { defaultCalendarColor, accentColor } = useSettingsStore();
+  const { defaultCalendarColor } = useSettingsStore();
   const colorPresets = useColorPresets();
-  const fallbackColor = colorPresets[0] ?? accentColor;
+  const resolveAccentColor = useAccentColorResolver();
+  const resolvedAccentColor = useResolvedAccentColor();
+  const fallbackColor = colorPresets[0] ?? resolvedAccentColor;
 
   const resolvedDefaultCalendarColor =
-    defaultCalendarColor === 'accent' ? accentColor : defaultCalendarColor;
+    defaultCalendarColor === 'accent'
+      ? resolvedAccentColor
+      : resolveAccentColor(defaultCalendarColor);
+  const initialColor = resolveAccentColor(calendar?.color ?? resolvedDefaultCalendarColor);
 
   const [displayName, setDisplayName] = useState(calendar?.displayName ?? '');
-  const [color, setColor] = useState(calendar?.color ?? resolvedDefaultCalendarColor);
+  const [color, setColor] = useState(initialColor);
   const [icon, setIcon] = useState(calendar?.icon || 'calendar');
   const [emoji, setEmoji] = useState(calendar?.emoji || '');
   const [isLoading, setIsLoading] = useState(false);

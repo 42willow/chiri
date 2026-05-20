@@ -14,6 +14,7 @@ vi.mock('$constants/colorSchemes', () => ({
 vi.mock('$types/color', () => ({ DEFAULT_COLOR_SCHEME_ID: 'default' }));
 
 import {
+  applyAccentColor,
   generateTagColor,
   getContrastTextColor,
   normalizeHexColor,
@@ -122,5 +123,15 @@ describe('getContrastTextColor', () => {
 
   it('falls back to white when color parsing fails (jsdom case)', () => {
     expect(getContrastTextColor('not a real color string at all')).toBe('#ffffff');
+  });
+});
+
+describe('applyAccentColor', () => {
+  it('anchors primary-500 to the exact selected accent color', () => {
+    applyAccentColor('#f085cc');
+
+    expect(document.documentElement.style.getPropertyValue('--primary-rgb-500')).toBe(
+      '240 133 204',
+    );
   });
 });
