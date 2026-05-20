@@ -54,8 +54,16 @@ const App = () => {
   } | null>(null);
   const [preloadedConfig, setPreloadedConfig] = useState<CalDAVConfig | null>(null);
 
-  const { isSyncing, syncingCalendarId, syncProgress, isOffline, lastSyncTime, lastSyncSource, syncAll, syncCalendar } =
-    useSyncQuery();
+  const {
+    isSyncing,
+    syncingCalendarId,
+    syncProgress,
+    isOffline,
+    lastSyncTime,
+    lastSyncSource,
+    syncAll,
+    syncCalendar,
+  } = useSyncQuery();
 
   // WebDAV Push: triggers sync when server sends push messages
   useWebDAVPush({ onSyncCalendar: syncCalendar, lastSyncTime });
