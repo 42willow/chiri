@@ -7,19 +7,6 @@ export interface ParsedTaskWithStatus extends Partial<Task> {
   importError?: string;
 }
 
-export interface ImportState {
-  step: ImportStep;
-  fileName: string;
-  parsedTasks: ParsedTaskWithStatus[];
-  selectedAccountId: string;
-  selectedCalendarId: string;
-  error: string;
-  parseErrors: string[];
-  isImporting: boolean;
-  importProgress: number;
-  importSuccess: boolean;
-}
-
 export interface FileUploadStepProps {
   fileName: string;
   isDraggingOver: boolean;
