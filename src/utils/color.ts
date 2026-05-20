@@ -264,10 +264,9 @@ export const applyAccentColor = (color: string) => {
   // convert to HSL for easier shade generation
   const [h, s, origL] = rgbToHsl(r, g, b);
 
-  // shift the lightness range toward the input color's own lightness.
-  // for mid-range colors (L≈50%) this is nearly a no-op; for light pastels or
-  // dark colors it keeps the generated palette perceptually closer to the input.
-  const lShift = (origL - 50) * 0.5;
+  // anchor primary-500 to the exact selected color so buttons and icons match
+  // the visible accent swatch
+  const lShift = origL - 50;
   const cl = (l: number) => Math.max(5, Math.min(97, l + lShift));
 
   const shades = [
