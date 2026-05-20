@@ -132,12 +132,12 @@ export const ConfirmDialogModal = ({
 
         {message && (
           <div className="p-4">
-            <p
+            <div
               id="confirm-dialog-description"
               className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed"
             >
               {message}
-            </p>
+            </div>
           </div>
         )}
 
