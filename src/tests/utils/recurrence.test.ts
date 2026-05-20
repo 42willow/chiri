@@ -13,7 +13,6 @@ import {
   buildRRule,
   frequencyToRRule,
   getNextOccurrence,
-  hasMoreOccurrences,
   parseRRule,
   rruleToFrequency,
   rruleToText,
@@ -202,19 +201,5 @@ describe('getNextOccurrence', () => {
     const after = new Date(Date.UTC(2025, 1, 1));
     const result = getNextOccurrence('FREQ=DAILY;UNTIL=20250110T000000Z', after, dtstart);
     expect(result).toBeNull();
-  });
-});
-
-describe('hasMoreOccurrences', () => {
-  it('returns true when more occurrences exist', () => {
-    const dtstart = new Date(Date.UTC(2025, 0, 1));
-    const after = new Date(Date.UTC(2025, 0, 1, 12));
-    expect(hasMoreOccurrences('FREQ=DAILY', after, dtstart)).toBe(true);
-  });
-
-  it('returns false when COUNT is exhausted', () => {
-    const dtstart = new Date(Date.UTC(2025, 0, 1));
-    const after = new Date(Date.UTC(2025, 0, 6));
-    expect(hasMoreOccurrences('FREQ=DAILY;COUNT=3', after, dtstart)).toBe(false);
   });
 });

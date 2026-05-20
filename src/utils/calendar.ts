@@ -52,21 +52,6 @@ export const createPaddedDaysArray = (days: Date[], startPadding: number): (Date
 };
 
 /**
- * Update time component in a time object
- * @param currentTime - Current time object with hours and minutes
- * @param type - 'hours' or 'minutes'
- * @param value - New value for the time component
- * @returns New time object with updated value
- */
-export const updateTimeComponent = (
-  currentTime: { hours: number; minutes: number },
-  type: 'hours' | 'minutes',
-  value: number,
-) => {
-  return { ...currentTime, [type]: value };
-};
-
-/**
  * Create a date with specific time components
  * @param baseDate - Base date to copy
  * @param hours - Hours to set

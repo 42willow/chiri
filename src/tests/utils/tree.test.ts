@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Task } from '$types';
 import type { FlattenedTask } from '$types/store';
-import { calculateNewPositions, flattenTasks } from '$utils/tree';
+import { flattenTasks } from '$utils/tree';
 import { makeFlattenedTask } from '../fixtures';
 
 const task = (id: string, uid: string, overrides: Partial<FlattenedTask> = {}): FlattenedTask =>
@@ -59,33 +59,5 @@ describe('flattenTasks', () => {
       (xs) => [...xs].sort((a, b) => a.sortOrder - b.sortOrder),
     );
     expect(result.map((r) => r.id)).toEqual(['p', 'c2', 'c1']);
-  });
-});
-
-describe('calculateNewPositions', () => {
-  it('returns empty map if active or over is not found', () => {
-    const items: FlattenedTask[] = [task('a', 'A', { ancestorIds: [], depth: 0 })];
-    expect(calculateNewPositions(items, 'missing', 'a').size).toBe(0);
-    expect(calculateNewPositions(items, 'a', 'missing').size).toBe(0);
-  });
-
-  it('refuses to drop a parent into its own descendant', () => {
-    const parent = task('p', 'P', { ancestorIds: [], depth: 0 });
-    const child = task('c', 'C', { parentUid: 'P', ancestorIds: ['p'], depth: 1 });
-    const result = calculateNewPositions([parent, child], 'p', 'c');
-    expect(result.size).toBe(0);
-  });
-
-  it('reorders siblings at top level', () => {
-    const items: FlattenedTask[] = [
-      task('a', 'A', { ancestorIds: [], depth: 0, sortOrder: 100 }),
-      task('b', 'B', { ancestorIds: [], depth: 0, sortOrder: 200 }),
-      task('c', 'C', { ancestorIds: [], depth: 0, sortOrder: 300 }),
-    ];
-    // Move 'a' down past 'b': new order = b, a, c
-    const result = calculateNewPositions(items, 'a', 'b');
-    const aUpdate = result.get('a');
-    const bUpdate = result.get('b');
-    expect(bUpdate?.sortOrder).toBeLessThan(aUpdate!.sortOrder);
   });
 });

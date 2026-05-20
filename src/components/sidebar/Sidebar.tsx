@@ -30,7 +30,7 @@ import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { useSidebarResize } from '$hooks/ui/useSidebarResize';
 import { useDeleteHandlers } from '$hooks/useDeleteHandlers';
 import { getTasksByCalendar } from '$lib/store/tasks';
-import type { Account, Calendar as CalendarType } from '$types';
+import type { Account, Calendar } from '$types';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 import { clampToViewport } from '$utils/misc';
 
@@ -119,7 +119,7 @@ export const Sidebar = ({
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
   const [editingCalendar, setEditingCalendar] = useState<{
-    calendar: CalendarType;
+    calendar: Calendar;
     accountId: string;
   } | null>(null);
   const [contextMenu, setContextMenu] = useState<{

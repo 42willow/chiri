@@ -55,14 +55,6 @@ export const getNextOccurrence = (rruleValue: string, after: Date, dtstart?: Dat
   }
 };
 
-/**
- * Returns true if the rrule has no more future occurrences after `after`
- * (i.e. COUNT was exhausted or UNTIL has passed).
- */
-export const hasMoreOccurrences = (rruleValue: string, after: Date, dtstart?: Date) => {
-  return getNextOccurrence(rruleValue, after, dtstart) !== null;
-};
-
 const FREQ_LABEL: Record<string, string> = {
   DAILY: 'Daily',
   WEEKLY: 'Weekly',
