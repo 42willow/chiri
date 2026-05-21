@@ -45,4 +45,11 @@ export const getColorSchemeColorPresets = (
 
 export const getDefaultAccentColor = () => defaultColorScheme.flavors[0].defaultAccent;
 
-export const getFallbackItemColor = getDefaultAccentColor;
+export const getFallbackItemColor = () => {
+  const flavor = defaultColorScheme.flavors[0];
+  return (
+    flavor.accentColors.find((color) => color.name === flavor.defaultAccent)?.value ??
+    flavor.accentColors[0]?.value ??
+    '#f085cc'
+  );
+};
