@@ -24,6 +24,7 @@ export const DEFAULT_UI_STATE: UIState = {
   activeAccountId: null,
   activeCalendarId: null,
   activeTagId: null,
+  activeFilterId: null,
   selectedTaskId: null,
   searchQuery: '',
   sortConfig: DEFAULT_SORT_CONFIG,
@@ -40,11 +41,17 @@ export const getUIState = async (conn: DatabasePlugin): Promise<UIState> => {
   if (rows.length === 0) return DEFAULT_UI_STATE;
 
   const row = rows[0];
+  const activeView =
+    row.active_view === 'recently-deleted' || row.active_view === 'filter'
+      ? row.active_view
+      : 'tasks';
+
   return {
-    activeView: row.active_view === 'recently-deleted' ? 'recently-deleted' : 'tasks',
+    activeView,
     activeAccountId: row.active_account_id,
     activeCalendarId: row.active_calendar_id,
     activeTagId: row.active_tag_id,
+    activeFilterId: row.active_filter_id,
     selectedTaskId: row.selected_task_id,
     searchQuery: row.search_query,
     sortConfig: {
@@ -71,35 +78,42 @@ export const getUIState = async (conn: DatabasePlugin): Promise<UIState> => {
 
 export const setActiveAccount = async (conn: DatabasePlugin, id: string | null) => {
   await conn.execute(
-    "UPDATE ui_state SET active_view = 'tasks', active_account_id = $1, active_calendar_id = NULL WHERE id = 1",
+    "UPDATE ui_state SET active_view = 'tasks', active_account_id = $1, active_calendar_id = NULL, active_tag_id = NULL, active_filter_id = NULL WHERE id = 1",
     [id],
   );
 };
 
 export const setActiveCalendar = async (conn: DatabasePlugin, id: string | null) => {
   await conn.execute(
-    "UPDATE ui_state SET active_view = 'tasks', active_calendar_id = $1, active_tag_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
+    "UPDATE ui_state SET active_view = 'tasks', active_calendar_id = $1, active_tag_id = NULL, active_filter_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
     [id],
   );
 };
 
 export const setActiveTag = async (conn: DatabasePlugin, id: string | null) => {
   await conn.execute(
-    "UPDATE ui_state SET active_view = 'tasks', active_tag_id = $1, active_calendar_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
+    "UPDATE ui_state SET active_view = 'tasks', active_tag_id = $1, active_calendar_id = NULL, active_filter_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
+    [id],
+  );
+};
+
+export const setActiveFilter = async (conn: DatabasePlugin, id: string | null) => {
+  await conn.execute(
+    "UPDATE ui_state SET active_view = 'filter', active_account_id = NULL, active_filter_id = $1, active_calendar_id = NULL, active_tag_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
     [id],
   );
 };
 
 export const setAllTasksView = async (conn: DatabasePlugin) => {
   await conn.execute(
-    "UPDATE ui_state SET active_view = 'tasks', active_calendar_id = NULL, active_tag_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
+    "UPDATE ui_state SET active_view = 'tasks', active_calendar_id = NULL, active_tag_id = NULL, active_filter_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
     [],
   );
 };
 
 export const setRecentlyDeletedView = async (conn: DatabasePlugin) => {
   await conn.execute(
-    "UPDATE ui_state SET active_view = 'recently-deleted', active_account_id = NULL, active_calendar_id = NULL, active_tag_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
+    "UPDATE ui_state SET active_view = 'recently-deleted', active_account_id = NULL, active_calendar_id = NULL, active_tag_id = NULL, active_filter_id = NULL, selected_task_id = NULL, is_editor_open = 0 WHERE id = 1",
     [],
   );
 };

@@ -1,6 +1,7 @@
 import DatabasePlugin from '@tauri-apps/plugin-sql';
 import * as accountOps from '$lib/database/accounts';
 import * as calendarOps from '$lib/database/calendars';
+import * as filterOps from '$lib/database/filters';
 import * as historyOps from '$lib/database/history';
 import * as pendingOps from '$lib/database/pendingDeletions';
 import * as pushOps from '$lib/database/pushSubscriptions';
@@ -14,6 +15,7 @@ import type {
   AccountSortConfig,
   Calendar,
   CalendarSortConfig,
+  Filter,
   SortConfig,
   Tag,
   TagSortConfig,
@@ -186,6 +188,32 @@ class Database {
     this.notify();
   }
 
+  // Filters
+  async getAllFilters(): Promise<Filter[]> {
+    return filterOps.getAllFilters(await this.conn());
+  }
+
+  async getFilterById(id: string): Promise<Filter | undefined> {
+    return filterOps.getFilterById(await this.conn(), id);
+  }
+
+  async createFilter(data: Partial<Filter>): Promise<Filter> {
+    const result = await filterOps.createFilter(await this.conn(), data);
+    this.notify();
+    return result;
+  }
+
+  async updateFilter(id: string, updates: Partial<Filter>): Promise<Filter | undefined> {
+    const result = await filterOps.updateFilter(await this.conn(), id, updates);
+    this.notify();
+    return result;
+  }
+
+  async deleteFilter(id: string): Promise<void> {
+    await filterOps.deleteFilter(await this.conn(), id);
+    this.notify();
+  }
+
   // UI state
   async getUIState(): Promise<UIState> {
     return uiOps.getUIState(await this.conn());
@@ -203,6 +231,11 @@ class Database {
 
   async setActiveTag(id: string | null): Promise<void> {
     await uiOps.setActiveTag(await this.conn(), id);
+    this.notify();
+  }
+
+  async setActiveFilter(id: string | null): Promise<void> {
+    await uiOps.setActiveFilter(await this.conn(), id);
     this.notify();
   }
 

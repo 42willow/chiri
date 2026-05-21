@@ -16,6 +16,7 @@ import {
   setAccountSortConfig,
   setActiveAccount,
   setActiveCalendar,
+  setActiveFilter,
   setActiveTag,
   setAllTasksView,
   setCalendarSortConfig,
@@ -63,6 +64,14 @@ export const useActiveCalendarId = () => {
 export const useActiveTagId = () => {
   const { data: uiState } = useUIState();
   return uiState?.activeTagId ?? null;
+};
+
+/**
+ * Hook to get active filter ID
+ */
+export const useActiveFilterId = () => {
+  const { data: uiState } = useUIState();
+  return uiState?.activeFilterId ?? null;
 };
 
 /**
@@ -190,6 +199,24 @@ export const useSetActiveTag = () => {
   return useMutation({
     mutationFn: (id: string | null) => {
       setActiveTag(id);
+      return Promise.resolve();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['uiState'] });
+      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+    },
+  });
+};
+
+/**
+ * Hook to set active filter
+ */
+export const useSetActiveFilter = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string | null) => {
+      setActiveFilter(id);
       return Promise.resolve();
     },
     onSuccess: () => {

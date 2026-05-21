@@ -181,6 +181,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     () => settingsStore.toggleAccountsSectionCollapsed(),
     [],
   );
+  const toggleFiltersSectionCollapsed = useCallback(
+    () => settingsStore.toggleFiltersSectionCollapsed(),
+    [],
+  );
   const toggleTagsSectionCollapsed = useCallback(
     () => settingsStore.toggleTagsSectionCollapsed(),
     [],
@@ -342,6 +346,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setDefaultAccountsExpanded,
     toggleLocalSectionCollapsed,
     toggleAccountsSectionCollapsed,
+    toggleFiltersSectionCollapsed,
     toggleTagsSectionCollapsed,
     setEnableSystemTray,
     setSystemTrayRestartNeeded,

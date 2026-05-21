@@ -83,6 +83,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'defaultAccountsExpanded',
       'localSectionCollapsed',
       'accountsSectionCollapsed',
+      'filtersSectionCollapsed',
       'tagsSectionCollapsed',
       'enableSystemTray',
       'systemTrayRestartNeeded',

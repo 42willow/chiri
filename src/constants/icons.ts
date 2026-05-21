@@ -6,6 +6,9 @@ import Bookmark from 'lucide-react/icons/bookmark';
 import Briefcase from 'lucide-react/icons/briefcase';
 import Building2 from 'lucide-react/icons/building-2';
 import Calendar from 'lucide-react/icons/calendar';
+import CalendarCheck from 'lucide-react/icons/calendar-check';
+import CalendarClock from 'lucide-react/icons/calendar-clock';
+import CalendarDays from 'lucide-react/icons/calendar-days';
 import Camera from 'lucide-react/icons/camera';
 import Car from 'lucide-react/icons/car';
 import CheckSquare from 'lucide-react/icons/check-square';
@@ -62,6 +65,9 @@ import Zap from 'lucide-react/icons/zap';
 export const CALENDAR_ICONS: { name: string; icon: LucideIcon }[] = [
   // Organization
   { name: 'calendar', icon: Calendar },
+  { name: 'calendar-check', icon: CalendarCheck },
+  { name: 'calendar-clock', icon: CalendarClock },
+  { name: 'calendar-days', icon: CalendarDays },
   { name: 'check-square', icon: CheckSquare },
   { name: 'list-todo', icon: ListTodo },
   { name: 'clock', icon: Clock },

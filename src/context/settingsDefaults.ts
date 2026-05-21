@@ -49,6 +49,7 @@ export const defaultState: SettingsState = {
   defaultAccountsExpanded: true,
   localSectionCollapsed: false,
   accountsSectionCollapsed: false,
+  filtersSectionCollapsed: false,
   tagsSectionCollapsed: false,
   enableSystemTray: true,
   systemTrayRestartNeeded: false,

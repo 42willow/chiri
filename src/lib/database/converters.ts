@@ -2,6 +2,8 @@ import type {
   Account,
   CaldavConfig,
   Calendar,
+  Filter,
+  FilterCriterion,
   Priority,
   ServerType,
   Tag,
@@ -12,6 +14,7 @@ import type {
   AccountRow,
   CaldavConfigRow,
   CalendarRow,
+  FilterRow,
   ReminderRow,
   TagRow,
   TaskRow,
@@ -116,4 +119,17 @@ export const rowToTag = (row: TagRow): Tag => ({
   icon: row.icon || undefined,
   emoji: row.emoji || undefined,
   sortOrder: row.sort_order ?? 0,
+});
+
+export const rowToFilter = (row: FilterRow): Filter => ({
+  id: row.id,
+  name: row.name,
+  icon: row.icon || undefined,
+  emoji: row.emoji || undefined,
+  color: row.color || undefined,
+  combinator: row.combinator === 'any' ? 'any' : 'all',
+  criteria: JSON.parse(row.criteria_json) as FilterCriterion[],
+  sortOrder: row.sort_order ?? 0,
+  createdAt: new Date(row.created_at),
+  updatedAt: new Date(row.updated_at),
 });

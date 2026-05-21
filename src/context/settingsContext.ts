@@ -261,6 +261,8 @@ export const settingsStore = {
     setState({ localSectionCollapsed: !state.localSectionCollapsed }),
   toggleAccountsSectionCollapsed: () =>
     setState({ accountsSectionCollapsed: !state.accountsSectionCollapsed }),
+  toggleFiltersSectionCollapsed: () =>
+    setState({ filtersSectionCollapsed: !state.filtersSectionCollapsed }),
   toggleTagsSectionCollapsed: () => setState({ tagsSectionCollapsed: !state.tagsSectionCollapsed }),
   setEnableSystemTray: (enableSystemTray: boolean) => setState({ enableSystemTray }),
   setSystemTrayRestartNeeded: (systemTrayRestartNeeded: boolean) =>

@@ -17,9 +17,7 @@ export const getAllAccounts = async (conn: DatabasePlugin) => {
   const calendars = calendarRows.map(rowToCalendar);
   const caldavByAccountId = new Map(caldavRows.map((r) => [r.account_id, r]));
 
-  return accountRows.map((row) =>
-    rowToAccount(row, calendars, caldavByAccountId.get(row.id)),
-  );
+  return accountRows.map((row) => rowToAccount(row, calendars, caldavByAccountId.get(row.id)));
 };
 
 export const getAccountById = async (conn: DatabasePlugin, id: string) => {

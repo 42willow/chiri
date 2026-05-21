@@ -84,6 +84,24 @@ export interface TagRow {
   sort_order: number | null;
 }
 
+export interface FilterRow {
+  id: string;
+  name: string;
+  icon: string | null;
+  emoji: string | null;
+  color: string | null;
+  combinator: string;
+  criteria_json: string;
+  sort_order: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AppMetadataRow {
+  key: string;
+  value: string;
+}
+
 export interface PendingDeletionRow {
   uid: string;
   href: string;
@@ -96,6 +114,7 @@ export interface UIStateRow {
   active_account_id: string | null;
   active_calendar_id: string | null;
   active_tag_id: string | null;
+  active_filter_id: string | null;
   selected_task_id: string | null;
   active_view: string | null;
   search_query: string;

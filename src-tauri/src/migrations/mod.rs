@@ -21,6 +21,7 @@ mod v020_account_icon;
 mod v021_oauth_tokens;
 mod v022_caldav_config_table;
 mod v023_recently_deleted;
+mod v024_saved_filters;
 
 use tauri_plugin_sql::Migration;
 
@@ -47,6 +48,7 @@ pub use v020_account_icon::migration as migration_v020;
 pub use v021_oauth_tokens::migration as migration_v021;
 pub use v022_caldav_config_table::migration as migration_v022;
 pub use v023_recently_deleted::migration as migration_v023;
+pub use v024_saved_filters::migration as migration_v024;
 
 /// Returns all database migrations for the application
 pub fn get_migrations() -> Vec<Migration> {
@@ -74,5 +76,6 @@ pub fn get_migrations() -> Vec<Migration> {
         migration_v021(),
         migration_v022(),
         migration_v023(),
+        migration_v024(),
     ]
 }

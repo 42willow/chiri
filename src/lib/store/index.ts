@@ -15,6 +15,7 @@ export const defaultUIState: UIState = {
   activeAccountId: null,
   activeCalendarId: null,
   activeTagId: null,
+  activeFilterId: null,
   selectedTaskId: null,
   searchQuery: '',
   sortConfig: DEFAULT_SORT_CONFIG,
@@ -29,6 +30,7 @@ export const defaultUIState: UIState = {
 export const defaultDataStore: DataStore = {
   tasks: [],
   tags: [],
+  filters: [],
   accounts: [],
   pendingDeletions: [],
   ui: defaultUIState,

@@ -110,6 +110,7 @@ export interface SettingsState {
   defaultAccountsExpanded: boolean;
   localSectionCollapsed: boolean;
   accountsSectionCollapsed: boolean;
+  filtersSectionCollapsed: boolean;
   tagsSectionCollapsed: boolean;
   systemTrayRestartNeeded: boolean;
   systemTrayAppliedValue: boolean;
@@ -186,6 +187,7 @@ export interface SettingsActions {
   setDefaultAccountsExpanded: (expanded: boolean) => void;
   toggleLocalSectionCollapsed: () => void;
   toggleAccountsSectionCollapsed: () => void;
+  toggleFiltersSectionCollapsed: () => void;
   toggleTagsSectionCollapsed: () => void;
   setEnableSystemTray: (enabled: boolean) => void;
   setSystemTrayRestartNeeded: (needed: boolean) => void;

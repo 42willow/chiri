@@ -32,6 +32,10 @@ export const queryKeys = {
     all: ['tags'] as const,
     byId: (id: string) => ['tags', id] as const,
   },
+  filters: {
+    all: ['filters'] as const,
+    byId: (id: string) => ['filters', id] as const,
+  },
   pushSubscriptions: {
     all: ['pushSubscriptions'] as const,
     byCalendar: (calendarId: string) => ['pushSubscriptions', 'calendar', calendarId] as const,

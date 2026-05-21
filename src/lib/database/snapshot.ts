@@ -1,6 +1,7 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { createAccount, getAllAccounts } from '$lib/database/accounts';
 import { addCalendar } from '$lib/database/calendars';
+import { bootstrapDefaultFilters, getAllFilters } from '$lib/database/filters';
 import { getPendingDeletions } from '$lib/database/pendingDeletions';
 import { getAllTags } from '$lib/database/tags';
 import { getAllTasks } from '$lib/database/tasks';
@@ -31,9 +32,12 @@ const bootstrapLocalAccount = async (conn: DatabasePlugin) => {
 };
 
 export const getSnapshot = async (conn: DatabasePlugin): Promise<DataStore> => {
-  const [tasks, tags, rawAccounts, pendingDeletions, ui] = await Promise.all([
+  await bootstrapDefaultFilters(conn);
+
+  const [tasks, tags, filters, rawAccounts, pendingDeletions, ui] = await Promise.all([
     getAllTasks(conn),
     getAllTags(conn),
+    getAllFilters(conn),
     getAllAccounts(conn),
     getPendingDeletions(conn),
     getUIState(conn),
@@ -74,10 +78,23 @@ export const getSnapshot = async (conn: DatabasePlugin): Promise<DataStore> => {
     }
   }
 
+  if (ui.activeFilterId) {
+    const filterExists = filters.some((filter) => filter.id === ui.activeFilterId);
+    if (!filterExists) {
+      log.warn('Active filter no longer exists, clearing UI state');
+      cleanedUI = {
+        ...cleanedUI,
+        activeFilterId: null,
+        selectedTaskId: null,
+      };
+      needsUpdate = true;
+    }
+  }
+
   if (needsUpdate) {
     await setAllTasksView(conn);
     log.info('Stale UI state cleaned up');
   }
 
-  return { tasks, tags, accounts, pendingDeletions, ui: cleanedUI };
+  return { tasks, tags, filters, accounts, pendingDeletions, ui: cleanedUI };
 };

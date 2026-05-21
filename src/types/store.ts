@@ -2,6 +2,7 @@ import type {
   Account,
   AccountSortConfig,
   CalendarSortConfig,
+  Filter,
   SortConfig,
   Tag,
   TagSortConfig,
@@ -16,10 +17,11 @@ export interface PendingDeletion {
 }
 
 export interface UIState {
-  activeView: 'tasks' | 'recently-deleted';
+  activeView: 'tasks' | 'recently-deleted' | 'filter';
   activeAccountId: string | null;
   activeCalendarId: string | null;
   activeTagId: string | null;
+  activeFilterId: string | null;
   selectedTaskId: string | null;
   searchQuery: string;
   sortConfig: SortConfig;
@@ -34,6 +36,7 @@ export interface UIState {
 export interface DataStore {
   tasks: Task[];
   tags: Tag[];
+  filters: Filter[];
   accounts: Account[];
   pendingDeletions: PendingDeletion[];
   ui: UIState;

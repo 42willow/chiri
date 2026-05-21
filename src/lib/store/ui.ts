@@ -29,7 +29,14 @@ export const setActiveAccount = (id: string | null) => {
 
   dataStore.save({
     ...data,
-    ui: { ...data.ui, activeView: 'tasks', activeAccountId: id, activeCalendarId: null },
+    ui: {
+      ...data.ui,
+      activeView: 'tasks',
+      activeAccountId: id,
+      activeCalendarId: null,
+      activeFilterId: null,
+      activeTagId: null,
+    },
   });
 };
 
@@ -56,6 +63,7 @@ export const setActiveCalendar = (id: string | null) => {
       activeView: 'tasks',
       activeCalendarId: id,
       activeTagId: null,
+      activeFilterId: null,
       selectedTaskId: null,
       isEditorOpen: false,
     },
@@ -83,6 +91,35 @@ export const setActiveTag = (id: string | null) => {
       activeView: 'tasks',
       activeTagId: id,
       activeCalendarId: null,
+      activeFilterId: null,
+      selectedTaskId: null,
+      isEditorOpen: false,
+    },
+  });
+};
+
+export const setActiveFilter = (id: string | null) => {
+  const data = dataStore.load();
+
+  if (id !== null) {
+    const filterExists = data.filters.some((filter) => filter.id === id);
+    if (!filterExists) {
+      log.warn('Attempted to set non-existent filter as active, ignoring', { filterId: id });
+      return;
+    }
+  }
+
+  db.setActiveFilter(id).catch((e) => log.error('Failed to persist active filter:', e));
+
+  dataStore.save({
+    ...data,
+    ui: {
+      ...data.ui,
+      activeView: 'filter',
+      activeAccountId: null,
+      activeFilterId: id,
+      activeCalendarId: null,
+      activeTagId: null,
       selectedTaskId: null,
       isEditorOpen: false,
     },
@@ -101,6 +138,7 @@ export const setAllTasksView = () => {
       activeView: 'tasks',
       activeCalendarId: null,
       activeTagId: null,
+      activeFilterId: null,
       selectedTaskId: null,
       isEditorOpen: false,
     },
@@ -122,6 +160,7 @@ export const setRecentlyDeletedView = () => {
       activeAccountId: null,
       activeCalendarId: null,
       activeTagId: null,
+      activeFilterId: null,
       selectedTaskId: null,
       isEditorOpen: false,
     },

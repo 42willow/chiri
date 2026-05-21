@@ -2,11 +2,12 @@ import { createPortal } from 'react-dom';
 import { SidebarAccountItemContextMenu } from '$components/sidebar/SidebarAccountItemContextMenu';
 import { SidebarAccountsContextMenu } from '$components/sidebar/SidebarAccountsContextMenu';
 import { SidebarCalendarContextMenu } from '$components/sidebar/SidebarCalendarContextMenu';
+import { SidebarFilterItemContextMenu } from '$components/sidebar/SidebarFilterItemContextMenu';
 import { SidebarTagItemContextMenu } from '$components/sidebar/SidebarTagItemContextMenu';
 import type { Account } from '$types';
 
 interface ContextMenuState {
-  type: 'account' | 'calendar' | 'tag' | 'accounts-section';
+  type: 'account' | 'calendar' | 'tag' | 'filter' | 'accounts-section';
   id: string;
   accountId?: string;
   x: number;
@@ -28,6 +29,8 @@ interface SidebarContextMenuProps {
   onDeleteAccount: (accountId: string) => Promise<void>;
   onDeleteCalendar: (calendarId: string, accountId: string) => Promise<void>;
   onDeleteTag: (tagId: string) => Promise<void>;
+  onEditFilter: (filterId: string) => void;
+  onDeleteFilter: (filterId: string) => void;
   onExpandAll: () => void;
   onCollapseAll: () => void;
 }
@@ -47,6 +50,8 @@ export const SidebarContextMenu = ({
   onDeleteAccount,
   onDeleteCalendar,
   onDeleteTag,
+  onEditFilter,
+  onDeleteFilter,
   onExpandAll,
   onCollapseAll,
 }: SidebarContextMenuProps) => {
@@ -113,6 +118,15 @@ export const SidebarContextMenu = ({
             onClose={onClose}
             onEditTag={onEditTag}
             onDeleteTag={onDeleteTag}
+          />
+        )}
+
+        {contextMenu.type === 'filter' && (
+          <SidebarFilterItemContextMenu
+            filterId={contextMenu.id}
+            onClose={onClose}
+            onEditFilter={onEditFilter}
+            onDeleteFilter={onDeleteFilter}
           />
         )}
       </div>

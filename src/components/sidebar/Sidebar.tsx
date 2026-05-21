@@ -4,10 +4,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccountModal } from '$components/modals/account/AccountModal';
 import { CalendarModal } from '$components/modals/CalendarModal';
 import { ExportModal } from '$components/modals/ExportModal';
+import { FilterModal } from '$components/modals/FilterModal';
+import { FilterPresetModal } from '$components/modals/FilterPresetModal';
 import { TagModal } from '$components/modals/TagModal';
 import { SidebarAccountsList } from '$components/sidebar/SidebarAccountsList';
 import { SidebarCollapsedView } from '$components/sidebar/SidebarCollapsedView';
 import { SidebarContextMenu } from '$components/sidebar/SidebarContextMenu';
+import { SidebarFiltersList } from '$components/sidebar/SidebarFiltersList';
 import { SidebarFooter } from '$components/sidebar/SidebarFooter';
 import { SidebarHeader } from '$components/sidebar/SidebarHeader';
 import { SidebarLocalList } from '$components/sidebar/SidebarLocalList';
@@ -15,12 +18,14 @@ import { SidebarTagsList } from '$components/sidebar/SidebarTagsList';
 import { useModalState } from '$context/modalStateContext';
 import { settingsStore } from '$context/settingsContext';
 import { useAccounts, useCreateAccount } from '$hooks/queries/useAccounts';
+import { useCreateFilter, useDeleteFilter, useFilters } from '$hooks/queries/useFilters';
 import { useSyncQuery } from '$hooks/queries/useSync';
 import { useTags } from '$hooks/queries/useTags';
 import { useTasks } from '$hooks/queries/useTasks';
 import {
   useSetActiveAccount,
   useSetActiveCalendar,
+  useSetActiveFilter,
   useSetActiveTag,
   useSetAllTasksView,
   useSetRecentlyDeletedView,
@@ -61,14 +66,18 @@ export const Sidebar = ({
   const localAccounts = useMemo(() => accounts.filter((a) => !a.caldav), [accounts]);
   const caldavAccounts = useMemo(() => accounts.filter((a) => a.caldav), [accounts]);
   const { data: tags = [] } = useTags();
+  const { data: filters = [] } = useFilters();
   const { data: uiState } = useUIState();
   const { data: tasks = [] } = useTasks();
 
   const setActiveAccountMutation = useSetActiveAccount();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveTagMutation = useSetActiveTag();
+  const setActiveFilterMutation = useSetActiveFilter();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
+  const createFilterMutation = useCreateFilter();
+  const deleteFilterMutation = useDeleteFilter();
 
   const { handleDeleteAccount, handleDeleteTag, handleDeleteCalendar } = useDeleteHandlers();
   const { syncCalendar, syncingCalendarId } = useSyncQuery();
@@ -76,6 +85,7 @@ export const Sidebar = ({
 
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
+  const activeFilterId = uiState?.activeFilterId ?? null;
   const activeView = uiState?.activeView ?? 'tasks';
   const { isAnyModalOpen } = useModalState();
   const {
@@ -85,9 +95,11 @@ export const Sidebar = ({
     setExpandedAccountIds,
     localSectionCollapsed,
     accountsSectionCollapsed,
+    filtersSectionCollapsed,
     tagsSectionCollapsed,
     toggleLocalSectionCollapsed,
     toggleAccountsSectionCollapsed,
+    toggleFiltersSectionCollapsed,
     toggleTagsSectionCollapsed,
   } = useSettingsStore();
 
@@ -117,17 +129,19 @@ export const Sidebar = ({
   const [showTagModal, setShowTagModal] = useState(false);
   const [showCalendarModal, setShowCalendarModal] = useState(false);
   const [showCreateCalendarModal, setShowCreateCalendarModal] = useState<string | null>(null);
+  const [showFilterPresetModal, setShowFilterPresetModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportCalendarId, setExportCalendarId] = useState<string | null>(null);
   const [exportAccountId, setExportAccountId] = useState<string | null>(null);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [editingTagId, setEditingTagId] = useState<string | null>(null);
+  const [editingFilterId, setEditingFilterId] = useState<string | null>(null);
   const [editingCalendar, setEditingCalendar] = useState<{
     calendar: Calendar;
     accountId: string;
   } | null>(null);
   const [contextMenu, setContextMenu] = useState<{
-    type: 'account' | 'calendar' | 'tag' | 'accounts-section';
+    type: 'account' | 'calendar' | 'tag' | 'filter' | 'accounts-section';
     id: string;
     accountId?: string;
     x: number;
@@ -194,7 +208,7 @@ export const Sidebar = ({
 
   const handleContextMenu = (
     e: React.MouseEvent,
-    type: 'account' | 'calendar' | 'tag' | 'accounts-section',
+    type: 'account' | 'calendar' | 'tag' | 'filter' | 'accounts-section',
     id: string,
     accountId?: string,
   ) => {
@@ -304,6 +318,18 @@ export const Sidebar = ({
                 <span className="text-xs">{getDeletedTaskCount()}</span>
               </button>
 
+              <SidebarFiltersList
+                filters={filters}
+                tasks={tasks}
+                activeFilterId={activeFilterId}
+                isAnyModalOpen={isAnyModalOpen}
+                collapsed={filtersSectionCollapsed}
+                onToggle={toggleFiltersSectionCollapsed}
+                onSelectFilter={(filterId) => setActiveFilterMutation.mutate(filterId)}
+                onAddFilter={() => setShowFilterPresetModal(true)}
+                onContextMenu={handleContextMenu}
+              />
+
               <SidebarLocalList
                 accounts={localAccounts}
                 tasks={tasks}
@@ -375,14 +401,17 @@ export const Sidebar = ({
           <SidebarCollapsedView
             accounts={accounts}
             tags={tags}
+            filters={filters}
             activeCalendarId={activeCalendarId}
             activeTagId={activeTagId}
+            activeFilterId={activeFilterId}
             activeView={activeView}
             contextMenu={contextMenu}
             showCollapsedContent={showCollapsedContent}
             localSectionCollapsed={localSectionCollapsed}
             accountsSectionCollapsed={accountsSectionCollapsed}
             tagsSectionCollapsed={tagsSectionCollapsed}
+            filtersSectionCollapsed={filtersSectionCollapsed}
             updateAvailable={updateAvailable}
             onAllTasks={() => {
               setAllTasksViewMutation.mutate();
@@ -396,6 +425,7 @@ export const Sidebar = ({
               setActiveCalendarMutation.mutate(calendarId);
             }}
             onSelectTag={(tagId) => setActiveTagMutation.mutate(tagId)}
+            onSelectFilter={(filterId) => setActiveFilterMutation.mutate(filterId)}
             onContextMenu={handleContextMenu}
             onOpenSettings={onOpenSettings}
             onUpdateClick={onUpdateClick}
@@ -440,9 +470,31 @@ export const Sidebar = ({
             handleDeleteCalendar(calendarId, accountId, accounts, activeCalendarId)
           }
           onDeleteTag={(tagId) => handleDeleteTag(tagId, tags)}
+          onEditFilter={(filterId) => {
+            setEditingFilterId(filterId);
+          }}
+          onDeleteFilter={(filterId) => {
+            deleteFilterMutation.mutate(filterId);
+          }}
           onExpandAll={handleExpandAllAccounts}
           onCollapseAll={handleCollapseAllAccounts}
         />
+      )}
+
+      {showFilterPresetModal && (
+        <FilterPresetModal
+          onCreatePreset={(preset) => {
+            const { sortOrder: _sortOrder, ...filter } = preset;
+            createFilterMutation.mutate(filter, {
+              onSuccess: (filter) => setActiveFilterMutation.mutate(filter.id),
+            });
+          }}
+          onClose={() => setShowFilterPresetModal(false)}
+        />
+      )}
+
+      {editingFilterId && (
+        <FilterModal filterId={editingFilterId} onClose={() => setEditingFilterId(null)} />
       )}
 
       {showAccountModal && (
