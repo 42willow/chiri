@@ -123,6 +123,7 @@ export const rowToTag = (row: TagRow): Tag => ({
 
 export const rowToFilter = (row: FilterRow): Filter => ({
   id: row.id,
+  presetId: row.preset_id || undefined,
   name: row.name,
   icon: row.icon || undefined,
   emoji: row.emoji || undefined,

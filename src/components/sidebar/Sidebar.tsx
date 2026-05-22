@@ -15,6 +15,7 @@ import { SidebarFooter } from '$components/sidebar/SidebarFooter';
 import { SidebarHeader } from '$components/sidebar/SidebarHeader';
 import { SidebarLocalList } from '$components/sidebar/SidebarLocalList';
 import { SidebarTagsList } from '$components/sidebar/SidebarTagsList';
+import { getFilterPresetId } from '$constants/filters';
 import { useModalState } from '$context/modalStateContext';
 import { settingsStore } from '$context/settingsContext';
 import { useAccounts, useCreateAccount } from '$hooks/queries/useAccounts';
@@ -87,6 +88,13 @@ export const Sidebar = ({
   const activeTagId = uiState?.activeTagId ?? null;
   const activeFilterId = uiState?.activeFilterId ?? null;
   const activeView = uiState?.activeView ?? 'tasks';
+  const existingFilterPresetIds = useMemo(() => {
+    return new Set(
+      filters
+        .map((filter) => getFilterPresetId(filter))
+        .filter((presetId): presetId is string => presetId !== undefined),
+    );
+  }, [filters]);
   const { isAnyModalOpen } = useModalState();
   const {
     expandedAccountIds,
@@ -483,11 +491,20 @@ export const Sidebar = ({
 
       {showFilterPresetModal && (
         <FilterPresetModal
+          existingPresetIds={existingFilterPresetIds}
           onCreatePreset={(preset) => {
-            const { sortOrder: _sortOrder, ...filter } = preset;
-            createFilterMutation.mutate(filter, {
-              onSuccess: (filter) => setActiveFilterMutation.mutate(filter.id),
-            });
+            createFilterMutation.mutate(
+              {
+                presetId: preset.presetId,
+                name: preset.name,
+                icon: preset.icon,
+                combinator: preset.combinator,
+                criteria: preset.criteria,
+              },
+              {
+                onSuccess: (filter) => setActiveFilterMutation.mutate(filter.id),
+              },
+            );
           }}
           onClose={() => setShowFilterPresetModal(false)}
         />

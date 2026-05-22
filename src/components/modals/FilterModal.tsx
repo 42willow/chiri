@@ -38,7 +38,7 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
 
     updateFilterMutation.mutate({
       id: existingFilter.id,
-      updates: { name, color, icon, emoji },
+      updates: { name, color, icon, emoji, presetId: undefined },
     });
     onClose();
   };

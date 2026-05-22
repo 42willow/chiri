@@ -86,6 +86,7 @@ export interface TagRow {
 
 export interface FilterRow {
   id: string;
+  preset_id: string | null;
   name: string;
   icon: string | null;
   emoji: string | null;

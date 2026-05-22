@@ -169,6 +169,7 @@ export type FilterCriterion =
 
 export interface Filter {
   id: string;
+  presetId?: string;
   name: string;
   icon?: string;
   emoji?: string;

@@ -41,6 +41,7 @@ export const createFilter = async (conn: DatabasePlugin, filterData: Partial<Fil
 
   const filter: Filter = {
     id: filterData.id ?? generateUUID(),
+    presetId: filterData.presetId,
     name: filterData.name ?? 'New Filter',
     icon: filterData.icon,
     emoji: filterData.emoji,
@@ -53,9 +54,10 @@ export const createFilter = async (conn: DatabasePlugin, filterData: Partial<Fil
   };
 
   await conn.execute(
-    'INSERT INTO filters (id, name, icon, emoji, color, combinator, criteria_json, sort_order, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)',
+    'INSERT INTO filters (id, preset_id, name, icon, emoji, color, combinator, criteria_json, sort_order, created_at, updated_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
     [
       filter.id,
+      filter.presetId ?? null,
       filter.name,
       filter.icon ?? null,
       filter.emoji ?? null,
@@ -82,8 +84,9 @@ export const updateFilter = async (conn: DatabasePlugin, id: string, updates: Pa
   };
 
   await conn.execute(
-    'UPDATE filters SET name=$1, icon=$2, emoji=$3, color=$4, combinator=$5, criteria_json=$6, sort_order=$7, created_at=$8, updated_at=$9 WHERE id=$10',
+    'UPDATE filters SET preset_id=$1, name=$2, icon=$3, emoji=$4, color=$5, combinator=$6, criteria_json=$7, sort_order=$8, created_at=$9, updated_at=$10 WHERE id=$11',
     [
+      updated.presetId ?? null,
       updated.name,
       updated.icon ?? null,
       updated.emoji ?? null,

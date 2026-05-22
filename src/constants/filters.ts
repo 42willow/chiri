@@ -3,10 +3,13 @@ import type { Filter } from '$types';
 export type FilterPresetDefinition = Pick<
   Filter,
   'name' | 'icon' | 'combinator' | 'criteria' | 'sortOrder'
->;
+> & {
+  presetId: string;
+};
 
 export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   {
+    presetId: 'today',
     name: 'Today',
     icon: 'calendar-check',
     combinator: 'all',
@@ -17,6 +20,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'overdue',
     name: 'Overdue',
     icon: 'clock',
     combinator: 'all',
@@ -27,6 +31,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'scheduled',
     name: 'Scheduled',
     icon: 'calendar-clock',
     combinator: 'all',
@@ -37,6 +42,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'this-week',
     name: 'This Week',
     icon: 'calendar-days',
     combinator: 'all',
@@ -47,6 +53,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'recently-modified',
     name: 'Recently Modified',
     icon: 'sparkles',
     combinator: 'all',
@@ -58,6 +65,7 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
 export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   ...DEFAULT_FILTER_PRESET_DEFINITIONS,
   {
+    presetId: 'tomorrow',
     name: 'Tomorrow',
     icon: 'calendar',
     combinator: 'all',
@@ -68,6 +76,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'no-due-date',
     name: 'No Due Date',
     icon: 'list-todo',
     combinator: 'all',
@@ -78,6 +87,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'high-priority',
     name: 'High Priority',
     icon: 'flag',
     combinator: 'all',
@@ -88,6 +98,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'untagged',
     name: 'Untagged',
     icon: 'tag',
     combinator: 'all',
@@ -98,6 +109,7 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     ],
   },
   {
+    presetId: 'recently-completed',
     name: 'Recently Completed',
     icon: 'check-square',
     combinator: 'all',
@@ -112,6 +124,8 @@ export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
 export const DEFAULT_FILTER_DEFINITIONS: Array<FilterPresetDefinition & Pick<Filter, 'id'>> =
   DEFAULT_FILTER_PRESET_DEFINITIONS.map((filter, index) => ({
     ...filter,
-    id: `default-filter-${filter.name.toLowerCase().replace(/\s+/g, '-')}`,
+    id: `default-filter-${filter.presetId}`,
     sortOrder: (index + 1) * 100,
   }));
+
+export const getFilterPresetId = (filter: Pick<Filter, 'presetId'>) => filter.presetId;

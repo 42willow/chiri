@@ -18,6 +18,7 @@ export const createFilter = (filterData: Partial<Filter>) => {
 
   const filter: Filter = {
     id: filterData.id ?? generateUUID(),
+    presetId: filterData.presetId,
     name: filterData.name ?? 'New Filter',
     icon: filterData.icon,
     emoji: filterData.emoji,
