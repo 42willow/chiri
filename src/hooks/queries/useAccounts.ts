@@ -6,12 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
-import {
-  createAccount,
-  deleteAccount,
-  getAllAccounts,
-  updateAccount,
-} from '$lib/store/accounts';
+import { createAccount, deleteAccount, getAllAccounts, updateAccount } from '$lib/store/accounts';
 import { addCalendar, deleteCalendar } from '$lib/store/calendars';
 import { moveItem } from '$lib/store/reorder';
 import { reorderAccounts } from '$lib/store/reorder/accounts';
