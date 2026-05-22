@@ -2,7 +2,7 @@ import ArrowUpDown from 'lucide-react/icons/arrow-up-down';
 import ChevronDown from 'lucide-react/icons/chevron-down';
 import Import from 'lucide-react/icons/import';
 import Plus from 'lucide-react/icons/plus';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { SidebarCalendarList } from '$components/sidebar/SidebarCalendarList';
 import { SidebarLocalSortMenu } from '$components/sidebar/SidebarLocalSortMenu';
 import { Tooltip } from '$components/Tooltip';
@@ -43,6 +43,7 @@ export const SidebarLocalList = ({
   onAddCalendar,
 }: SidebarLocalListProps) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortButtonRef = useRef<HTMLButtonElement>(null);
   const calendarSortConfig = useCalendarSortConfig();
 
   const closeSortMenu = useCallback(() => setShowSortMenu(false), []);
@@ -51,7 +52,7 @@ export const SidebarLocalList = ({
   if (accounts.length === 0) return null;
 
   return (
-    <div className="mb-1 relative">
+    <div className="relative">
       {/* biome-ignore lint/a11y/useSemanticElements: Section header toggle div contains icon+text layout that button element can't replicate */}
       <div
         onClick={onToggle}
@@ -85,6 +86,7 @@ export const SidebarLocalList = ({
 
           <Tooltip content="List order" position="top">
             <button
+              ref={sortButtonRef}
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -116,7 +118,11 @@ export const SidebarLocalList = ({
       </div>
 
       {showSortMenu && (
-        <SidebarLocalSortMenu calendarSortConfig={calendarSortConfig} onClose={closeSortMenu} />
+        <SidebarLocalSortMenu
+          anchorRef={sortButtonRef}
+          calendarSortConfig={calendarSortConfig}
+          onClose={closeSortMenu}
+        />
       )}
 
       <div

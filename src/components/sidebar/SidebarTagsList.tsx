@@ -55,6 +55,7 @@ export const SidebarTagsList = ({
 }: SidebarTagsListProps) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [isAnyTagDragging, setIsAnyTagDragging] = useState(false);
+  const sortButtonRef = useRef<HTMLButtonElement>(null);
   const tagsDragBoundsRef = useRef<HTMLDivElement>(null);
   const tagSortConfig = useTagSortConfig();
   const reorderMutation = useReorderTags();
@@ -145,6 +146,7 @@ export const SidebarTagsList = ({
           <div className="flex items-center gap-1">
             <Tooltip content="Tag order" position="top">
               <button
+                ref={sortButtonRef}
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -176,7 +178,11 @@ export const SidebarTagsList = ({
         </div>
 
         {showSortMenu && (
-          <SidebarTagsSortMenu tagSortConfig={tagSortConfig} onClose={closeSortMenu} />
+          <SidebarTagsSortMenu
+            anchorRef={sortButtonRef}
+            tagSortConfig={tagSortConfig}
+            onClose={closeSortMenu}
+          />
         )}
       </div>
 

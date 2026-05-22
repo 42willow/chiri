@@ -61,6 +61,7 @@ export const SidebarAccountsList = ({
 }: SidebarAccountsListProps) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [isDraggingAccount, setIsDraggingAccount] = useState(false);
+  const sortButtonRef = useRef<HTMLButtonElement>(null);
   const accountsDragBoundsRef = useRef<HTMLDivElement>(null);
 
   const accountSortConfig = useAccountSortConfig();
@@ -165,6 +166,7 @@ export const SidebarAccountsList = ({
 
           <Tooltip content="List order" position="top">
             <button
+              ref={sortButtonRef}
               type="button"
               onClick={(e) => {
                 e.stopPropagation();
@@ -197,6 +199,7 @@ export const SidebarAccountsList = ({
 
       {showSortMenu && (
         <SidebarAccountsSortMenu
+          anchorRef={sortButtonRef}
           accountSortConfig={accountSortConfig}
           calendarSortConfig={calendarSortConfig}
           onClose={closeSortMenu}
