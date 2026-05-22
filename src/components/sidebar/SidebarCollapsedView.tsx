@@ -2,6 +2,7 @@ import Download from 'lucide-react/icons/download';
 import Inbox from 'lucide-react/icons/inbox';
 import Settings from 'lucide-react/icons/settings';
 import Trash2 from 'lucide-react/icons/trash-2';
+import { SidebarCollapsedItemTooltip } from '$components/sidebar/SidebarCollapsedItemTooltip';
 import { Tooltip } from '$components/Tooltip';
 import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
@@ -106,10 +107,15 @@ export const SidebarCollapsedView = ({
           const FilterIcon = getIconByName(filter.icon ?? 'list-todo');
           const filterColor = filter.color ? resolveAccent(filter.color) : resolvedAccentColor;
           return (
-            <Tooltip key={filter.id} content={filter.name} position="right">
+            <Tooltip
+              key={filter.id}
+              content={<SidebarCollapsedItemTooltip name={filter.name} type="Filter" />}
+              position="right"
+            >
               <button
                 type="button"
                 data-context-menu
+                aria-label={`${filter.name} filter`}
                 onClick={() => onSelectFilter(filter.id)}
                 onContextMenu={(e) => onContextMenu(e, 'filter', filter.id)}
                 className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
@@ -147,10 +153,17 @@ export const SidebarCollapsedView = ({
                   ? resolveAccent(calendar.color)
                   : resolvedAccentColor;
                 return (
-                  <Tooltip key={calendar.id} content={calendar.displayName} position="right">
+                  <Tooltip
+                    key={calendar.id}
+                    content={
+                      <SidebarCollapsedItemTooltip name={calendar.displayName} type="Calendar" />
+                    }
+                    position="right"
+                  >
                     <button
                       type="button"
                       data-context-menu
+                      aria-label={`${calendar.displayName} calendar`}
                       onClick={() => onSelectCalendar(account.id, calendar.id)}
                       onContextMenu={(e) => onContextMenu(e, 'calendar', calendar.id, account.id)}
                       className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
@@ -186,10 +199,15 @@ export const SidebarCollapsedView = ({
           const TagIcon = getIconByName(tag.icon ?? 'tag');
           const tagColor = tag.color ? resolveAccent(tag.color) : resolvedAccentColor;
           return (
-            <Tooltip key={tag.id} content={tag.name} position="right">
+            <Tooltip
+              key={tag.id}
+              content={<SidebarCollapsedItemTooltip name={tag.name} type="Tag" />}
+              position="right"
+            >
               <button
                 type="button"
                 data-context-menu
+                aria-label={`${tag.name} tag`}
                 onClick={() => onSelectTag(tag.id)}
                 onContextMenu={(e) => onContextMenu(e, 'tag', tag.id)}
                 className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
