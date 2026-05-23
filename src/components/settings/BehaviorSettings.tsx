@@ -1,8 +1,6 @@
-import { relaunch } from '@tauri-apps/plugin-process';
 import { AppSelect } from '$components/AppSelect';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import type { SubtaskDeletionBehavior } from '$types';
-import { isMacPlatform } from '$utils/platform';
 
 export const BehaviorSettings = () => {
   const {
@@ -20,27 +18,7 @@ export const BehaviorSettings = () => {
     setDeleteSubtasksWithParent,
     defaultAccountsExpanded,
     setDefaultAccountsExpanded,
-    confirmBeforeQuit,
-    setConfirmBeforeQuit,
-    confirmBeforeQuitAppliedValue,
-    setConfirmBeforeQuitAppliedValue,
   } = useSettingsStore();
-
-  const isMac = isMacPlatform();
-  const confirmBeforeQuitChanged = confirmBeforeQuit !== confirmBeforeQuitAppliedValue;
-
-  const handleConfirmBeforeQuitChange = (checked: boolean) => {
-    setConfirmBeforeQuit(checked);
-  };
-
-  const handleRestart = async () => {
-    try {
-      setConfirmBeforeQuitAppliedValue(confirmBeforeQuit);
-      await relaunch();
-    } catch (error) {
-      console.error('Failed to relaunch app:', error);
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -155,46 +133,6 @@ export const BehaviorSettings = () => {
             className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden"
           />
         </label>
-
-        {isMac && (
-          <>
-            <div className="border-t border-surface-200 dark:border-surface-700" />
-            <label className="flex items-center justify-between p-4">
-              <div>
-                <p className="text-sm text-surface-700 dark:text-surface-300">
-                  Show warning before quitting with ⌘Q
-                </p>
-                <p className="text-xs text-surface-500 dark:text-surface-400">
-                  Hold or double press ⌘Q to quit. Requires restart.
-                </p>
-              </div>
-              <input
-                type="checkbox"
-                checked={confirmBeforeQuit}
-                onChange={(e) => handleConfirmBeforeQuitChange(e.target.checked)}
-                className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
-              />
-            </label>
-
-            {confirmBeforeQuitChanged && (
-              <>
-                <div className="border-t border-surface-200 dark:border-surface-700" />
-                <div className="flex items-center justify-between gap-4 px-4 py-3 bg-surface-100 dark:bg-surface-700/50">
-                  <p className="text-sm text-surface-700 dark:text-surface-300">
-                    Restart required to apply changes
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleRestart}
-                    className="px-3 py-1.5 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-primary-contrast rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
-                  >
-                    Restart now
-                  </button>
-                </div>
-              </>
-            )}
-          </>
-        )}
       </div>
     </div>
   );

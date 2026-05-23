@@ -21,6 +21,10 @@ export const SystemSettings = () => {
     setShowWindowOnLoginLaunch,
     hideDockIconWhenWindowClosed,
     setHideDockIconWhenWindowClosed,
+    confirmBeforeQuit,
+    setConfirmBeforeQuit,
+    confirmBeforeQuitAppliedValue,
+    setConfirmBeforeQuitAppliedValue,
     windowDecorationsMode,
     windowDecorationsAppliedValue,
     setWindowDecorationsMode,
@@ -33,7 +37,8 @@ export const SystemSettings = () => {
   const systemTrayChanged = enableSystemTray !== systemTrayAppliedValue;
   const windowDecorationsChanged =
     isLinux && windowDecorationsMode !== windowDecorationsAppliedValue;
-  const restartRequired = systemTrayChanged || windowDecorationsChanged;
+  const confirmBeforeQuitChanged = isMac && confirmBeforeQuit !== confirmBeforeQuitAppliedValue;
+  const restartRequired = systemTrayChanged || windowDecorationsChanged || confirmBeforeQuitChanged;
 
   const handleSystemTrayChange = (checked: boolean) => {
     setEnableSystemTray(checked);
@@ -67,6 +72,7 @@ export const SystemSettings = () => {
     try {
       setSystemTrayAppliedValue(enableSystemTray);
       setWindowDecorationsAppliedValue(windowDecorationsMode);
+      setConfirmBeforeQuitAppliedValue(confirmBeforeQuit);
       await relaunch();
     } catch (error) {
       console.error('Failed to relaunch app:', error);
@@ -209,6 +215,27 @@ export const SystemSettings = () => {
           </div>
         )}
       </div>
+
+      {isMac && (
+        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+          <label className="flex items-center justify-between p-4">
+            <div>
+              <p className="text-sm text-surface-700 dark:text-surface-300">
+                Show warning before quitting with ⌘Q
+              </p>
+              <p className="text-xs text-surface-500 dark:text-surface-400">
+                Hold or double press ⌘Q to quit. Requires restart.
+              </p>
+            </div>
+            <input
+              type="checkbox"
+              checked={confirmBeforeQuit}
+              onChange={(e) => setConfirmBeforeQuit(e.target.checked)}
+              className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+            />
+          </label>
+        </div>
+      )}
 
       {isLinux && (
         <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
