@@ -265,8 +265,6 @@ export const settingsStore = {
     setState({ filtersSectionCollapsed: !state.filtersSectionCollapsed }),
   toggleTagsSectionCollapsed: () => setState({ tagsSectionCollapsed: !state.tagsSectionCollapsed }),
   setEnableSystemTray: (enableSystemTray: boolean) => setState({ enableSystemTray }),
-  setSystemTrayRestartNeeded: (systemTrayRestartNeeded: boolean) =>
-    setState({ systemTrayRestartNeeded }),
   setSystemTrayAppliedValue: (systemTrayAppliedValue: boolean) =>
     setState({ systemTrayAppliedValue }),
   setCheckForUpdatesAutomatically: (checkForUpdatesAutomatically: boolean) =>

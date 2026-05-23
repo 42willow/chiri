@@ -112,7 +112,6 @@ export interface SettingsState {
   accountsSectionCollapsed: boolean;
   filtersSectionCollapsed: boolean;
   tagsSectionCollapsed: boolean;
-  systemTrayRestartNeeded: boolean;
   systemTrayAppliedValue: boolean;
   confirmBeforeQuit: boolean;
   confirmBeforeQuitAppliedValue: boolean;
@@ -191,7 +190,6 @@ export interface SettingsActions {
   toggleFiltersSectionCollapsed: () => void;
   toggleTagsSectionCollapsed: () => void;
   setEnableSystemTray: (enabled: boolean) => void;
-  setSystemTrayRestartNeeded: (needed: boolean) => void;
   setSystemTrayAppliedValue: (value: boolean) => void;
   setCheckForUpdatesAutomatically: (enabled: boolean) => void;
   setConfirmBeforeQuit: (confirm: boolean) => void;

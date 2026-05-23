@@ -193,10 +193,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (enabled: boolean) => settingsStore.setEnableSystemTray(enabled),
     [],
   );
-  const setSystemTrayRestartNeeded = useCallback(
-    (needed: boolean) => settingsStore.setSystemTrayRestartNeeded(needed),
-    [],
-  );
   const setSystemTrayAppliedValue = useCallback(
     (value: boolean) => settingsStore.setSystemTrayAppliedValue(value),
     [],
@@ -353,7 +349,6 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     toggleFiltersSectionCollapsed,
     toggleTagsSectionCollapsed,
     setEnableSystemTray,
-    setSystemTrayRestartNeeded,
     setSystemTrayAppliedValue,
     setCheckForUpdatesAutomatically,
     setConfirmBeforeQuit,

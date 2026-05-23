@@ -52,7 +52,6 @@ export const defaultState: SettingsState = {
   filtersSectionCollapsed: false,
   tagsSectionCollapsed: false,
   enableSystemTray: true,
-  systemTrayRestartNeeded: false,
   systemTrayAppliedValue: true,
   checkForUpdatesAutomatically: true,
   confirmBeforeQuit: true,
