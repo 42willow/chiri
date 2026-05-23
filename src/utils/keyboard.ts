@@ -26,6 +26,29 @@ const KEY_DISPLAY_NAMES: Record<string, string> = {
   Escape: 'Esc',
 };
 
+export const getShortcutSignature = (shortcut: KeyboardShortcut | Partial<KeyboardShortcut>) => {
+  if (!shortcut.key) return null;
+
+  const key = shortcut.key.length === 1 ? shortcut.key.toLowerCase() : shortcut.key;
+  return [
+    key,
+    shortcut.meta ? 'meta' : '',
+    shortcut.ctrl ? 'ctrl' : '',
+    shortcut.shift ? 'shift' : '',
+    shortcut.alt ? 'alt' : '',
+  ].join('|');
+};
+
+export const shortcutsConflict = (
+  first: KeyboardShortcut | Partial<KeyboardShortcut>,
+  second: KeyboardShortcut | Partial<KeyboardShortcut>,
+) => {
+  const firstSignature = getShortcutSignature(first);
+  const secondSignature = getShortcutSignature(second);
+
+  return firstSignature !== null && firstSignature === secondSignature;
+};
+
 export const formatShortcut = (shortcut: KeyboardShortcut | Partial<KeyboardShortcut>) => {
   const parts: string[] = [];
   if (shortcut.meta) parts.push(getMetaKeyLabel());

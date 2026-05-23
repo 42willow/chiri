@@ -141,6 +141,7 @@ export const ShortcutsSettings = ({
       <KeyboardShortcutModal
         isOpen={editingShortcut !== null}
         shortcut={editingShortcut}
+        shortcuts={keyboardShortcuts}
         onClose={handleCloseEdit}
         onSave={handleSave}
       />

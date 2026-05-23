@@ -4,11 +4,12 @@ import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { useModalEscapeKey } from '$hooks/ui/useModalEscapeKey';
 import type { KeyboardShortcut } from '$types';
-import { formatShortcut } from '$utils/keyboard';
+import { formatShortcut, shortcutsConflict } from '$utils/keyboard';
 
 interface KeyboardShortcutModalProps {
   isOpen: boolean;
   shortcut: KeyboardShortcut | null;
+  shortcuts: KeyboardShortcut[];
   onClose: () => void;
   onSave: (id: string, updates: Partial<KeyboardShortcut>) => void;
 }
@@ -16,11 +17,21 @@ interface KeyboardShortcutModalProps {
 export const KeyboardShortcutModal = ({
   isOpen,
   shortcut,
+  shortcuts,
   onClose,
   onSave,
 }: KeyboardShortcutModalProps) => {
   const [pendingShortcut, setPendingShortcut] = useState<Partial<KeyboardShortcut> | null>(null);
   const inputRef = useRef<HTMLDivElement>(null);
+  const pendingFullShortcut =
+    shortcut && pendingShortcut ? { ...shortcut, ...pendingShortcut } : null;
+  const conflictingShortcut =
+    pendingFullShortcut && shortcut
+      ? shortcuts.find(
+          (candidate) =>
+            candidate.id !== shortcut.id && shortcutsConflict(candidate, pendingFullShortcut),
+        )
+      : undefined;
 
   // Reset pending shortcut when modal opens with new shortcut
   useEffect(() => {
@@ -53,7 +64,7 @@ export const KeyboardShortcutModal = ({
 
     // Enter saves the current shortcut
     if (e.key === 'Enter') {
-      if (pendingShortcut && shortcut) {
+      if (pendingShortcut && shortcut && !conflictingShortcut) {
         onSave(shortcut.id, pendingShortcut);
         onClose();
       }
@@ -77,10 +88,10 @@ export const KeyboardShortcutModal = ({
   };
 
   const handleSave = () => {
-    if (pendingShortcut && shortcut) {
+    if (pendingShortcut && shortcut && !conflictingShortcut) {
       onSave(shortcut.id, pendingShortcut);
+      onClose();
     }
-    onClose();
   };
 
   const handleReset = () => {
@@ -104,7 +115,7 @@ export const KeyboardShortcutModal = ({
           <ModalButton variant="secondary" onClick={onClose}>
             Cancel
           </ModalButton>
-          <ModalButton onClick={handleSave} disabled={!pendingShortcut}>
+          <ModalButton onClick={handleSave} disabled={!pendingShortcut || !!conflictingShortcut}>
             Save
           </ModalButton>
         </>
@@ -121,7 +132,11 @@ export const KeyboardShortcutModal = ({
           // biome-ignore lint/a11y/noNoninteractiveTabindex: we need to make this div focusable to capture key events, but it doesn't have typical interactive behavior
           tabIndex={0}
           onKeyDown={handleKeyCapture}
-          className="w-full h-20 flex items-center justify-center bg-surface-50 dark:bg-surface-900 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-surface-50 dark:focus:bg-surface-900 transition-colors cursor-text"
+          className={`w-full h-20 flex items-center justify-center bg-surface-50 dark:bg-surface-900 border-2 border-dashed rounded-lg focus:outline-hidden focus:bg-surface-50 dark:focus:bg-surface-900 transition-colors cursor-text ${
+            conflictingShortcut
+              ? 'border-semantic-error focus:border-semantic-error'
+              : 'border-surface-300 dark:border-surface-600 focus:border-primary-500'
+          }`}
           aria-label="Press keys to set shortcut"
         >
           {displayShortcut ? (
@@ -151,6 +166,12 @@ export const KeyboardShortcutModal = ({
             </span>
           )}
         </div>
+
+        {conflictingShortcut && (
+          <p className="text-xs text-semantic-error">
+            Already used by {conflictingShortcut.description}.
+          </p>
+        )}
 
         {pendingShortcut && (
           <button
