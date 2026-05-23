@@ -144,6 +144,7 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
     setStep(CONNECT_METHOD_SERVER_TYPES.has(serverType) ? 'connect-method' : 'pick-type');
   };
 
+
   const handleBackFromOAuth = () => {
     setNavDirection('back');
     setStep('connect-method');
@@ -524,6 +525,12 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
     step === 'pick-type' ? 'Choose your server type to get started.' : undefined;
 
   const isQuickConnectInProgress = step === 'quick-connect' && quickConnectLoginStep !== 'input';
+  const stepAnimationClass =
+    navDirection === 'forward'
+      ? 'animate-step-forward'
+      : navDirection === 'back'
+        ? 'animate-step-back'
+        : '';
 
   const backButton =
     !account && step !== 'pick-type' && !isQuickConnectInProgress ? (
@@ -600,13 +607,7 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
     >
       <div
         key={step}
-        className={
-          navDirection === 'forward'
-            ? 'animate-step-forward'
-            : navDirection === 'back'
-              ? 'animate-step-back'
-              : undefined
-        }
+        className={`h-full overflow-y-auto ${stepAnimationClass}`}
       >
         {step === 'pick-type' && <ServerTypePicker onSelect={handleSelectServerType} />}
 

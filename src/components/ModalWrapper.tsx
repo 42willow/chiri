@@ -19,6 +19,7 @@ interface ModalWrapperProps {
   preventClose?: boolean;
   zIndex?: 'z-50' | 'z-60' | 'z-70';
   contentPadding?: boolean;
+  contentOverflow?: 'hidden' | 'auto';
   className?: string;
 }
 
@@ -34,6 +35,7 @@ export const ModalWrapper = ({
   preventClose = false,
   zIndex = 'z-50',
   contentPadding = true,
+  contentOverflow = contentPadding ? 'auto' : 'hidden',
   className,
 }: ModalWrapperProps) => {
   const focusTrapRef = useFocusTrap(isOpen);
@@ -75,7 +77,7 @@ export const ModalWrapper = ({
         )}
 
         <div
-          className={`${contentPadding ? 'p-4 space-y-4 overflow-y-auto' : 'overflow-hidden'} flex-1 min-h-0 ${!title ? 'rounded-t-xl' : ''}`}
+          className={`${contentPadding ? 'p-4 space-y-4' : ''} ${contentOverflow === 'auto' ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'} flex-1 min-h-0 ${!title ? 'rounded-t-xl' : ''}`}
         >
           {children}
         </div>
