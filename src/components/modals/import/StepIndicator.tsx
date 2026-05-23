@@ -53,7 +53,7 @@ export const StepIndicator = ({ currentStep, hasFile, hasDestination }: StepIndi
               <div
                 className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all ${
                   status === 'completed'
-                    ? 'bg-primary-500 text-white'
+                    ? 'bg-primary-500 text-primary-contrast'
                     : status === 'active'
                       ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100 ring-2 ring-primary-500'
                       : 'bg-surface-200 dark:bg-surface-700 text-surface-500 dark:text-surface-400'
