@@ -195,7 +195,7 @@ fn initialize_tray_impl(
                     // On macOS, restore the dock icon when showing the window
                     #[cfg(target_os = "macos")]
                     {
-                        let _ = app.set_activation_policy(tauri::ActivationPolicy::Regular);
+                        crate::window_events::show_dock_icon(app);
                     }
                 }
             }

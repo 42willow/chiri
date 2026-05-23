@@ -3,6 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ErrorBoundary } from '$components/ErrorBoundary';
 import {
+  applyHiddenWindowDockIconState,
   forceShowWindow,
   initializeApp,
   shouldShowWindowOnStartup,
@@ -54,6 +55,8 @@ const bootstrap = async () => {
   renderApp();
   if (await shouldShowWindowOnStartup()) {
     await showWindow();
+  } else {
+    await applyHiddenWindowDockIconState();
   }
 };
 

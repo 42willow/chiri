@@ -267,6 +267,8 @@ export const settingsStore = {
   setEnableSystemTray: (enableSystemTray: boolean) => setState({ enableSystemTray }),
   setSystemTrayAppliedValue: (systemTrayAppliedValue: boolean) =>
     setState({ systemTrayAppliedValue }),
+  setHideDockIconWhenWindowClosed: (hideDockIconWhenWindowClosed: boolean) =>
+    setState({ hideDockIconWhenWindowClosed }),
   setShowWindowOnLoginLaunch: (showWindowOnLoginLaunch: boolean) =>
     setState({ showWindowOnLoginLaunch }),
   setCheckForUpdatesAutomatically: (checkForUpdatesAutomatically: boolean) =>

@@ -70,7 +70,7 @@ fn main() {
                 // on macOS, show the dock icon when the window is shown
                 #[cfg(target_os = "macos")]
                 {
-                    let _ = app.set_activation_policy(tauri::ActivationPolicy::Regular);
+                    window_events::show_dock_icon(app);
                 }
             }
         }))
@@ -115,6 +115,7 @@ fn main() {
             tray::set_tray_visible,
             tray::update_tray_sync_enabled,
             tray::update_tray_sync_time,
+            window_events::set_hide_dock_icon_when_window_closed,
         ])
         .setup(|_app| {
             // Register deep link URL scheme handler (macOS uses Info.plist; Windows/Linux
@@ -220,7 +221,7 @@ fn main() {
                         let _ = window.set_focus();
 
                         // restore the dock icon
-                        let _ = _app_handle.set_activation_policy(tauri::ActivationPolicy::Regular);
+                        window_events::show_dock_icon(_app_handle);
                     }
                 }
 

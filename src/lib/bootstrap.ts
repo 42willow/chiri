@@ -1,3 +1,4 @@
+import { setDockVisibility } from '@tauri-apps/api/app';
 import { invoke } from '@tauri-apps/api/core';
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import { BaseDirectory, remove } from '@tauri-apps/plugin-fs';
@@ -18,6 +19,34 @@ export interface BootstrapResult {
   error?: Error;
 }
 
+const applyMacDockIconPreference = async () => {
+  if (!isMacPlatform()) return;
+
+  const { hideDockIconWhenWindowClosed } = settingsStore.getState();
+  try {
+    await invoke('set_hide_dock_icon_when_window_closed', {
+      enabled: hideDockIconWhenWindowClosed,
+    });
+  } catch (error) {
+    log.error('Failed to apply Dock icon preference:', error);
+  }
+};
+
+export const setMacDockIconVisible = async (visible: boolean) => {
+  if (!isMacPlatform()) return;
+
+  try {
+    await setDockVisibility(visible);
+  } catch (error) {
+    log.error('Failed to update Dock icon visibility:', error);
+  }
+};
+
+export const applyHiddenWindowDockIconState = async () => {
+  if (!settingsStore.getState().hideDockIconWhenWindowClosed) return;
+  await setMacDockIconVisible(false);
+};
+
 export const initializeApp = async () => {
   // Initialize logger first so all subsequent logs are captured
   await initLogger();
@@ -31,6 +60,8 @@ export const initializeApp = async () => {
   await preloadAutostartState().catch((error) => {
     log.warn('Failed to preload launch-at-login status:', error);
   });
+
+  await applyMacDockIconPreference();
 
   // initialize system tray based on settings
   log.debug('Initializing system tray...');
@@ -101,6 +132,7 @@ export const showWindow = async (delay: number = 200): Promise<void> => {
   return new Promise((resolve) => {
     setTimeout(async () => {
       const window = getCurrentWindow();
+      await setMacDockIconVisible(true);
       await window.show();
       await window.setFocus();
       log.debug('Window shown and focused');

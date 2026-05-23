@@ -113,6 +113,7 @@ export interface SettingsState {
   filtersSectionCollapsed: boolean;
   tagsSectionCollapsed: boolean;
   systemTrayAppliedValue: boolean;
+  hideDockIconWhenWindowClosed: boolean;
   showWindowOnLoginLaunch: boolean;
   confirmBeforeQuit: boolean;
   confirmBeforeQuitAppliedValue: boolean;
@@ -192,6 +193,7 @@ export interface SettingsActions {
   toggleTagsSectionCollapsed: () => void;
   setEnableSystemTray: (enabled: boolean) => void;
   setSystemTrayAppliedValue: (value: boolean) => void;
+  setHideDockIconWhenWindowClosed: (enabled: boolean) => void;
   setShowWindowOnLoginLaunch: (show: boolean) => void;
   setCheckForUpdatesAutomatically: (enabled: boolean) => void;
   setConfirmBeforeQuit: (confirm: boolean) => void;

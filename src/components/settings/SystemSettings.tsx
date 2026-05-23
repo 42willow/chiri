@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api/core';
+import { openUrl } from '@tauri-apps/plugin-opener';
 import { relaunch } from '@tauri-apps/plugin-process';
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
 import { AppSelect } from '$components/AppSelect';
@@ -6,7 +7,7 @@ import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useAutostart } from '$hooks/system/useAutostart';
 import { usePlatform } from '$hooks/system/usePlatform';
 import type { WindowDecorationsMode } from '$types/settings';
-import { isLinuxPlatform } from '$utils/platform';
+import { isLinuxPlatform, isMacPlatform } from '$utils/platform';
 
 export const SystemSettings = () => {
   const { isGNOME } = usePlatform();
@@ -18,6 +19,8 @@ export const SystemSettings = () => {
     setSystemTrayAppliedValue,
     showWindowOnLoginLaunch,
     setShowWindowOnLoginLaunch,
+    hideDockIconWhenWindowClosed,
+    setHideDockIconWhenWindowClosed,
     windowDecorationsMode,
     windowDecorationsAppliedValue,
     setWindowDecorationsMode,
@@ -25,6 +28,7 @@ export const SystemSettings = () => {
   } = useSettingsStore();
 
   const isLinux = isLinuxPlatform();
+  const isMac = isMacPlatform();
 
   const systemTrayChanged = enableSystemTray !== systemTrayAppliedValue;
   const windowDecorationsChanged =
@@ -33,6 +37,15 @@ export const SystemSettings = () => {
 
   const handleSystemTrayChange = (checked: boolean) => {
     setEnableSystemTray(checked);
+  };
+
+  const handleHideDockIconWhenWindowClosedChange = async (checked: boolean) => {
+    setHideDockIconWhenWindowClosed(checked);
+    try {
+      await invoke('set_hide_dock_icon_when_window_closed', { enabled: checked });
+    } catch (error) {
+      console.error('Failed to apply Dock icon preference:', error);
+    }
   };
 
   const handleWindowDecorationsChange = async (mode: WindowDecorationsMode) => {
@@ -60,6 +73,14 @@ export const SystemSettings = () => {
     }
   };
 
+  const handleOpenLoginItemsSettings = async () => {
+    try {
+      await openUrl('x-apple.systempreferences:com.apple.LoginItems-Settings.extension');
+    } catch (error) {
+      console.error('Failed to open Login Items & Extensions settings:', error);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">System</h3>
@@ -80,23 +101,43 @@ export const SystemSettings = () => {
           />
         </label>
 
-        <label className="flex items-center justify-between p-4 pt-0">
-          <div>
-            <p className="text-sm text-surface-700 dark:text-surface-300">
-              Start quietly in tray at login
-            </p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
-              Hide the main window when Chiri starts automatically. Requires system tray.
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            checked={!showWindowOnLoginLaunch}
-            disabled={autostart.enabled !== true || !enableSystemTray}
-            onChange={(e) => setShowWindowOnLoginLaunch(!e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50"
-          />
-        </label>
+        {isMac && (
+          <>
+            <div className="px-4 pb-4">
+              <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+                <label className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-surface-700 dark:text-surface-300">
+                      Start quietly in tray at login
+                    </p>
+                    <p className="text-xs text-surface-500 dark:text-surface-400">
+                      Hide the main window when Chiri starts automatically. Requires system tray.
+                    </p>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={!showWindowOnLoginLaunch}
+                    disabled={autostart.enabled !== true || !enableSystemTray}
+                    onChange={(e) => setShowWindowOnLoginLaunch(!e.target.checked)}
+                    className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50"
+                  />
+                </label>
+              </div>
+            </div>
+
+            <div className="border-t border-surface-200 dark:border-surface-700" />
+
+            <div className="px-4 py-3">
+              <button
+                type="button"
+                onClick={handleOpenLoginItemsSettings}
+                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              >
+                Open macOS Settings
+              </button>
+            </div>
+          </>
+        )}
 
         {autostart.error && (
           <div className="px-4 pb-4">
@@ -106,9 +147,9 @@ export const SystemSettings = () => {
             </div>
           </div>
         )}
+      </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
-
+      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Enable system tray</p>
@@ -123,6 +164,30 @@ export const SystemSettings = () => {
             className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
           />
         </label>
+
+        {isMac && (
+          <div className="px-4 pb-4">
+            <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+              <label
+                className={`flex items-center justify-between ${!enableSystemTray ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <div>
+                  <p className="text-sm text-surface-700 dark:text-surface-300">Hide Dock icon</p>
+                  <p className="text-xs text-surface-500 dark:text-surface-400">
+                    Hide the Dock icon when all windows are closed
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={hideDockIconWhenWindowClosed}
+                  disabled={!enableSystemTray}
+                  onChange={(e) => handleHideDockIconWhenWindowClosedChange(e.target.checked)}
+                  className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50"
+                />
+              </label>
+            </div>
+          </div>
+        )}
 
         {isGNOME && (
           <div className="px-4 pb-4">
@@ -143,53 +208,51 @@ export const SystemSettings = () => {
             </div>
           </div>
         )}
-
-        {isLinux && (
-          <>
-            <div className="border-t border-surface-200 dark:border-surface-700" />
-            <div className="flex items-center justify-between gap-4 p-4">
-              <div>
-                <p className="text-sm text-surface-700 dark:text-surface-300">
-                  Enable window decorations
-                </p>
-                <p className="text-xs text-surface-500 dark:text-surface-400">
-                  Show title bar and borders on Linux. If changed, overrides the default
-                  auto-detection.
-                </p>
-              </div>
-              <AppSelect
-                value={windowDecorationsMode}
-                onChange={(e) =>
-                  handleWindowDecorationsChange(e.target.value as WindowDecorationsMode)
-                }
-                className="text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-none focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0"
-              >
-                <option value="auto">Auto (detect)</option>
-                <option value="on">Always show</option>
-                <option value="off">Always hide</option>
-              </AppSelect>
-            </div>
-          </>
-        )}
-
-        {restartRequired && (
-          <>
-            <div className="border-t border-surface-200 dark:border-surface-700" />
-            <div className="flex items-center justify-between gap-4 px-4 py-3 bg-surface-100 dark:bg-surface-700/50">
-              <p className="text-sm text-surface-700 dark:text-surface-300">
-                Restart required to apply changes
-              </p>
-              <button
-                type="button"
-                onClick={handleRestart}
-                className="px-3 py-1.5 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-primary-contrast rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
-              >
-                Restart now
-              </button>
-            </div>
-          </>
-        )}
       </div>
+
+      {isLinux && (
+        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+          <div className="flex items-center justify-between gap-4 p-4">
+            <div>
+              <p className="text-sm text-surface-700 dark:text-surface-300">
+                Enable window decorations
+              </p>
+              <p className="text-xs text-surface-500 dark:text-surface-400">
+                Show title bar and borders on Linux. If changed, overrides the default
+                auto-detection.
+              </p>
+            </div>
+            <AppSelect
+              value={windowDecorationsMode}
+              onChange={(e) =>
+                handleWindowDecorationsChange(e.target.value as WindowDecorationsMode)
+              }
+              className="text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-none focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0"
+            >
+              <option value="auto">Auto (detect)</option>
+              <option value="on">Always show</option>
+              <option value="off">Always hide</option>
+            </AppSelect>
+          </div>
+        </div>
+      )}
+
+      {restartRequired && (
+        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden">
+          <div className="flex items-center justify-between gap-4 px-4 py-3 bg-surface-100 dark:bg-surface-700/50">
+            <p className="text-sm text-surface-700 dark:text-surface-300">
+              Restart required to apply changes
+            </p>
+            <button
+              type="button"
+              onClick={handleRestart}
+              className="px-3 py-1.5 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-primary-contrast rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
+            >
+              Restart now
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

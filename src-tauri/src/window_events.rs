@@ -4,20 +4,50 @@
 // to keep the main file clean and focused on application setup.
 
 #[cfg(target_os = "macos")]
-use tauri::Manager;
-use tauri::WindowEvent;
+use std::sync::atomic::{AtomicBool, Ordering};
+use tauri::{Manager, WindowEvent};
 
-/// Hide the dock icon on macOS when the window is hidden
 #[cfg(target_os = "macos")]
-fn hide_dock_icon<R: tauri::Runtime>(window: &tauri::Window<R>) {
-    let _ = window
-        .app_handle()
-        .set_activation_policy(tauri::ActivationPolicy::Accessory);
+static HIDE_DOCK_ICON_WHEN_WINDOW_CLOSED: AtomicBool = AtomicBool::new(true);
+
+#[tauri::command]
+pub fn set_hide_dock_icon_when_window_closed(enabled: bool) {
+    #[cfg(target_os = "macos")]
+    HIDE_DOCK_ICON_WHEN_WINDOW_CLOSED.store(enabled, Ordering::Relaxed);
+
+    #[cfg(not(target_os = "macos"))]
+    let _ = enabled;
+}
+
+/// Show the dock icon on macOS when the window is shown
+#[cfg(target_os = "macos")]
+pub fn show_dock_icon<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
+    let _ = app_handle.set_activation_policy(tauri::ActivationPolicy::Regular);
 }
 
 #[cfg(not(target_os = "macos"))]
-fn hide_dock_icon<R: tauri::Runtime>(_window: &tauri::Window<R>) {
+pub fn show_dock_icon<R: tauri::Runtime>(_app_handle: &tauri::AppHandle<R>) {
     // No-op on non-macOS platforms
+}
+
+/// Hide the dock icon on macOS when the window is hidden
+#[cfg(target_os = "macos")]
+fn hide_dock_icon<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
+    let _ = app_handle.set_activation_policy(tauri::ActivationPolicy::Accessory);
+}
+
+#[cfg(not(target_os = "macos"))]
+fn hide_dock_icon<R: tauri::Runtime>(_app_handle: &tauri::AppHandle<R>) {
+    // No-op on non-macOS platforms
+}
+
+fn hide_dock_icon_if_configured<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
+    #[cfg(target_os = "macos")]
+    if !HIDE_DOCK_ICON_WHEN_WINDOW_CLOSED.load(Ordering::Relaxed) {
+        return;
+    }
+
+    hide_dock_icon(app_handle);
 }
 
 /// Handle window focus event
@@ -61,7 +91,7 @@ pub fn handle_window_event<R: tauri::Runtime>(window: &tauri::Window<R>, event: 
                     let window = window.clone();
                     std::thread::spawn(move || {
                         let _ = window.hide();
-                        hide_dock_icon(&window);
+                        hide_dock_icon_if_configured(&window.app_handle());
                     });
                 }
 
@@ -69,7 +99,7 @@ pub fn handle_window_event<R: tauri::Runtime>(window: &tauri::Window<R>, event: 
                 #[cfg(not(feature = "cef"))]
                 {
                     let _ = window.hide();
-                    hide_dock_icon(window);
+                    hide_dock_icon_if_configured(&window.app_handle());
                 }
             }
         }
