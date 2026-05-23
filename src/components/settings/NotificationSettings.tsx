@@ -182,7 +182,7 @@ export const NotificationSettings = () => {
               All-day reminder notifications
             </p>
             <p className="text-xs text-surface-500 dark:text-surface-400">
-              Set a default time for all-day task reminders
+              Add default reminders to all-day tasks
             </p>
           </div>
           <input
@@ -198,7 +198,7 @@ export const NotificationSettings = () => {
             <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-surface-600 dark:text-surface-400">
-                  All-day reminder time
+                  Notification time
                 </p>
                 <button
                   type="button"

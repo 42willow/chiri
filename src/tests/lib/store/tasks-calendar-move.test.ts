@@ -1,14 +1,35 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Task } from '$types';
+import type { SettingsState } from '$types/settings';
 import type { PendingDeletion } from '$types/store';
 import { makeTask } from '../../fixtures';
 
 // vi.mock factories are hoisted; pre-create the mock fn refs via vi.hoisted
 // so they're initialized before the mock factories run
-const { mockAddPendingDeletion, mockUpdateTask } = vi.hoisted(() => ({
-  mockAddPendingDeletion: vi.fn().mockResolvedValue(undefined),
-  mockUpdateTask: vi.fn().mockResolvedValue(undefined),
-}));
+const { mockAddPendingDeletion, mockUpdateTask, mockGetSettingsState, mockSettingsState } =
+  vi.hoisted(() => {
+    const mockSettingsState: Partial<SettingsState> = {
+      defaultCalendarId: null,
+      defaultPriority: 'none',
+      defaultStatus: 'needs-action',
+      defaultPercentComplete: 0,
+      defaultTags: [],
+      defaultStartDate: 'none',
+      defaultDueDate: 'none',
+      defaultReminders: [],
+      defaultRrule: undefined,
+      defaultRepeatFrom: 0,
+      defaultAllDayReminderHour: 9,
+      allDayReminderNotificationsEnabled: true,
+    };
+
+    return {
+      mockAddPendingDeletion: vi.fn().mockResolvedValue(undefined),
+      mockUpdateTask: vi.fn().mockResolvedValue(undefined),
+      mockGetSettingsState: vi.fn(() => mockSettingsState),
+      mockSettingsState,
+    };
+  });
 
 vi.mock('@tauri-apps/plugin-sql', () => ({ default: { load: vi.fn() } }));
 vi.mock('@tauri-apps/plugin-notification', () => ({}));
@@ -25,19 +46,7 @@ vi.mock('$lib/database', () => ({
 // settingsStore.getState() is called by task helpers. minimal defaults
 vi.mock('$context/settingsContext', () => ({
   settingsStore: {
-    getState: vi.fn(() => ({
-      defaultCalendarId: null,
-      defaultPriority: 'none',
-      defaultStatus: 'needs-action',
-      defaultPercentComplete: 0,
-      defaultTags: [],
-      defaultStartDate: 'none',
-      defaultDueDate: 'none',
-      defaultReminders: [],
-      defaultRrule: undefined,
-      defaultRepeatFrom: 0,
-      defaultAllDayReminderHour: 9,
-    })),
+    getState: mockGetSettingsState,
   },
 }));
 
@@ -55,7 +64,7 @@ vi.mock('$utils/recurrence', () => ({
 }));
 
 import { dataStore, defaultDataStore, defaultUIState } from '$lib/store';
-import { updateTask } from '$lib/store/tasks';
+import { createTask, updateTask } from '$lib/store/tasks';
 
 const seedStore = (tasks: Task[], pendingDeletions: PendingDeletion[] = []) => {
   dataStore.save({
@@ -75,6 +84,7 @@ const seedStore = (tasks: Task[], pendingDeletions: PendingDeletion[] = []) => {
 describe('updateTask — calendar move detection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockGetSettingsState.mockReturnValue(mockSettingsState);
     seedStore([]);
   });
 
@@ -259,5 +269,58 @@ describe('updateTask — calendar move detection', () => {
     const stored = dataStore.load().tasks.find((t) => t.id === 'task-1');
     expect(stored?.href).toBeUndefined();
     expect(stored?.calendarId).toBe('personal');
+  });
+});
+
+describe('createTask — all-day reminder notifications', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultDueDate: 'today',
+      defaultReminders: ['at-due'],
+    });
+    seedStore([]);
+  });
+
+  it('adds default reminders to all-day tasks when enabled', () => {
+    const task = createTask({ title: 'All-day task' });
+
+    expect(task.dueDateAllDay).toBe(true);
+    expect(task.reminders).toHaveLength(1);
+    expect(task.reminders?.[0].trigger.getHours()).toBe(9);
+  });
+
+  it('skips default reminders for all-day tasks when disabled', () => {
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultDueDate: 'today',
+      defaultReminders: ['at-due'],
+      allDayReminderNotificationsEnabled: false,
+    });
+
+    const task = createTask({ title: 'Quiet all-day task' });
+
+    expect(task.dueDateAllDay).toBe(true);
+    expect(task.reminders).toBeUndefined();
+  });
+
+  it('still adds default reminders to timed tasks when all-day reminders are disabled', () => {
+    mockGetSettingsState.mockReturnValue({
+      ...mockSettingsState,
+      defaultReminders: ['at-due'],
+      allDayReminderNotificationsEnabled: false,
+    });
+    const dueDate = new Date(2025, 0, 15, 14, 30);
+
+    const task = createTask({
+      title: 'Timed task',
+      dueDate,
+      dueDateAllDay: false,
+    });
+
+    expect(task.dueDateAllDay).toBe(false);
+    expect(task.reminders).toHaveLength(1);
+    expect(task.reminders?.[0].trigger).toEqual(dueDate);
   });
 });

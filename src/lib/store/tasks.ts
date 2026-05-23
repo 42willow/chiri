@@ -14,7 +14,14 @@ const resolveReminderOffsets = (
   due: { date: Date; allDay: boolean },
 ): Reminder[] => {
   // Base time: 9am on the due date for all-day, or the exact due datetime otherwise
-  const allDayHour = settingsStore.getState().defaultAllDayReminderHour ?? 9;
+  const { allDayReminderNotificationsEnabled, defaultAllDayReminderHour } =
+    settingsStore.getState();
+
+  if (due.allDay && !allDayReminderNotificationsEnabled) {
+    return [];
+  }
+
+  const allDayHour = defaultAllDayReminderHour ?? 9;
   const base = due.allDay ? setHours(startOfDay(due.date), allDayHour) : due.date;
   return offsets.map((offset) => {
     let trigger: Date;
@@ -263,6 +270,10 @@ export const createTask = (taskData: Partial<Task>) => {
     taskData.startDate !== undefined
       ? { date: taskData.startDate, allDay: taskData.startDateAllDay ?? true }
       : resolveDateOffset(defaultStartDate, due.date);
+  const defaultResolvedReminders =
+    due.date !== undefined && defaultReminders.length > 0
+      ? resolveReminderOffsets(defaultReminders, { date: due.date, allDay: due.allDay })
+      : undefined;
 
   const task: Task = {
     id: generateUUID(),
@@ -291,8 +302,8 @@ export const createTask = (taskData: Partial<Task>) => {
     tags,
     reminders:
       taskData.reminders ??
-      (due.date !== undefined && defaultReminders.length > 0
-        ? resolveReminderOffsets(defaultReminders, { date: due.date, allDay: due.allDay })
+      (defaultResolvedReminders && defaultResolvedReminders.length > 0
+        ? defaultResolvedReminders
         : undefined),
   } satisfies Task;
 
