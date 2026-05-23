@@ -2,11 +2,13 @@ import { useCallback, useEffect, useMemo } from 'react';
 import { DEFAULT_SORT_CONFIG } from '$constants';
 import { useModalState } from '$context/modalStateContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
+import { useFilters } from '$hooks/queries/useFilters';
 import { useTags } from '$hooks/queries/useTags';
 import { useCreateTask, useFilteredTasks, useToggleTaskComplete } from '$hooks/queries/useTasks';
 import {
   useSetActiveAccount,
   useSetActiveCalendar,
+  useSetActiveFilter,
   useSetActiveTag,
   useSetAllTasksView,
   useSetEditorOpen,
@@ -116,6 +118,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
+  const activeFilterId = uiState?.activeFilterId ?? null;
   const activeView = uiState?.activeView ?? 'tasks';
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
@@ -124,9 +127,11 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { keyboardShortcuts, toggleSidebarCollapsed } = useSettingsStore();
   const { data: accounts = [] } = useAccounts();
   const { data: tags = [] } = useTags();
+  const { data: filters = [] } = useFilters();
   const setActiveAccountMutation = useSetActiveAccount();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveTagMutation = useSetActiveTag();
+  const setActiveFilterMutation = useSetActiveFilter();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
   const { confirmAndDelete } = useConfirmTaskDelete();
@@ -231,10 +236,14 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
     | { type: 'all' }
     | { type: 'calendar'; accountId: string; calendarId: string }
     | { type: 'tag'; tagId: string }
+    | { type: 'filter'; filterId: string }
     | { type: 'recently-deleted' };
 
   const orderedLists = useMemo((): ListItem[] => {
     const items: ListItem[] = [{ type: 'all' }, { type: 'recently-deleted' }];
+    for (const filter of filters) {
+      items.push({ type: 'filter', filterId: filter.id });
+    }
     for (const account of accounts) {
       for (const cal of account.calendars) {
         items.push({ type: 'calendar', accountId: account.id, calendarId: cal.id });
@@ -244,11 +253,16 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       items.push({ type: 'tag', tagId: tag.id });
     }
     return items;
-  }, [accounts, tags]);
+  }, [accounts, filters, tags]);
 
   const currentListIndex = useMemo(() => {
     if (activeView === 'recently-deleted') {
       return orderedLists.findIndex((item) => item.type === 'recently-deleted');
+    }
+    if (activeView === 'filter' && activeFilterId !== null) {
+      return orderedLists.findIndex(
+        (item) => item.type === 'filter' && item.filterId === activeFilterId,
+      );
     }
     if (activeTagId !== null) {
       return orderedLists.findIndex((item) => item.type === 'tag' && item.tagId === activeTagId);
@@ -259,7 +273,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       );
     }
     return 0;
-  }, [orderedLists, activeCalendarId, activeTagId, activeView]);
+  }, [orderedLists, activeCalendarId, activeFilterId, activeTagId, activeView]);
 
   const activateListItem = useCallback(
     (item: ListItem) => {
@@ -271,6 +285,8 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
         setActiveCalendarMutation.mutate(item.calendarId);
       } else if (item.type === 'tag') {
         setActiveTagMutation.mutate(item.tagId);
+      } else if (item.type === 'filter') {
+        setActiveFilterMutation.mutate(item.filterId);
       } else {
         setRecentlyDeletedViewMutation.mutate();
       }
@@ -279,6 +295,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       setAllTasksViewMutation,
       setActiveAccountMutation,
       setActiveCalendarMutation,
+      setActiveFilterMutation,
       setActiveTagMutation,
       setRecentlyDeletedViewMutation,
     ],

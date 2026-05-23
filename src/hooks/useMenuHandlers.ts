@@ -1,10 +1,12 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useAccounts, useDeleteAccount, useDeleteCalendar } from '$hooks/queries/useAccounts';
+import { useFilters } from '$hooks/queries/useFilters';
 import { useTags } from '$hooks/queries/useTags';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import {
   useSetActiveAccount,
   useSetActiveCalendar,
+  useSetActiveFilter,
   useSetActiveTag,
   useSetAllTasksView,
   useSetRecentlyDeletedView,
@@ -50,6 +52,7 @@ export const useMenuHandlers = (
   const setSelectedTaskMutation = useSetSelectedTask();
   const { data: accounts = [] } = useAccounts();
   const { data: tags = [] } = useTags();
+  const { data: filters = [] } = useFilters();
   const { data: uiState } = useUIState();
   const setShowCompletedMutation = useSetShowCompletedTasks();
   const setShowUnstartedMutation = useSetShowUnstartedTasks();
@@ -57,6 +60,7 @@ export const useMenuHandlers = (
   const setActiveAccountMutation = useSetActiveAccount();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveTagMutation = useSetActiveTag();
+  const setActiveFilterMutation = useSetActiveFilter();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
   const { toggleSidebarCollapsed } = useSettingsStore();
@@ -212,10 +216,14 @@ export const useMenuHandlers = (
     | { type: 'all' }
     | { type: 'calendar'; accountId: string; calendarId: string }
     | { type: 'tag'; tagId: string }
+    | { type: 'filter'; filterId: string }
     | { type: 'recently-deleted' };
 
   const orderedLists = useMemo((): ListItem[] => {
     const items: ListItem[] = [{ type: 'all' }, { type: 'recently-deleted' }];
+    for (const filter of filters) {
+      items.push({ type: 'filter', filterId: filter.id });
+    }
     for (const account of accounts) {
       for (const cal of account.calendars) {
         items.push({ type: 'calendar', accountId: account.id, calendarId: cal.id });
@@ -225,15 +233,21 @@ export const useMenuHandlers = (
       items.push({ type: 'tag', tagId: tag.id });
     }
     return items;
-  }, [accounts, tags]);
+  }, [accounts, filters, tags]);
 
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const activeTagId = uiState?.activeTagId ?? null;
+  const activeFilterId = uiState?.activeFilterId ?? null;
   const activeView = uiState?.activeView ?? 'tasks';
 
   const currentListIndex = useMemo(() => {
     if (activeView === 'recently-deleted') {
       return orderedLists.findIndex((item) => item.type === 'recently-deleted');
+    }
+    if (activeView === 'filter' && activeFilterId !== null) {
+      return orderedLists.findIndex(
+        (item) => item.type === 'filter' && item.filterId === activeFilterId,
+      );
     }
     if (activeTagId !== null) {
       return orderedLists.findIndex((item) => item.type === 'tag' && item.tagId === activeTagId);
@@ -244,7 +258,7 @@ export const useMenuHandlers = (
       );
     }
     return 0;
-  }, [orderedLists, activeCalendarId, activeTagId, activeView]);
+  }, [orderedLists, activeCalendarId, activeFilterId, activeTagId, activeView]);
 
   const activateListItem = useCallback(
     (item: ListItem) => {
@@ -256,6 +270,8 @@ export const useMenuHandlers = (
         setActiveCalendarMutation.mutate(item.calendarId);
       } else if (item.type === 'tag') {
         setActiveTagMutation.mutate(item.tagId);
+      } else if (item.type === 'filter') {
+        setActiveFilterMutation.mutate(item.filterId);
       } else {
         setRecentlyDeletedViewMutation.mutate();
       }
@@ -264,6 +280,7 @@ export const useMenuHandlers = (
       setAllTasksViewMutation,
       setActiveAccountMutation,
       setActiveCalendarMutation,
+      setActiveFilterMutation,
       setActiveTagMutation,
       setRecentlyDeletedViewMutation,
     ],
