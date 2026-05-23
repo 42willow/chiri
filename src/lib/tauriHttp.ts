@@ -4,6 +4,7 @@ import { buildDigestAuth, parseDigestChallenge } from '$lib/auth/digest';
 import { loggers } from '$lib/logger';
 
 const log = loggers.http;
+const REQUEST_TIMEOUT_MS = 15_000;
 
 // Tracks which server hosts require Digest auth so we can skip the wasted
 // Basic-auth attempt on the first round-trip. Cleared on app restart (intentionally).
@@ -120,6 +121,7 @@ export const tauriRequest = async (
       headers: requestHeaders,
       body: body,
       maxRedirections: 0,
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
     const responseBody = await rawResponse.text();
     const headersObj: Record<string, string> = {};
