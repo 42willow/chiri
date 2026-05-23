@@ -54,7 +54,30 @@ const parsePushProperties = (
   };
 };
 
-export const fetchCalendars = async (conn: Connection, accountId: string): Promise<Calendar[]> => {
+const slugifyCalendarName = (displayName: string) =>
+  displayName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '') || 'calendar';
+
+export interface CalendarDiscoveryDiagnostics {
+  calendarCollectionCount: number;
+  includedCalendarCount: number;
+  explicitVtodoCalendarCount: number;
+  assumedCompatibleCalendarCount: number;
+  nonVtodoCalendarCount: number;
+  nonVtodoCalendarNames: string[];
+}
+
+export interface CalendarDiscoveryResult {
+  calendars: Calendar[];
+  diagnostics: CalendarDiscoveryDiagnostics;
+}
+
+export const discoverCalendars = async (
+  conn: Connection,
+  accountId: string,
+): Promise<CalendarDiscoveryResult> => {
   // Include WebDAV Push properties in the PROPFIND request
   const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
 <d:propfind xmlns:d="DAV:" xmlns:c="urn:ietf:params:xml:ns:caldav" xmlns:a="http://apple.com/ns/ical/" xmlns:P="${NS_WEBDAV_PUSH}">
@@ -80,6 +103,14 @@ export const fetchCalendars = async (conn: Connection, accountId: string): Promi
   const results = parseMultiStatus(response.body);
   const calendars: Calendar[] = [];
   const calendarHomePath = new URL(conn.calendarHome, conn.serverUrl).pathname;
+  const diagnostics: CalendarDiscoveryDiagnostics = {
+    calendarCollectionCount: 0,
+    includedCalendarCount: 0,
+    explicitVtodoCalendarCount: 0,
+    assumedCompatibleCalendarCount: 0,
+    nonVtodoCalendarCount: 0,
+    nonVtodoCalendarNames: [],
+  };
 
   for (const result of results) {
     const resultPath = result.href.startsWith('http') ? new URL(result.href).pathname : result.href;
@@ -93,6 +124,8 @@ export const fetchCalendars = async (conn: Connection, accountId: string): Promi
       continue;
     }
 
+    diagnostics.calendarCollectionCount++;
+
     const supportedComponentsRaw = result.props['supported-calendar-component-set'] ?? '';
     const supportedComponents: string[] = [];
     const componentMatches = supportedComponentsRaw.matchAll(/<[^:>]*:?comp[^>]+name="([^"]+)"/gi);
@@ -101,7 +134,16 @@ export const fetchCalendars = async (conn: Connection, accountId: string): Promi
     }
 
     if (supportedComponents.length > 0 && !supportedComponents.includes('VTODO')) {
+      diagnostics.nonVtodoCalendarCount++;
+      diagnostics.nonVtodoCalendarNames.push(result.props.displayname ?? 'Calendar');
       continue;
+    }
+
+    diagnostics.includedCalendarCount++;
+    if (supportedComponents.includes('VTODO')) {
+      diagnostics.explicitVtodoCalendarCount++;
+    } else {
+      diagnostics.assumedCompatibleCalendarCount++;
     }
 
     const calendarUrl = makeAbsoluteUrl(result.href, conn.serverUrl);
@@ -126,7 +168,11 @@ export const fetchCalendars = async (conn: Connection, accountId: string): Promi
     });
   }
 
-  return calendars;
+  return { calendars, diagnostics };
+};
+
+export const fetchCalendars = async (conn: Connection, accountId: string): Promise<Calendar[]> => {
+  return (await discoverCalendars(conn, accountId)).calendars;
 };
 
 export const createCalendar = async (
@@ -142,12 +188,7 @@ export const createCalendar = async (
     );
   }
 
-  const slug =
-    displayName
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '') ?? 'calendar';
-
+  const slug = slugifyCalendarName(displayName);
   const calendarUrl = `${conn.calendarHome.replace(/\/$/, '')}/${slug}/`;
 
   let colorProp = '';
@@ -186,6 +227,23 @@ export const createCalendar = async (
     supportedComponents: ['VTODO'],
     sortOrder: 0,
   };
+};
+
+export const probeVtodoCalendarCreation = async (
+  conn: Connection,
+  accountId: string,
+): Promise<void> => {
+  const displayName = `Chiri VTODO capability check ${Date.now()} ${Math.random().toString(36).slice(2, 8)}`;
+  const probeCalendar = await createCalendar(conn, accountId, displayName);
+
+  try {
+    await deleteCalendar(conn, probeCalendar.url);
+  } catch (error) {
+    log.error('Failed to clean up VTODO capability check calendar:', error);
+    throw new Error(
+      `Chiri could create a VTODO calendar, but could not clean up the temporary test calendar at ${probeCalendar.url}.`,
+    );
+  }
 };
 
 export const updateCalendar = async (

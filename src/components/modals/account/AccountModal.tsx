@@ -18,6 +18,13 @@ import { getPredefinedServerUrl, SERVER_TYPE_OPTIONS } from '$constants/settings
 import { useAddCalendar, useCreateAccount, useUpdateAccount } from '$hooks/queries/useAccounts';
 import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { CalDAVClient } from '$lib/caldav';
+import {
+  type CalDAVSetupError,
+  type CalDAVSetupNotice,
+  getSetupErrorInfo,
+  getSetupNotice,
+  probeSetupVtodoCreationIfNeeded,
+} from '$lib/caldav/setup';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
@@ -77,7 +84,8 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
   const [testSuccess, setTestSuccess] = useState(false);
   const [testedConnectionId, setTestedConnectionId] = useState<string | null>(null);
   const [testedCalendars, setTestedCalendars] = useState<Calendar[]>([]);
-  const [error, setError] = useState('');
+  const [setupError, setSetupError] = useState<CalDAVSetupError | null>(null);
+  const [setupNotice, setSetupNotice] = useState<CalDAVSetupNotice | null>(null);
   const [quickConnectLoginStep, setQuickConnectLoginStep] =
     useState<QuickConnectLoginStep>('input');
   const [navDirection, setNavDirection] = useState<'forward' | 'back' | null>(null);
@@ -110,6 +118,7 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
     setTestSuccess(false);
     setTestedConnectionId(null);
     setTestedCalendars([]);
+    setSetupNotice(null);
   }
 
   const handleSelectServerType = (type: ServerType) => {
@@ -125,7 +134,8 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
   };
 
   const handleBack = () => {
-    setError('');
+    setSetupError(null);
+    setSetupNotice(null);
     setTestSuccess(false);
     setTestedConnectionId(null);
     setTestedCalendars([]);
@@ -140,7 +150,8 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
   };
 
   const handleBackToTypePicker = () => {
-    setError('');
+    setSetupError(null);
+    setSetupNotice(null);
     setNavDirection('back');
     setStep('pick-type');
   };
@@ -283,7 +294,8 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
   };
 
   const handleTestConnection = async () => {
-    setError('');
+    setSetupError(null);
+    setSetupNotice(null);
     setTestSuccess(false);
     setTestedConnectionId(null);
     setTestedCalendars([]);
@@ -324,17 +336,23 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
       }
 
       log.debug(`Fetching calendars...`);
-      const calendars = await CalDAVClient.getForAccount(tempId).fetchCalendars();
+      const client = CalDAVClient.getForAccount(tempId);
+      const { calendars, diagnostics } = await client.discoverCalendars();
+      const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(client, diagnostics);
       log.info(`Connection test successful - found ${calendars.length} calendars`);
 
       setTestedConnectionId(tempId);
       setTestedCalendars(calendars);
+      setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
       setTestSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to connect to CalDAV server');
+      setSetupError(
+        getSetupErrorInfo(err, 'Failed to test CalDAV connection', serverType, serverUrl),
+      );
       log.error('Connection test failed:', err);
       setTestedConnectionId(null);
       setTestedCalendars([]);
+      setSetupNotice(null);
     } finally {
       setIsTesting(false);
     }
@@ -372,7 +390,7 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
   };
 
   const connectAndFetchCalendars = async (effectivePassword: string) => {
-    if (testSuccess && testedConnectionId && testedCalendars.length > 0) {
+    if (testSuccess && testedConnectionId) {
       log.debug('Reusing tested connection...');
       return { tempId: testedConnectionId, calendars: testedCalendars };
     }
@@ -393,8 +411,11 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
     }
 
     log.debug(`Fetching calendars...`);
-    const calendars = await CalDAVClient.getForAccount(tempId).fetchCalendars();
+    const client = CalDAVClient.getForAccount(tempId);
+    const { calendars, diagnostics } = await client.discoverCalendars();
+    const canCreateVtodoCalendar = await probeSetupVtodoCreationIfNeeded(client, diagnostics);
     log.info(`Found ${calendars.length} calendars:`, calendars);
+    setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
 
     return { tempId, calendars };
   };
@@ -445,7 +466,9 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
         },
         onError: (error) => {
           log.error('Error creating account:', error);
-          setError(error instanceof Error ? error.message : 'Failed to create account');
+          setSetupError(
+            getSetupErrorInfo(error, 'Failed to create account', serverType, serverUrl),
+          );
           setIsLoading(false);
         },
       },
@@ -456,7 +479,8 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setSetupError(null);
+    setSetupNotice(null);
     setIsLoading(true);
 
     try {
@@ -478,7 +502,9 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
       onClose();
       setIsLoading(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to connect to CalDAV server');
+      setSetupError(
+        getSetupErrorInfo(err, 'Failed to connect to CalDAV server', serverType, serverUrl),
+      );
       log.error('Failed to connect:', err);
       setIsLoading(false);
     }
@@ -666,7 +692,8 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
             calendarHomeUrl={calendarHomeUrl}
             onCalendarHomeUrlChange={setCalendarHomeUrl}
             account={account}
-            error={error}
+            error={setupError}
+            setupNotice={setupNotice}
             testSuccess={testSuccess}
             testedCalendarCount={testedCalendars.length}
             testedPushSupportedCount={testedCalendars.filter((c) => c.pushSupported).length}

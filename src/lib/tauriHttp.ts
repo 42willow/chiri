@@ -262,6 +262,14 @@ export const mkcalendar = async (url: string, credentials: CalDAVCredentials, bo
 export const parseMultiStatus = (xml: string) => {
   const parser = new DOMParser();
   const doc = parser.parseFromString(xml, 'application/xml');
+  const parseError = doc.querySelector('parsererror');
+  if (parseError) {
+    throw new Error('Invalid CalDAV XML response.');
+  }
+
+  if (doc.documentElement?.localName !== 'multistatus') {
+    throw new Error('Invalid CalDAV multistatus response.');
+  }
 
   const responses: MultiStatusResponse[] = [];
   const responseElements = doc.querySelectorAll('response');

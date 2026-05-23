@@ -1,3 +1,4 @@
+import CircleX from 'lucide-react/icons/circle-x';
 import Info from 'lucide-react/icons/info';
 import { useRef } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
@@ -5,6 +6,7 @@ import { IconEmojiPicker } from '$components/IconEmojiPicker';
 import { AdvancedSection } from '$components/modals/account/AdvancedSection';
 import { ConnectionSuccessBanner } from '$components/modals/account/ConnectionSuccessBanner';
 import { getPredefinedServerUrl, getServerTypeDescription } from '$constants/settings';
+import type { CalDAVSetupError, CalDAVSetupNotice } from '$lib/caldav/setup';
 import type { Account, ServerType } from '$types';
 
 interface CredentialsFormProps {
@@ -26,7 +28,8 @@ interface CredentialsFormProps {
   calendarHomeUrl: string;
   onCalendarHomeUrlChange: (v: string) => void;
   account: Account | null;
-  error: string;
+  error: CalDAVSetupError | null;
+  setupNotice: CalDAVSetupNotice | null;
   testSuccess: boolean;
   testedCalendarCount: number;
   testedPushSupportedCount: number;
@@ -124,6 +127,7 @@ export const CredentialsForm = ({
   onCalendarHomeUrlChange,
   account,
   error,
+  setupNotice,
   testSuccess,
   testedCalendarCount,
   testedPushSupportedCount,
@@ -256,8 +260,32 @@ export const CredentialsForm = ({
       />
 
       {error && (
-        <div className="p-3 text-sm text-semantic-error bg-semantic-error/10 border border-semantic-error/30 rounded-lg">
-          {error}
+        <div
+          role="alert"
+          className="rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3 text-sm text-surface-700 dark:text-surface-300"
+        >
+          <div className="grid grid-cols-[1rem_1fr] gap-x-3 gap-y-2">
+            <CircleX className="mt-0.5 size-4 shrink-0 text-semantic-error" />
+            <div className="min-w-0">
+              <p className="font-medium text-semantic-error">{error.title}</p>
+            </div>
+            <p className="col-span-2">{error.message}</p>
+
+            {error.hint && (
+              <p className="col-span-2 text-xs text-surface-600 dark:text-surface-400">
+                {error.hint}
+              </p>
+            )}
+
+            {error.detail && error.detail !== error.message && (
+              <details className="col-span-2 text-xs text-surface-500 dark:text-surface-400">
+                <summary className="cursor-pointer select-none font-medium">
+                  Technical detail
+                </summary>
+                <p className="mt-1 break-words font-mono">{error.detail}</p>
+              </details>
+            )}
+          </div>
         </div>
       )}
 
@@ -265,6 +293,7 @@ export const CredentialsForm = ({
         <ConnectionSuccessBanner
           calendarCount={testedCalendarCount}
           pushSupportedCount={testedPushSupportedCount}
+          notice={setupNotice}
         />
       )}
     </form>

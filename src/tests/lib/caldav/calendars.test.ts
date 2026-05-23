@@ -27,7 +27,9 @@ import {
   calendarExists,
   createCalendar,
   deleteCalendar,
+  discoverCalendars,
   fetchCalendars,
+  probeVtodoCalendarCreation,
   updateCalendar,
 } from '$lib/caldav/calendars';
 import * as http from '$lib/tauriHttp';
@@ -116,6 +118,41 @@ describe('fetchCalendars', () => {
           },
         },
       ]),
+    );
+
+    expect(await fetchCalendars(conn, 'acct')).toEqual([]);
+  });
+
+  it('reports diagnostics for skipped event-only calendars', async () => {
+    vi.mocked(http.propfind).mockResolvedValueOnce(httpOk(207));
+    vi.mocked(http.parseMultiStatus).mockReturnValueOnce(
+      multi([
+        {
+          href: '/calendars/alice/events/',
+          props: {
+            resourcetype: 'collection,calendar',
+            displayname: 'Events',
+            'supported-calendar-component-set': '<comp name="VEVENT"/>',
+          },
+        },
+      ]),
+    );
+
+    const result = await discoverCalendars(conn, 'acct');
+
+    expect(result.calendars).toEqual([]);
+    expect(result.diagnostics).toMatchObject({
+      calendarCollectionCount: 1,
+      includedCalendarCount: 0,
+      nonVtodoCalendarCount: 1,
+      nonVtodoCalendarNames: ['Events'],
+    });
+  });
+
+  it('returns an empty list when the account has no calendars yet', async () => {
+    vi.mocked(http.propfind).mockResolvedValueOnce(httpOk(207));
+    vi.mocked(http.parseMultiStatus).mockReturnValueOnce(
+      multi([{ href: '/calendars/alice/', props: { resourcetype: 'collection' } }]),
     );
 
     expect(await fetchCalendars(conn, 'acct')).toEqual([]);
@@ -252,6 +289,40 @@ describe('createCalendar', () => {
     const body = vi.mocked(http.mkcalendar).mock.calls[0][2];
     expect(body).toContain('VTODO');
     expect(body).not.toContain('VEVENT');
+  });
+});
+
+describe('probeVtodoCalendarCreation', () => {
+  beforeEach(() => vi.clearAllMocks());
+
+  it('creates and deletes a temporary VTODO calendar', async () => {
+    vi.mocked(http.mkcalendar).mockResolvedValueOnce(httpOk(201));
+    vi.mocked(http.del).mockResolvedValueOnce(httpOk(204));
+
+    await probeVtodoCalendarCreation(conn, 'acct');
+
+    expect(http.mkcalendar).toHaveBeenCalledTimes(1);
+    expect(http.del).toHaveBeenCalledTimes(1);
+    expect(vi.mocked(http.mkcalendar).mock.calls[0][2]).toContain('VTODO');
+    expect(vi.mocked(http.del).mock.calls[0][0]).toContain(
+      'https://cal.example.com/calendars/alice/chiri-vtodo-capability-check-',
+    );
+  });
+
+  it('throws when the server rejects VTODO calendar creation', async () => {
+    vi.mocked(http.mkcalendar).mockResolvedValueOnce(httpOk(403));
+
+    await expect(probeVtodoCalendarCreation(conn, 'acct')).rejects.toThrow(/HTTP 403/i);
+    expect(http.del).not.toHaveBeenCalled();
+  });
+
+  it('throws a cleanup-specific error when deleting the probe calendar fails', async () => {
+    vi.mocked(http.mkcalendar).mockResolvedValueOnce(httpOk(201));
+    vi.mocked(http.del).mockResolvedValueOnce(httpOk(500));
+
+    await expect(probeVtodoCalendarCreation(conn, 'acct')).rejects.toThrow(
+      /could not clean up the temporary test calendar/i,
+    );
   });
 });
 

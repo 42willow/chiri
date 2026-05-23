@@ -16,6 +16,16 @@ describe('parseMultiStatus', () => {
     expect(result).toEqual([]);
   });
 
+  it('throws for malformed XML', () => {
+    expect(() => parseMultiStatus('<not xml lol')).toThrow(/Invalid CalDAV XML response/i);
+  });
+
+  it('throws when the XML is not a multistatus response', () => {
+    expect(() => parseMultiStatus(xml('<d:error xmlns:d="DAV:"/>'))).toThrow(
+      /Invalid CalDAV multistatus response/i,
+    );
+  });
+
   it('parses a single response with href, status, and props', () => {
     const result = parseMultiStatus(
       xml(`
