@@ -195,7 +195,7 @@ export const SidebarTagsList = ({
               No tags. Click + to add one!
             </div>
           ) : tagSortConfig.mode === 'manual' ? (
-            <div ref={tagsDragBoundsRef}>
+            <div ref={tagsDragBoundsRef} className="space-y-1">
               <DndContext
                 sensors={sensors}
                 collisionDetection={closestCenter}
@@ -215,7 +215,7 @@ export const SidebarTagsList = ({
               </DndContext>
             </div>
           ) : (
-            <div ref={tagsDragBoundsRef}>
+            <div ref={tagsDragBoundsRef} className="space-y-1">
               {sortedTags.map((tag) => (
                 <SidebarTagItem key={tag.id} {...sharedItemProps(tag)} />
               ))}
