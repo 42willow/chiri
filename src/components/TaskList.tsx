@@ -1,8 +1,10 @@
 import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import type { LucideIcon } from 'lucide-react';
-import ListTodo from 'lucide-react/icons/list-todo';
+import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
+import FunnelX from 'lucide-react/icons/funnel-x';
 import Plus from 'lucide-react/icons/plus';
+import SearchX from 'lucide-react/icons/search-x';
 import Trash2 from 'lucide-react/icons/trash-2';
 import { type ReactNode, useCallback, useMemo } from 'react';
 import { TaskItem } from '$components/taskItem/TaskItem';
@@ -16,6 +18,7 @@ import { flattenTasks } from '$utils/tree';
 
 const getEmptyState = (
   isRecentlyDeleted: boolean,
+  isFilterView: boolean,
   isSearching: boolean,
   newTaskShortcut: string,
 ): { Icon: LucideIcon; title: string; description: ReactNode; showCreateButton: boolean } => {
@@ -32,15 +35,24 @@ const getEmptyState = (
 
   if (isSearching) {
     return {
-      Icon: ListTodo,
+      Icon: SearchX,
       title: 'No tasks found',
       description: 'Try adjusting your search terms.',
       showCreateButton: false,
     };
   }
 
+  if (isFilterView) {
+    return {
+      Icon: FunnelX,
+      title: 'No tasks match this filter',
+      description: 'Tasks will appear here when they match this filter.',
+      showCreateButton: false,
+    };
+  }
+
   return {
-    Icon: ListTodo,
+    Icon: ClipboardPlus,
     title: 'No tasks yet',
     description: (
       <>
@@ -130,12 +142,14 @@ export const TaskList = () => {
 
   // only enable dragging for manual sort mode
   const isRecentlyDeleted = activeView === 'recently-deleted';
+  const isFilterView = activeView === 'filter';
   const isDragEnabled = sortConfig.mode === 'manual' && !isRecentlyDeleted;
 
   if (flattenedTasks.length === 0) {
     const isSearching = searchQuery.trim().length > 0;
     const { Icon, title, description, showCreateButton } = getEmptyState(
       isRecentlyDeleted,
+      isFilterView,
       isSearching,
       newTaskShortcut,
     );
