@@ -187,7 +187,7 @@ ${errorInfo?.componentStack || 'No component stack available'}
                       <button
                         type="button"
                         onClick={this.handleResetPreferences}
-                        className="rounded-md bg-semantic-error hover:opacity-90 px-4 py-2 text-sm font-medium text-white transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-offset-2"
+                        className="rounded-md bg-semantic-error hover:opacity-90 px-4 py-2 text-sm font-medium text-primary-contrast transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-offset-2"
                       >
                         Yes, Reset Preferences
                       </button>
