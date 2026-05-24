@@ -190,7 +190,7 @@ export const IconEmojiPicker = ({
                       Emoji: ({ emoji, ...props }) => (
                         <button
                           type="button"
-                          className="flex flex-1 max-w-[calc(100%/9)] h-8 items-center justify-center rounded-lg text-lg hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                          className="flex flex-1 max-w-1/9 h-8 items-center justify-center rounded-lg text-lg hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
                           {...props}
                         >
                           {emoji.emoji}

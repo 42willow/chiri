@@ -282,7 +282,7 @@ export const CredentialsForm = ({
                 <summary className="cursor-pointer select-none font-medium">
                   Technical detail
                 </summary>
-                <p className="mt-1 break-words font-mono">{error.detail}</p>
+                <p className="mt-1 wrap-break-word font-mono">{error.detail}</p>
               </details>
             )}
           </div>
