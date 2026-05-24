@@ -11,8 +11,8 @@ import { AppSelect } from '$components/AppSelect';
 import { RepeatModal } from '$components/modals/RepeatModal';
 import { TagModal } from '$components/modals/TagModal';
 import { TagPickerModal } from '$components/modals/TagPickerModal';
-import { TaskDefaultsColorPickerSection } from '$components/settings/TaskDefaultsSettings/TaskDefaultsColorPickerSection';
-import { TaskDefaultsReminderPickerModal } from '$components/settings/TaskDefaultsSettings/TaskDefaultsReminderPickerModal';
+import { TaskDefaultsReminderPickerModal } from '$components/modals/TaskDefaultsReminderPickerModal';
+import { TaskDefaultsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsColorPicker';
 import { getIconByName } from '$constants/icons';
 import { PRIORITIES } from '$constants/priority';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -308,7 +308,7 @@ export const TaskDefaultsSettings = () => {
 
         <div className="border-t border-surface-200 dark:border-surface-700" />
 
-        <TaskDefaultsColorPickerSection
+        <TaskDefaultsColorPicker
           label="Default calendar color"
           value={defaultCalendarColor}
           onChange={setDefaultCalendarColor}
@@ -375,7 +375,7 @@ export const TaskDefaultsSettings = () => {
       </div>
 
       <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
-        <TaskDefaultsColorPickerSection
+        <TaskDefaultsColorPicker
           label="Default tag color"
           value={defaultTagColor}
           onChange={setDefaultTagColor}

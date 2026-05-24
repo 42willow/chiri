@@ -19,7 +19,7 @@ const initColorMode = (value: string, presets: readonly string[]): ColorMode => 
   return 'custom';
 };
 
-interface TaskDefaultsColorPickerSectionProps {
+interface TaskDefaultsColorPickerProps {
   label: string;
   value: string;
   onChange: (value: string) => void;
@@ -27,13 +27,13 @@ interface TaskDefaultsColorPickerSectionProps {
   accentColor: string;
 }
 
-export const TaskDefaultsColorPickerSection = ({
+export const TaskDefaultsColorPicker = ({
   label,
   value,
   onChange,
   presets,
   accentColor,
-}: TaskDefaultsColorPickerSectionProps) => {
+}: TaskDefaultsColorPickerProps) => {
   const [mode, setMode] = useState<ColorMode>(() => initColorMode(value, presets));
   const fallbackColor = presets[0] ?? accentColor;
 
