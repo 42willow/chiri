@@ -10,6 +10,7 @@ interface TaskEditorDatesProps {
   timeFormat: TimeFormat;
   onOpenStartDate: () => void;
   onOpenDueDate: () => void;
+  readOnly?: boolean;
 }
 
 export const TaskEditorDates = ({
@@ -17,6 +18,7 @@ export const TaskEditorDates = ({
   timeFormat,
   onOpenStartDate,
   onOpenDueDate,
+  readOnly = false,
 }: TaskEditorDatesProps) => {
   return (
     <div className="space-y-4">
@@ -31,8 +33,11 @@ export const TaskEditorDates = ({
         <button
           type="button"
           onClick={onOpenStartDate}
+          disabled={readOnly}
           aria-labelledby="start-date-label"
-          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg hover:border-surface-300 dark:hover:border-surface-500 focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
+            readOnly ? 'cursor-default' : 'hover:border-surface-300 dark:hover:border-surface-500'
+          }`}
         >
           {task.startDate ? (
             <Calendar className="w-4 h-4 text-surface-400 shrink-0" />
@@ -48,7 +53,9 @@ export const TaskEditorDates = ({
               ? task.startDateAllDay
                 ? `${formatDate(new Date(task.startDate), true)} (All day)`
                 : `${formatDate(new Date(task.startDate), true)} ${formatTime(new Date(task.startDate), timeFormat)}`
-              : 'Set start date...'}
+              : readOnly
+                ? 'No start date'
+                : 'Set start date...'}
           </span>
         </button>
       </div>
@@ -63,8 +70,11 @@ export const TaskEditorDates = ({
         <button
           type="button"
           onClick={onOpenDueDate}
+          disabled={readOnly}
           aria-labelledby="due-date-label"
-          className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg hover:border-surface-300 dark:hover:border-surface-500 focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
+            readOnly ? 'cursor-default' : 'hover:border-surface-300 dark:hover:border-surface-500'
+          }`}
         >
           {task.dueDate ? (
             <Calendar className="w-4 h-4 text-surface-400 shrink-0" />
@@ -78,7 +88,9 @@ export const TaskEditorDates = ({
               ? task.dueDateAllDay
                 ? `${formatDate(new Date(task.dueDate), true)} (All day)`
                 : `${formatDate(new Date(task.dueDate), true)} ${formatTime(new Date(task.dueDate), timeFormat)}`
-              : 'Set due date...'}
+              : readOnly
+                ? 'No due date'
+                : 'Set due date...'}
           </span>
         </button>
       </div>

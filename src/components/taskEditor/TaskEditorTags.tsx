@@ -11,9 +11,15 @@ interface TagsProps {
   onAddTag: (tagId: string) => void;
   onRemoveTag: (tagId: string) => void;
   onOpenTagPicker: () => void;
+  readOnly?: boolean;
 }
 
-export const TaskEditorTags = ({ task, onRemoveTag, onOpenTagPicker }: TagsProps) => {
+export const TaskEditorTags = ({
+  task,
+  onRemoveTag,
+  onOpenTagPicker,
+  readOnly = false,
+}: TagsProps) => {
   const taskTags = (task.tags || [])
     .map((tagId) => getAllTags().find((t) => t.id === tagId))
     .filter(Boolean);
@@ -48,25 +54,33 @@ export const TaskEditorTags = ({ task, onRemoveTag, onOpenTagPicker }: TagsProps
                 <Icon className="w-3 h-3" />
               )}
               {tag.name}
-              <button
-                type="button"
-                onClick={() => onRemoveTag(tag.id)}
-                className="p-0.5 rounded-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-              >
-                <X className="w-3 h-3" />
-              </button>
+              {!readOnly && (
+                <button
+                  type="button"
+                  onClick={() => onRemoveTag(tag.id)}
+                  className="p-0.5 rounded-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </span>
           );
         })}
 
-        <button
-          type="button"
-          onClick={onOpenTagPicker}
-          className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-        >
-          <Plus className="w-3 h-3" />
-          Add tag
-        </button>
+        {readOnly && taskTags.length === 0 && (
+          <span className="text-sm text-surface-400 dark:text-surface-500">No tags</span>
+        )}
+
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={onOpenTagPicker}
+            className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          >
+            <Plus className="w-3 h-3" />
+            Add tag
+          </button>
+        )}
       </div>
     </div>
   );

@@ -6,9 +6,10 @@ import { rruleToText } from '$utils/recurrence';
 interface TaskEditorRepeatProps {
   task: Task;
   onOpen: () => void;
+  readOnly?: boolean;
 }
 
-export const TaskEditorRepeat = ({ task, onOpen }: TaskEditorRepeatProps) => {
+export const TaskEditorRepeat = ({ task, onOpen, readOnly = false }: TaskEditorRepeatProps) => {
   const { dateFormat } = useSettingsStore();
   const summary = task.rrule ? rruleToText(task.rrule, task.repeatFrom, dateFormat) : null;
 
@@ -24,12 +25,15 @@ export const TaskEditorRepeat = ({ task, onOpen }: TaskEditorRepeatProps) => {
       <button
         type="button"
         onClick={onOpen}
+        disabled={readOnly}
         aria-labelledby="repeat-label"
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg hover:border-surface-300 dark:hover:border-surface-500 focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+        className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
+          readOnly ? 'cursor-default' : 'hover:border-surface-300 dark:hover:border-surface-500'
+        }`}
       >
         <RefreshCw className="w-4 h-4 text-surface-400 shrink-0" />
         <span className={summary ? 'text-surface-700 dark:text-surface-300' : 'text-surface-400'}>
-          {summary ?? 'Set repeat rules...'}
+          {summary ?? (readOnly ? 'No repeat' : 'Set repeat rules...')}
         </span>
       </button>
     </div>

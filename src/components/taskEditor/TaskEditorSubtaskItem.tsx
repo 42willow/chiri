@@ -14,6 +14,44 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) =>
 // is always shown before the checkbox so all levels align consistently.
 const getPaddingLeft = (depth: number) => 8 + depth * 20;
 
+const getRowClassName = (isDragEnabled: boolean, isOverlay: boolean) => `
+  group/row flex items-center gap-1.5 py-1.5 pr-2 rounded-md transition-colors
+  ${isDragEnabled ? 'cursor-grab active:cursor-grabbing' : ''}
+  ${isOverlay ? 'bg-surface-50 dark:bg-surface-800 shadow-lg' : 'hover:bg-surface-50 dark:hover:bg-surface-800/60'}
+`;
+
+const getStatusButtonClassName = (
+  task: Task,
+  useAccentColorForCheckboxes: boolean,
+  readOnly: boolean,
+) => {
+  const statusClass =
+    task.status === 'completed'
+      ? useAccentColorForCheckboxes
+        ? 'bg-primary-500 border-primary-500'
+        : 'bg-status-completed border-status-completed'
+      : task.status === 'cancelled'
+        ? 'bg-status-cancelled border-status-cancelled'
+        : `border-surface-300 dark:border-surface-600 ${readOnly ? '' : 'hover:border-primary-400 dark:hover:border-primary-500'}`;
+
+  return `w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${statusClass} ${
+    readOnly ? 'cursor-default' : 'cursor-pointer'
+  }`;
+};
+
+const getTitleClassName = (task: Task, isInteractive: boolean) => {
+  const stateClass = task.completed
+    ? 'line-through text-surface-400 dark:text-surface-500'
+    : `text-surface-700 dark:text-surface-300 ${
+        isInteractive ? 'hover:text-surface-900 dark:hover:text-surface-100' : ''
+      }`;
+
+  return `flex-1 pl-0.5 text-sm text-left whitespace-nowrap ${stateClass}`;
+};
+
+const SubtaskTitleContent = ({ task }: { task: Task }) =>
+  task.title || <span className="text-surface-400 dark:text-surface-500 italic">Untitled</span>;
+
 interface TaskEditorSubtaskItemProps {
   task: Task;
   depth: number;
@@ -24,6 +62,7 @@ interface TaskEditorSubtaskItemProps {
   updateTask: (id: string, updates: Partial<Task>) => void;
   confirmAndDelete: (id: string) => Promise<boolean>;
   isDragEnabled: boolean;
+  readOnly?: boolean;
   isOverlay?: boolean;
 }
 
@@ -37,6 +76,7 @@ export const TaskEditorSubtaskItem = ({
   updateTask,
   confirmAndDelete,
   isDragEnabled,
+  readOnly = false,
   isOverlay = false,
 }: TaskEditorSubtaskItemProps) => {
   const { data: children = [] } = useChildTasks(task.uid);
@@ -74,6 +114,7 @@ export const TaskEditorSubtaskItem = ({
   };
 
   const handleStartEdit = () => {
+    if (readOnly) return;
     setEditValue(task.title);
     setIsEditing(true);
     requestAnimationFrame(() => inputRef.current?.focus());
@@ -108,13 +149,7 @@ export const TaskEditorSubtaskItem = ({
     <div ref={setNodeRef} style={style}>
       <div
         {...(isDragEnabled ? listeners : {})}
-        className={`group/row flex items-center gap-1.5 py-1.5 pr-2 rounded-md transition-colors ${
-          isDragEnabled ? 'cursor-grab active:cursor-grabbing' : ''
-        } ${
-          isOverlay
-            ? 'bg-surface-50 dark:bg-surface-800 shadow-lg'
-            : 'hover:bg-surface-50 dark:hover:bg-surface-800/60'
-        }`}
+        className={getRowClassName(isDragEnabled, isOverlay)}
         style={{ paddingLeft: `${getPaddingLeft(depth)}px` }}
       >
         {hasChildren ? (
@@ -134,7 +169,9 @@ export const TaskEditorSubtaskItem = ({
 
         <button
           type="button"
+          disabled={readOnly}
           onClick={() => {
+            if (readOnly) return;
             const newStatus = task.status === 'needs-action' ? 'completed' : 'needs-action';
             updateTask(task.id, {
               status: newStatus,
@@ -142,15 +179,7 @@ export const TaskEditorSubtaskItem = ({
               completedAt: newStatus === 'completed' ? new Date() : undefined,
             });
           }}
-          className={`cursor-pointer w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${
-            task.status === 'completed'
-              ? useAccentColorForCheckboxes
-                ? 'bg-primary-500 border-primary-500'
-                : 'bg-status-completed border-status-completed'
-              : task.status === 'cancelled'
-                ? 'bg-status-cancelled border-status-cancelled'
-                : 'border-surface-300 dark:border-surface-600 hover:border-primary-400 dark:hover:border-primary-500'
-          }`}
+          className={getStatusButtonClassName(task, useAccentColorForCheckboxes, readOnly)}
         >
           {task.completed && (
             <Check
@@ -161,7 +190,7 @@ export const TaskEditorSubtaskItem = ({
           )}
         </button>
 
-        {isEditing ? (
+        {isEditing && !readOnly ? (
           <input
             ref={inputRef}
             type="text"
@@ -171,23 +200,21 @@ export const TaskEditorSubtaskItem = ({
             onBlur={handleCommitEdit}
             className="flex-1 pl-0.5 text-sm bg-transparent outline-hidden text-surface-700 dark:text-surface-300 min-w-0"
           />
+        ) : readOnly ? (
+          <span className={getTitleClassName(task, false)}>
+            <SubtaskTitleContent task={task} />
+          </span>
         ) : (
           <button
             type="button"
             onClick={handleStartEdit}
-            className={`flex-1 pl-0.5 text-sm text-left whitespace-nowrap outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:rounded-sm ${
-              task.completed
-                ? 'line-through text-surface-400 dark:text-surface-500'
-                : 'text-surface-700 dark:text-surface-300 hover:text-surface-900 dark:hover:text-surface-100'
-            }`}
+            className={`${getTitleClassName(task, true)} outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:rounded-sm`}
           >
-            {task.title || (
-              <span className="text-surface-400 dark:text-surface-500 italic">Untitled</span>
-            )}
+            <SubtaskTitleContent task={task} />
           </button>
         )}
 
-        {!isEditing && (
+        {!isEditing && !readOnly && (
           <button
             type="button"
             onClick={async () => {

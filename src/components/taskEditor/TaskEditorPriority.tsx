@@ -5,9 +5,10 @@ import type { Priority, Task } from '$types';
 
 interface PriorityProps {
   task: Task;
+  readOnly?: boolean;
 }
 
-export const TaskEditorPriority = ({ task }: PriorityProps) => {
+export const TaskEditorPriority = ({ task, readOnly = false }: PriorityProps) => {
   const updateTaskMutation = useUpdateTask();
 
   const handlePriorityChange = (priority: Priority) => {
@@ -30,13 +31,15 @@ export const TaskEditorPriority = ({ task }: PriorityProps) => {
             type="button"
             key={p.value}
             onClick={() => handlePriorityChange(p.value)}
+            disabled={readOnly}
             className={`
               flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500
               ${
                 task.priority === p.value
                   ? `${p.borderColor} bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100`
-                  : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-400'
+                  : `border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`
               }
+              ${readOnly ? 'cursor-default' : ''}
             `}
           >
             <span className={p.color}>{p.label}</span>

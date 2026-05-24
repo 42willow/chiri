@@ -10,12 +10,14 @@ interface TaskEditorStatusProps {
   task: Task;
   onStatusChange: (status: TaskStatus) => void;
   onCommitPercent: (value: number) => void;
+  readOnly?: boolean;
 }
 
 export const TaskEditorStatus = ({
   task,
   onStatusChange,
   onCommitPercent,
+  readOnly = false,
 }: TaskEditorStatusProps) => {
   const [draftPercent, setDraftPercent] = useState<number | undefined>(undefined);
 
@@ -74,8 +76,10 @@ export const TaskEditorStatus = ({
                 type="button"
                 key={s.value}
                 onClick={() => onStatusChange(s.value)}
+                disabled={readOnly}
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500
-                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800 text-surface-600 dark:text-surface-400'}
+                  ${readOnly ? 'disabled:cursor-default' : ''}
+                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`}
                 `}
               >
                 <Icon className={`w-4 h-4 shrink-0 ${isActive ? s.color : ''}`} />
@@ -106,15 +110,18 @@ export const TaskEditorStatus = ({
           }
           onChange={(e) => setDraftPercent(Number(e.target.value))}
           onPointerUp={(e) => {
+            if (readOnly) return;
             const value = Number((e.target as HTMLInputElement).value);
             setDraftPercent(undefined);
             onCommitPercent(value);
           }}
           onKeyUp={(e) => {
+            if (readOnly) return;
             const value = Number((e.target as HTMLInputElement).value);
             setDraftPercent(undefined);
             onCommitPercent(value);
           }}
+          disabled={readOnly}
           className="w-full"
         />
         <div className="flex justify-between text-xs text-surface-400 mt-1">

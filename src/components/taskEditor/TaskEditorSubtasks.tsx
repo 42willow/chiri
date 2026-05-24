@@ -17,6 +17,7 @@ interface SubtasksProps {
   useAccentColorForCheckboxes: boolean;
   updateTask: (id: string, updates: Partial<Task>) => void;
   confirmAndDelete: (id: string) => Promise<boolean>;
+  readOnly?: boolean;
 }
 
 export const TaskEditorSubtasks = ({
@@ -25,6 +26,7 @@ export const TaskEditorSubtasks = ({
   useAccentColorForCheckboxes,
   updateTask,
   confirmAndDelete,
+  readOnly = false,
 }: SubtasksProps) => {
   const createTaskMutation = useCreateTask();
   const { data: childTasks = [] } = useChildTasks(task.uid);
@@ -52,7 +54,7 @@ export const TaskEditorSubtasks = ({
     return [{ ...task, depth: 0, ancestorIds: [] }, ...flatten(getChildren(task.uid), [task.id])];
   }, [task, allTasks, expandedSubtasks]);
 
-  const anySubtaskDragEnabled = flattenedSubtasks.length > 2;
+  const anySubtaskDragEnabled = !readOnly && flattenedSubtasks.length > 2;
 
   const {
     activeItem: activeDragSubtask,
@@ -152,6 +154,7 @@ export const TaskEditorSubtasks = ({
                       updateTask={updateTask}
                       confirmAndDelete={confirmAndDelete}
                       isDragEnabled={anySubtaskDragEnabled}
+                      readOnly={readOnly}
                     />
                   ))}
                 </SortableContext>
@@ -178,6 +181,7 @@ export const TaskEditorSubtasks = ({
                         updateTask={updateTask}
                         confirmAndDelete={confirmAndDelete}
                         isDragEnabled={false}
+                        readOnly={readOnly}
                         isOverlay
                       />
                     </div>
@@ -188,7 +192,11 @@ export const TaskEditorSubtasks = ({
           </div>
         )}
 
-        {showAddSubtask ? (
+        {readOnly && childTasks.length === 0 ? (
+          <div className="px-3 py-2 text-sm text-surface-400 dark:text-surface-500">
+            No subtasks
+          </div>
+        ) : showAddSubtask ? (
           <div
             className={`flex items-center gap-2 py-2 pr-3 pl-3 ${
               childTasks.length > 0 ? 'border-t border-surface-200 dark:border-surface-700' : ''
@@ -207,7 +215,7 @@ export const TaskEditorSubtasks = ({
               className="flex-1 text-sm bg-transparent outline-hidden text-surface-700 dark:text-surface-300 placeholder:text-surface-400 dark:placeholder:text-surface-500"
             />
           </div>
-        ) : (
+        ) : !readOnly ? (
           <button
             type="button"
             onClick={() => setShowAddSubtask(true)}
@@ -218,7 +226,7 @@ export const TaskEditorSubtasks = ({
             <Plus className="w-4 h-4" />
             Add subtask
           </button>
-        )}
+        ) : null}
       </div>
     </div>
   );

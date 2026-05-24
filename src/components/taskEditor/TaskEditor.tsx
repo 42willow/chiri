@@ -38,13 +38,25 @@ import { useConfirmTaskDelete } from '$hooks/useConfirmTaskDelete';
 import type { Task, TaskStatus } from '$types';
 import type { EditorFieldKey } from '$types/settings';
 import { getContrastTextColor } from '$utils/color';
-import { formatDate, formatTime } from '$utils/date';
 import { hasOpenModalElements } from '$utils/misc';
 
 interface TaskEditorProps {
   task: Task;
   onOpenNotificationSettings?: () => void;
 }
+
+const ALL_EDITOR_FIELD_KEYS: EditorFieldKey[] = [
+  'status',
+  'description',
+  'url',
+  'dates',
+  'repeat',
+  'priority',
+  'calendar',
+  'tags',
+  'reminders',
+  'subtasks',
+];
 
 export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps) => {
   const updateTaskMutation = useUpdateTask();
@@ -68,7 +80,13 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const { confirmAndDelete } = useConfirmTaskDelete();
   const { confirmAndDeletePermanently } = useConfirmPermanentTaskDelete();
 
+  const isReadOnly = !!task.deletedAt;
   const checkmarkColor = getContrastTextColor(resolvedAccentColor);
+  const deletedEditorFieldOrder = [
+    ...editorFieldOrder,
+    ...ALL_EDITOR_FIELD_KEYS.filter((fieldKey) => !editorFieldOrder.includes(fieldKey)),
+  ];
+  const renderedEditorFieldOrder = isReadOnly ? deletedEditorFieldOrder : editorFieldOrder;
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -221,100 +239,68 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
     }
   };
 
-  if (task.deletedAt) {
-    return (
-      <div className="flex flex-col h-full bg-white dark:bg-surface-900" ref={editorContainerRef}>
-        <TaskEditorHeader
-          onDelete={handleDelete}
-          onClose={() => setEditorOpenMutation.mutate(false)}
-          isDeleted
-          onRestore={handleRestore}
-          onDeletePermanently={handlePermanentDelete}
-        />
-
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 overscroll-contain">
-          <div>
-            <div className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2">
-              Title
-            </div>
-            <div className="px-3 py-3 bg-surface-100 dark:bg-surface-800 rounded-lg text-sm font-medium text-surface-700 dark:text-surface-300 whitespace-pre-wrap">
-              {task.title || 'Untitled task'}
-            </div>
-          </div>
-
-          {task.description && (
-            <div>
-              <div className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2">
-                Description
-              </div>
-              <div className="px-3 py-3 bg-surface-100 dark:bg-surface-800 rounded-lg text-sm text-surface-700 dark:text-surface-300 whitespace-pre-wrap">
-                {task.description}
-              </div>
-            </div>
-          )}
-
-          <div>
-            <div className="text-sm font-medium text-surface-600 dark:text-surface-400 mb-2">
-              Deleted
-            </div>
-            <div className="px-3 py-3 bg-surface-100 dark:bg-surface-800 rounded-lg text-sm text-surface-700 dark:text-surface-300">
-              {formatDate(new Date(task.deletedAt), true)}{' '}
-              {formatTime(new Date(task.deletedAt), timeFormat)}
-            </div>
-          </div>
-        </div>
-
-        <TaskEditorFooter task={task} timeFormat={timeFormat} />
-      </div>
-    );
-  }
-
   const editorFieldRenderers: Record<EditorFieldKey, () => React.ReactNode> = {
     status: () =>
-      editorFieldVisibility.status ? (
+      isReadOnly || editorFieldVisibility.status ? (
         <TaskEditorStatus
           task={task}
           onStatusChange={handleStatusChange}
           onCommitPercent={commitPercentComplete}
+          readOnly={isReadOnly}
         />
       ) : null,
     description: () =>
-      editorFieldVisibility.description ? <TaskEditorDescription task={task} /> : null,
-    url: () => (editorFieldVisibility.url ? <TaskEditorUrl task={task} /> : null),
+      isReadOnly || editorFieldVisibility.description ? (
+        <TaskEditorDescription task={task} readOnly={isReadOnly} />
+      ) : null,
+    url: () =>
+      isReadOnly || editorFieldVisibility.url ? (
+        <TaskEditorUrl task={task} readOnly={isReadOnly} />
+      ) : null,
     dates: () =>
-      editorFieldVisibility.dates ? (
+      isReadOnly || editorFieldVisibility.dates ? (
         <TaskEditorDates
           task={task}
           timeFormat={timeFormat}
           onOpenStartDate={() => setShowStartDatePicker(true)}
           onOpenDueDate={() => setShowDueDatePicker(true)}
+          readOnly={isReadOnly}
         />
       ) : null,
     repeat: () =>
-      editorFieldVisibility.repeat ? (
-        <TaskEditorRepeat task={task} onOpen={() => setShowRepeatModal(true)} />
+      isReadOnly || editorFieldVisibility.repeat ? (
+        <TaskEditorRepeat
+          task={task}
+          onOpen={() => setShowRepeatModal(true)}
+          readOnly={isReadOnly}
+        />
       ) : null,
-    priority: () => (editorFieldVisibility.priority ? <TaskEditorPriority task={task} /> : null),
+    priority: () =>
+      isReadOnly || editorFieldVisibility.priority ? (
+        <TaskEditorPriority task={task} readOnly={isReadOnly} />
+      ) : null,
     calendar: () =>
-      editorFieldVisibility.calendar ? (
+      isReadOnly || editorFieldVisibility.calendar ? (
         <TaskEditorCalendar
           task={task}
           accounts={accounts}
           onCalendarChange={handleCalendarChange}
+          readOnly={isReadOnly}
         />
       ) : null,
     tags: () =>
-      editorFieldVisibility.tags ? (
+      isReadOnly || editorFieldVisibility.tags ? (
         <TaskEditorTags
           task={task}
           tags={tags}
           onAddTag={(tagId) => addTagToTaskMutation.mutate({ taskId: task.id, tagId })}
           onRemoveTag={(tagId) => removeTagFromTaskMutation.mutate({ taskId: task.id, tagId })}
           onOpenTagPicker={() => setShowTagPicker(true)}
+          readOnly={isReadOnly}
         />
       ) : null,
     reminders: () =>
-      editorFieldVisibility.reminders ? (
+      isReadOnly || editorFieldVisibility.reminders ? (
         <TaskEditorReminders
           task={task}
           timeFormat={timeFormat}
@@ -328,16 +314,18 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
             setEditingReminderId(reminder.id);
             setEditReminderDate(reminder.trigger);
           }}
+          readOnly={isReadOnly}
         />
       ) : null,
     subtasks: () =>
-      editorFieldVisibility.subtasks ? (
+      isReadOnly || editorFieldVisibility.subtasks ? (
         <TaskEditorSubtasks
           task={task}
           checkmarkColor={checkmarkColor}
           useAccentColorForCheckboxes={useAccentColorForCheckboxes}
           updateTask={(id, updates) => updateTaskMutation.mutate({ id, updates })}
           confirmAndDelete={confirmAndDelete}
+          readOnly={isReadOnly}
         />
       ) : null,
   };
@@ -348,6 +336,9 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         <TaskEditorHeader
           onDelete={handleDelete}
           onClose={() => setEditorOpenMutation.mutate(false)}
+          isDeleted={isReadOnly}
+          onRestore={handleRestore}
+          onDeletePermanently={handlePermanentDelete}
         />
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6 flex overscroll-contain flex-col">
@@ -355,9 +346,10 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
             task={task}
             checkmarkColor={checkmarkColor}
             useAccentColorForCheckboxes={useAccentColorForCheckboxes}
+            readOnly={isReadOnly}
           />
 
-          {editorFieldOrder.map((fieldKey) => (
+          {renderedEditorFieldOrder.map((fieldKey) => (
             <Fragment key={fieldKey}>{editorFieldRenderers[fieldKey]()}</Fragment>
           ))}
         </div>
@@ -365,7 +357,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         <TaskEditorFooter task={task} timeFormat={timeFormat} />
       </div>
 
-      {showRepeatModal && (
+      {!isReadOnly && showRepeatModal && (
         <RepeatModal
           isOpen={showRepeatModal}
           onClose={() => setShowRepeatModal(false)}
@@ -376,7 +368,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         />
       )}
 
-      {showTagPicker && (
+      {!isReadOnly && showTagPicker && (
         <TagPickerModal
           isOpen={showTagPicker}
           onClose={() => setShowTagPicker(false)}
@@ -393,7 +385,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         />
       )}
 
-      {createTagName !== null && (
+      {!isReadOnly && createTagName !== null && (
         <TagModal
           tagId={null}
           initialName={createTagName}
@@ -404,7 +396,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         />
       )}
 
-      {showStartDatePicker && (
+      {!isReadOnly && showStartDatePicker && (
         <DatePickerModal
           isOpen={showStartDatePicker}
           onClose={() => setShowStartDatePicker(false)}
@@ -416,7 +408,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         />
       )}
 
-      {showDueDatePicker && (
+      {!isReadOnly && showDueDatePicker && (
         <DatePickerModal
           isOpen={showDueDatePicker}
           onClose={() => setShowDueDatePicker(false)}
@@ -428,7 +420,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         />
       )}
 
-      {showReminderPicker && (
+      {!isReadOnly && showReminderPicker && (
         <ReminderPickerModal
           isOpen={showReminderPicker}
           onClose={() => setShowReminderPicker(false)}
@@ -437,7 +429,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         />
       )}
 
-      {editingReminderId !== null && (
+      {!isReadOnly && editingReminderId !== null && (
         <ReminderPickerModal
           isOpen={editingReminderId !== null}
           onClose={() => {

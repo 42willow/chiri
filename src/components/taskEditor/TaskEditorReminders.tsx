@@ -15,6 +15,7 @@ interface RemindersProps {
   onRemoveReminder: (reminderId: string) => void;
   onOpenReminderPicker: () => void;
   onEditReminder: (reminder: { id: string; trigger: Date }) => void;
+  readOnly?: boolean;
 }
 
 export const TaskEditorReminders = ({
@@ -25,6 +26,7 @@ export const TaskEditorReminders = ({
   onRemoveReminder,
   onOpenReminderPicker,
   onEditReminder,
+  readOnly = false,
 }: RemindersProps) => {
   return (
     <div>
@@ -38,40 +40,52 @@ export const TaskEditorReminders = ({
       {/* biome-ignore lint/a11y/useSemanticElements: fieldset would change semantic structure; div with role="group" is appropriate here */}
       <div className="space-y-2" role="group" aria-labelledby="reminders-label">
         {(task.reminders ?? []).map((reminder) => (
-          // biome-ignore lint/a11y/useSemanticElements: Using div with role=button to allow nested delete button without button nesting
           <div
             key={reminder.id}
-            role="button"
-            tabIndex={0}
-            className="flex items-center gap-2 px-3 py-2 bg-surface-50 dark:bg-surface-800 rounded-lg hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors cursor-pointer group outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-            onClick={() => onEditReminder({ id: reminder.id, trigger: new Date(reminder.trigger) })}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onEditReminder({ id: reminder.id, trigger: new Date(reminder.trigger) });
-              }
-            }}
+            {...(readOnly
+              ? {}
+              : {
+                  role: 'button' as const,
+                  tabIndex: 0,
+                  onClick: () =>
+                    onEditReminder({ id: reminder.id, trigger: new Date(reminder.trigger) }),
+                  onKeyDown: (e: React.KeyboardEvent<HTMLDivElement>) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onEditReminder({ id: reminder.id, trigger: new Date(reminder.trigger) });
+                    }
+                  },
+                })}
+            className={`flex items-center gap-2 px-3 py-2 bg-surface-50 dark:bg-surface-800 rounded-lg transition-colors group outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              readOnly ? '' : 'hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer'
+            }`}
           >
             <BellRing className="w-4 h-4 text-surface-400 shrink-0" />
             <span className="flex-1 text-sm text-surface-700 dark:text-surface-300">
               {formatDate(new Date(reminder.trigger), true)}{' '}
               {formatTime(new Date(reminder.trigger), timeFormat)}
             </span>
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                onRemoveReminder(reminder.id);
-              }}
-              className="p-1 text-surface-400 hover:text-semantic-error hover:bg-surface-100 dark:hover:bg-surface-800 rounded-full invisible group-hover:visible focus-visible:visible outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-              title="Remove reminder"
-            >
-              <X className="w-4 h-4" />
-            </button>
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRemoveReminder(reminder.id);
+                }}
+                className="p-1 text-surface-400 hover:text-semantic-error hover:bg-surface-100 dark:hover:bg-surface-800 rounded-full invisible group-hover:visible focus-visible:visible outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                title="Remove reminder"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         ))}
 
-        {notifications ? (
+        {readOnly && (task.reminders?.length ?? 0) === 0 && (
+          <div className="text-sm text-surface-400 dark:text-surface-500">No reminders</div>
+        )}
+
+        {!readOnly && notifications ? (
           <button
             type="button"
             onClick={onOpenReminderPicker}
@@ -80,7 +94,7 @@ export const TaskEditorReminders = ({
             <Plus className="w-3 h-3" />
             Add reminder
           </button>
-        ) : (
+        ) : !readOnly ? (
           <div className="flex items-center justify-between gap-2 text-xs text-surface-700 dark:text-surface-300 border border-semantic-warning/30 bg-surface-100 dark:bg-surface-800 rounded-md p-2">
             <span>
               {isMacPlatform()
@@ -98,7 +112,7 @@ export const TaskEditorReminders = ({
               </button>
             )}
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

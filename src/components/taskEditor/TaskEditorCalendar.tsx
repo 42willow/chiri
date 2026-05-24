@@ -6,12 +6,14 @@ interface TaskEditorCalendarProps {
   task: Task;
   accounts: Account[];
   onCalendarChange: (calendarId: string) => void;
+  readOnly?: boolean;
 }
 
 export const TaskEditorCalendar = ({
   task,
   accounts,
   onCalendarChange,
+  readOnly = false,
 }: TaskEditorCalendarProps) => {
   const allCalendars = accounts.flatMap((account) =>
     account.calendars.map((cal) => ({
@@ -23,6 +25,28 @@ export const TaskEditorCalendar = ({
 
   const currentAccount = accounts.find((a) => a.id === task.accountId);
   const currentCalendar = currentAccount?.calendars.find((c) => c.id === task.calendarId);
+  const accountLabel = currentAccount?.name ?? (task.accountId ? `Account ${task.accountId}` : '');
+  const calendarLabel =
+    currentCalendar?.displayName ?? (task.calendarId ? `Calendar ${task.calendarId}` : '');
+
+  if (readOnly) {
+    return (
+      <div>
+        <div
+          id="task-calendar-label"
+          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        >
+          <FolderSync className="w-4 h-4" />
+          Calendar
+        </div>
+        <div className="w-full px-3 py-2 text-sm border border-transparent bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-lg">
+          {accountLabel || calendarLabel
+            ? [accountLabel, calendarLabel].filter(Boolean).join(' / ')
+            : 'No calendar'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>

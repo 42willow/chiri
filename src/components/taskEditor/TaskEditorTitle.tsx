@@ -12,12 +12,40 @@ interface TaskEditorTitleProps {
   task: Task;
   checkmarkColor: string;
   useAccentColorForCheckboxes: boolean;
+  readOnly?: boolean;
 }
+
+const getCheckboxStateClass = (
+  task: Task,
+  useAccentColorForCheckboxes: boolean,
+  readOnly: boolean,
+) => {
+  if (task.status === 'completed') {
+    return useAccentColorForCheckboxes
+      ? 'bg-primary-500 border-primary-500'
+      : 'bg-status-completed border-status-completed';
+  }
+  if (task.status === 'cancelled') return 'bg-status-cancelled border-status-cancelled';
+  if (task.status === 'in-process') return 'bg-status-in-process border-status-in-process';
+
+  return `border-surface-300 dark:border-surface-600 ${
+    readOnly ? '' : 'hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700'
+  }`;
+};
+
+const getCheckboxAriaLabel = (task: Task, readOnly: boolean) => {
+  if (readOnly) return 'Task status';
+  if (task.status === 'cancelled') return 'Cancelled';
+  if (task.status === 'in-process') return 'In Progress';
+  if (task.status === 'completed') return 'Completed — click to reopen';
+  return 'Mark complete';
+};
 
 export const TaskEditorTitle = ({
   task,
   checkmarkColor,
   useAccentColorForCheckboxes,
+  readOnly = false,
 }: TaskEditorTitleProps) => {
   const [pendingTitle, updatePendingTitle] = useDebouncedTaskUpdate(task.id, 'title', task.title);
   const toggleTaskCompleteMutation = useToggleTaskComplete();
@@ -25,10 +53,11 @@ export const TaskEditorTitle = ({
 
   // focus title on open if empty
   useEffect(() => {
+    if (readOnly) return;
     if (!task.title && titleRef.current) {
       titleRef.current.focus();
     }
-  }, [task.title]);
+  }, [readOnly, task.title]);
 
   // Auto-resize title textarea based on content
   useEffect(() => {
@@ -51,13 +80,16 @@ export const TaskEditorTitle = ({
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (readOnly) return;
     toggleTaskCompleteMutation.mutate(task.id);
   };
+
+  const checkboxStateClass = getCheckboxStateClass(task, useAccentColorForCheckboxes, readOnly);
 
   return (
     <div>
       <label
-        htmlFor="task-title"
+        htmlFor={readOnly ? undefined : 'task-title'}
         className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
       >
         <Type className="w-4 h-4" />
@@ -67,6 +99,7 @@ export const TaskEditorTitle = ({
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: Click focuses child textarea which is already keyboard accessible */}
       <div
         onClick={(e) => {
+          if (readOnly) return;
           if (
             titleRef.current &&
             e.target !== titleRef.current &&
@@ -75,33 +108,20 @@ export const TaskEditorTitle = ({
             titleRef.current.focus();
           }
         }}
-        className="flex items-start gap-3 px-3 py-3 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg has-focus:border-primary-500 has-[textarea:focus]:bg-white dark:has-[textarea:focus]:bg-surface-800 transition-colors cursor-text"
+        className={`flex items-start gap-3 px-3 py-3 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg transition-colors ${
+          readOnly
+            ? 'cursor-default'
+            : 'has-focus:border-primary-500 has-[textarea:focus]:bg-white dark:has-[textarea:focus]:bg-surface-800 cursor-text'
+        }`}
       >
         <button
           type="button"
           onClick={handleCheckboxClick}
-          aria-label={
-            task.status === 'cancelled'
-              ? 'Cancelled'
-              : task.status === 'in-process'
-                ? 'In Progress'
-                : task.status === 'completed'
-                  ? 'Completed — click to reopen'
-                  : 'Mark complete'
-          }
+          disabled={readOnly}
+          aria-label={getCheckboxAriaLabel(task, readOnly)}
           className={`
-            shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset
-            ${
-              task.status === 'completed'
-                ? useAccentColorForCheckboxes
-                  ? 'bg-primary-500 border-primary-500'
-                  : 'bg-status-completed border-status-completed'
-                : task.status === 'cancelled'
-                  ? 'bg-status-cancelled border-status-cancelled'
-                  : task.status === 'in-process'
-                    ? 'bg-status-in-process border-status-in-process'
-                    : 'border-surface-300 dark:border-surface-600 hover:border-primary-500 hover:bg-surface-100 dark:hover:bg-surface-700'
-            }
+            shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-default
+            ${checkboxStateClass}
           `}
         >
           {task.status === 'completed' && (
@@ -118,15 +138,23 @@ export const TaskEditorTitle = ({
             <Loader className="w-4 h-4 dark:text-primary-contrast" />
           )}
         </button>
-        <ComposedTextarea
-          ref={titleRef}
-          id="task-title"
-          value={pendingTitle}
-          onChange={handleTitleChange}
-          placeholder="Task title..."
-          rows={1}
-          className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 bg-transparent border-0 focus:outline-hidden focus:ring-0 p-0 overflow-hidden resize-none w-full"
-        />
+        {readOnly ? (
+          <div className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 whitespace-pre-wrap selectable">
+            {pendingTitle || (
+              <span className="text-surface-400 dark:text-surface-500">Untitled task</span>
+            )}
+          </div>
+        ) : (
+          <ComposedTextarea
+            ref={titleRef}
+            id="task-title"
+            value={pendingTitle}
+            onChange={handleTitleChange}
+            placeholder="Task title..."
+            rows={1}
+            className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 bg-transparent border-0 focus:outline-hidden focus:ring-0 p-0 overflow-hidden resize-none w-full"
+          />
+        )}
       </div>
     </div>
   );

@@ -8,9 +8,10 @@ import type { Task } from '$types';
 
 interface UrlProps {
   task: Task;
+  readOnly?: boolean;
 }
 
-export const TaskEditorUrl = ({ task }: UrlProps) => {
+export const TaskEditorUrl = ({ task, readOnly = false }: UrlProps) => {
   const [pendingUrl, updatePendingUrl] = useDebouncedTaskUpdate(task.id, 'url', task.url ?? '');
 
   const urlRef = useRef<HTMLTextAreaElement>(null);
@@ -37,7 +38,7 @@ export const TaskEditorUrl = ({ task }: UrlProps) => {
     <div>
       <div className="flex items-center justify-between mb-2">
         <label
-          htmlFor="task-url"
+          htmlFor={readOnly ? undefined : 'task-url'}
           className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400"
         >
           <Link className="w-4 h-4" />
@@ -55,15 +56,21 @@ export const TaskEditorUrl = ({ task }: UrlProps) => {
           </button>
         )}
       </div>
-      <ComposedTextarea
-        ref={urlRef}
-        id="task-url"
-        value={pendingUrl}
-        onChange={handleUrlChange}
-        placeholder="https://example.com"
-        rows={1}
-        className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors resize-none overflow-hidden max-h-24"
-      />
+      {readOnly ? (
+        <div className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap break-words selectable">
+          {pendingUrl || <span className="text-surface-400 dark:text-surface-500">No URL</span>}
+        </div>
+      ) : (
+        <ComposedTextarea
+          ref={urlRef}
+          id="task-url"
+          value={pendingUrl}
+          onChange={handleUrlChange}
+          placeholder="https://example.com"
+          rows={1}
+          className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors resize-none overflow-hidden max-h-24"
+        />
+      )}
     </div>
   );
 };
