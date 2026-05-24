@@ -17,8 +17,8 @@ import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Tag from 'lucide-react/icons/tag';
 import {
   type BadgeConfig,
-  BadgesSettingsSortableBadgeRow,
-} from '$components/settings/BadgesSettingsSortableBadgeRow';
+  BadgesSettingsSortableBadges,
+} from '$components/settings/BadgesSettings/BadgesSettingsSortableBadges';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import type { TaskBadgeKey } from '$types/settings';
 
@@ -102,7 +102,7 @@ export const BadgesSettings = () => {
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={taskBadgeOrder} strategy={verticalListSortingStrategy}>
             {orderedBadges.map((badge, index) => (
-              <BadgesSettingsSortableBadgeRow
+              <BadgesSettingsSortableBadges
                 key={badge.key}
                 badge={badge}
                 showBorder={index > 0}

@@ -18,9 +18,9 @@ import Link from 'lucide-react/icons/link';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Tag from 'lucide-react/icons/tag';
 import {
-  EditorSettingsSortableFieldRow,
+  EditorSettingsSortableFields,
   type FieldConfig,
-} from '$components/settings/EditorSettingsSortableFieldRow';
+} from '$components/settings/EditorSettings/EditorSettingsSortableFields';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import type { EditorFieldKey } from '$types/settings';
 
@@ -116,7 +116,7 @@ export const EditorSettings = () => {
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={editorFieldOrder} strategy={verticalListSortingStrategy}>
             {orderedFields.map((field, index) => (
-              <EditorSettingsSortableFieldRow
+              <EditorSettingsSortableFields
                 key={field.key}
                 field={field}
                 showBorder={index > 0}

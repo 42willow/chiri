@@ -1,30 +1,30 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import GripVertical from 'lucide-react/icons/grip-vertical';
-import type { TaskBadgeKey } from '$types/settings';
+import type { EditorFieldKey } from '$types/settings';
 
-export type BadgeConfig = {
-  key: TaskBadgeKey;
+export type FieldConfig = {
+  key: EditorFieldKey;
   label: string;
   description: string;
   icon: React.ReactNode;
 };
 
-interface BadgesSettingsSortableBadgeRowProps {
-  badge: BadgeConfig;
+interface EditorSettingsSortableFieldsProps {
+  field: FieldConfig;
   showBorder: boolean;
   checked: boolean;
-  onToggle: (key: TaskBadgeKey, value: boolean) => void;
+  onToggle: (key: EditorFieldKey, value: boolean) => void;
 }
 
-export const BadgesSettingsSortableBadgeRow = ({
-  badge,
+export const EditorSettingsSortableFields = ({
+  field,
   showBorder,
   checked,
   onToggle,
-}: BadgesSettingsSortableBadgeRowProps) => {
+}: EditorSettingsSortableFieldsProps) => {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id: badge.key,
+    id: field.key,
   });
 
   const style: React.CSSProperties = {
@@ -42,22 +42,22 @@ export const BadgesSettingsSortableBadgeRow = ({
           <button
             type="button"
             className="text-surface-400 dark:text-surface-500 shrink-0 cursor-grab active:cursor-grabbing rounded-sm focus-visible:ring-2 focus-visible:ring-primary-500 outline-hidden"
-            aria-label={`Reorder ${badge.label}`}
+            aria-label={`Reorder ${field.label}`}
             {...attributes}
             {...listeners}
           >
             <GripVertical className="w-4 h-4" />
           </button>
-          <span className="text-surface-400 dark:text-surface-500 shrink-0">{badge.icon}</span>
+          <span className="text-surface-400 dark:text-surface-500 shrink-0">{field.icon}</span>
           <div className="min-w-0">
-            <p className="text-sm text-surface-700 dark:text-surface-300">{badge.label}</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">{badge.description}</p>
+            <p className="text-sm text-surface-700 dark:text-surface-300">{field.label}</p>
+            <p className="text-xs text-surface-500 dark:text-surface-400">{field.description}</p>
           </div>
         </div>
         <input
           type="checkbox"
           checked={checked}
-          onChange={(e) => onToggle(badge.key, e.target.checked)}
+          onChange={(e) => onToggle(field.key, e.target.checked)}
           className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
         />
       </div>
