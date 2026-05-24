@@ -1,9 +1,0 @@
-[submodule "aur/src"]
-	path = aur/src
-	url = ssh://aur@aur.archlinux.org/chiri.git
-[submodule "aur/bin"]
-	path = aur/bin
-	url = ssh://aur@aur.archlinux.org/chiri-bin.git
-[submodule "flatpak/shared-modules"]
-	path = flatpak/shared-modules
-	url = https://github.com/flathub/shared-modules.git
