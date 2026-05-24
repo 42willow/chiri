@@ -40,7 +40,7 @@ export const TaskEditorDescription = ({ task, readOnly = false }: DescriptionPro
         Description
       </label>
       {readOnly ? (
-        <div className="w-full min-h-24 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap selectable">
+        <div className="w-full min-h-24 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap cursor-not-allowed selectable">
           {description || (
             <span className="text-surface-400 dark:text-surface-500">No description</span>
           )}

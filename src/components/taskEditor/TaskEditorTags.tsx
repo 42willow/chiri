@@ -41,7 +41,9 @@ export const TaskEditorTags = ({
           return (
             <span
               key={tag.id}
-              className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-sm border text-xs font-medium group"
+              className={`inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-sm border text-xs font-medium group ${
+                readOnly ? 'cursor-not-allowed' : ''
+              }`}
               style={{
                 borderColor: tag.color,
                 backgroundColor: `${tag.color}15`,
@@ -68,7 +70,9 @@ export const TaskEditorTags = ({
         })}
 
         {readOnly && taskTags.length === 0 && (
-          <span className="text-sm text-surface-400 dark:text-surface-500">No tags</span>
+          <span className="text-sm text-surface-400 dark:text-surface-500 cursor-not-allowed">
+            No tags
+          </span>
         )}
 
         {!readOnly && (

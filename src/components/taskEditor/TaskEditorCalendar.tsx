@@ -39,7 +39,7 @@ export const TaskEditorCalendar = ({
           <FolderSync className="w-4 h-4" />
           Calendar
         </div>
-        <div className="w-full px-3 py-2 text-sm border border-transparent bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-lg">
+        <div className="w-full px-3 py-2 text-sm border border-transparent bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-lg cursor-not-allowed">
           {accountLabel || calendarLabel
             ? [accountLabel, calendarLabel].filter(Boolean).join(' / ')
             : 'No calendar'}

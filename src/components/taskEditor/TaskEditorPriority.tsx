@@ -39,7 +39,7 @@ export const TaskEditorPriority = ({ task, readOnly = false }: PriorityProps) =>
                   ? `${p.borderColor} bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100`
                   : `border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`
               }
-              ${readOnly ? 'cursor-default' : ''}
+              ${readOnly ? 'cursor-not-allowed' : ''}
             `}
           >
             <span className={p.color}>{p.label}</span>

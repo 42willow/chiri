@@ -93,18 +93,6 @@ input[type="range"] {
     }
   }
 
-  &:disabled {
-    cursor: default;
-  }
-
-  &:disabled::-webkit-slider-thumb {
-    cursor: default;
-
-    &:hover {
-      transform: none;
-    }
-  }
-
   &:focus-visible {
     outline: 2px solid rgb(var(--primary-rgb-500));
     outline-offset: 3px;

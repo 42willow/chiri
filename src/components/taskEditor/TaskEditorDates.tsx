@@ -36,7 +36,9 @@ export const TaskEditorDates = ({
           disabled={readOnly}
           aria-labelledby="start-date-label"
           className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
-            readOnly ? 'cursor-default' : 'hover:border-surface-300 dark:hover:border-surface-500'
+            readOnly
+              ? 'cursor-not-allowed'
+              : 'hover:border-surface-300 dark:hover:border-surface-500'
           }`}
         >
           {task.startDate ? (
@@ -73,7 +75,9 @@ export const TaskEditorDates = ({
           disabled={readOnly}
           aria-labelledby="due-date-label"
           className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
-            readOnly ? 'cursor-default' : 'hover:border-surface-300 dark:hover:border-surface-500'
+            readOnly
+              ? 'cursor-not-allowed'
+              : 'hover:border-surface-300 dark:hover:border-surface-500'
           }`}
         >
           {task.dueDate ? (

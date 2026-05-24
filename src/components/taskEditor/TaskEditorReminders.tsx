@@ -57,7 +57,9 @@ export const TaskEditorReminders = ({
                   },
                 })}
             className={`flex items-center gap-2 px-3 py-2 bg-surface-50 dark:bg-surface-800 rounded-lg transition-colors group outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-              readOnly ? '' : 'hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer'
+              readOnly
+                ? 'cursor-not-allowed'
+                : 'hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer'
             }`}
           >
             <BellRing className="w-4 h-4 text-surface-400 shrink-0" />

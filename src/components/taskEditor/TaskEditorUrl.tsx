@@ -57,7 +57,7 @@ export const TaskEditorUrl = ({ task, readOnly = false }: UrlProps) => {
         )}
       </div>
       {readOnly ? (
-        <div className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap wrap-break-word selectable">
+        <div className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap wrap-break-word cursor-not-allowed selectable">
           {pendingUrl || <span className="text-surface-400 dark:text-surface-500">No URL</span>}
         </div>
       ) : (

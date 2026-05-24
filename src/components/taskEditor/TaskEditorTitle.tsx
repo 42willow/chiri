@@ -110,7 +110,7 @@ export const TaskEditorTitle = ({
         }}
         className={`flex items-start gap-3 px-3 py-3 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg transition-colors ${
           readOnly
-            ? 'cursor-default'
+            ? 'cursor-not-allowed'
             : 'has-focus:border-primary-500 has-[textarea:focus]:bg-white dark:has-[textarea:focus]:bg-surface-800 cursor-text'
         }`}
       >
@@ -120,7 +120,7 @@ export const TaskEditorTitle = ({
           disabled={readOnly}
           aria-label={getCheckboxAriaLabel(task, readOnly)}
           className={`
-            shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-default
+            shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed
             ${checkboxStateClass}
           `}
         >
@@ -139,7 +139,7 @@ export const TaskEditorTitle = ({
           )}
         </button>
         {readOnly ? (
-          <div className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 whitespace-pre-wrap selectable">
+          <div className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 whitespace-pre-wrap cursor-not-allowed selectable">
             {pendingTitle || (
               <span className="text-surface-400 dark:text-surface-500">Untitled task</span>
             )}

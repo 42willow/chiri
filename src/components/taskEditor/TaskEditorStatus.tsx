@@ -78,7 +78,7 @@ export const TaskEditorStatus = ({
                 onClick={() => onStatusChange(s.value)}
                 disabled={readOnly}
                 className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500
-                  ${readOnly ? 'disabled:cursor-default' : ''}
+                  ${readOnly ? 'disabled:cursor-not-allowed' : ''}
                   ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`}
                 `}
               >
@@ -98,32 +98,34 @@ export const TaskEditorStatus = ({
           <Loader className="w-4 h-4" />
           Progress ({draftPercent ?? task.percentComplete ?? 0}%)
         </label>
-        <input
-          id="task-percent-complete"
-          type="range"
-          min={0}
-          max={100}
-          step={5}
-          value={draftPercent ?? task.percentComplete ?? 0}
-          style={
-            { '--pct': `${draftPercent ?? task.percentComplete ?? 0}%` } as React.CSSProperties
-          }
-          onChange={(e) => setDraftPercent(Number(e.target.value))}
-          onPointerUp={(e) => {
-            if (readOnly) return;
-            const value = Number((e.target as HTMLInputElement).value);
-            setDraftPercent(undefined);
-            onCommitPercent(value);
-          }}
-          onKeyUp={(e) => {
-            if (readOnly) return;
-            const value = Number((e.target as HTMLInputElement).value);
-            setDraftPercent(undefined);
-            onCommitPercent(value);
-          }}
-          disabled={readOnly}
-          className="w-full"
-        />
+        <div className={readOnly ? 'cursor-not-allowed' : undefined}>
+          <input
+            id="task-percent-complete"
+            type="range"
+            min={0}
+            max={100}
+            step={5}
+            value={draftPercent ?? task.percentComplete ?? 0}
+            style={
+              { '--pct': `${draftPercent ?? task.percentComplete ?? 0}%` } as React.CSSProperties
+            }
+            onChange={(e) => setDraftPercent(Number(e.target.value))}
+            onPointerUp={(e) => {
+              if (readOnly) return;
+              const value = Number((e.target as HTMLInputElement).value);
+              setDraftPercent(undefined);
+              onCommitPercent(value);
+            }}
+            onKeyUp={(e) => {
+              if (readOnly) return;
+              const value = Number((e.target as HTMLInputElement).value);
+              setDraftPercent(undefined);
+              onCommitPercent(value);
+            }}
+            disabled={readOnly}
+            className={`w-full ${readOnly ? 'pointer-events-none' : ''}`}
+          />
+        </div>
         <div className="flex justify-between text-xs text-surface-400 mt-1">
           <span>0%</span>
           <span>100%</span>

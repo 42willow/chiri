@@ -35,7 +35,7 @@ const getStatusButtonClassName = (
         : `border-surface-300 dark:border-surface-600 ${readOnly ? '' : 'hover:border-primary-400 dark:hover:border-primary-500'}`;
 
   return `w-4 h-4 rounded border-[1.5px] flex items-center justify-center shrink-0 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-1 ${statusClass} ${
-    readOnly ? 'cursor-default' : 'cursor-pointer'
+    readOnly ? 'cursor-not-allowed' : 'cursor-pointer'
   }`;
 };
 
@@ -201,7 +201,7 @@ export const TaskEditorSubtaskItem = ({
             className="flex-1 pl-0.5 text-sm bg-transparent outline-hidden text-surface-700 dark:text-surface-300 min-w-0"
           />
         ) : readOnly ? (
-          <span className={getTitleClassName(task, false)}>
+          <span className={`${getTitleClassName(task, false)} cursor-not-allowed`}>
             <SubtaskTitleContent task={task} />
           </span>
         ) : (
