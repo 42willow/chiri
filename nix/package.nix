@@ -128,8 +128,8 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   meta = {
     description = "A cross-platform CalDAV task management app. Currently in very early alpha!";
-    homepage = "https://github.com/SapphoSys/chiri";
-    changelog = "https://github.com/SapphoSys/chiri/releases/tag/v${finalAttrs.version}";
+    homepage = "https://github.com/chiriapp/chiri";
+    changelog = "https://github.com/chiriapp/chiri/releases/tag/app-v${finalAttrs.version}";
     license = lib.licenses.zlib;
     maintainers = with lib.maintainers; [ SapphoSys ];
     mainProgram = "Chiri";

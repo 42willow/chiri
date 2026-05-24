@@ -80,7 +80,7 @@ fn is_tiling_wm() -> bool {
 /// - KDE, others: use native window decorations (integrates better)
 ///
 /// note: the Wayland xdg_toplevel app_id is derived from the binary name,
-/// so the Flatpak installs the binary as moe.sapphic.Chiri to match the .desktop filename for KWin icon lookup
+/// so the Flatpak installs the binary as garden.chiri.Chiri to match the .desktop filename for KWin icon lookup
 #[cfg(target_os = "linux")]
 pub fn configure_titlebar_for_de(window: &tauri::WebviewWindow) {
     use gtk::prelude::GtkWindowExt;

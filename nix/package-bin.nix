@@ -46,7 +46,7 @@ let
   info = platformInfo.${system} or (throw "Unsupported platform: ${system}");
 
   src = fetchurl {
-    url = "https://github.com/SapphoSys/chiri/releases/download/app-v${version}/${info.asset}";
+    url = "https://github.com/chiriapp/chiri/releases/download/app-v${version}/${info.asset}";
     hash = info.hash;
   };
 in
@@ -79,7 +79,7 @@ if stdenvNoCC.isDarwin then
 
     meta = {
       description = "A cross-platform CalDAV task management app. Currently in very early alpha! (pre-built binary)";
-      homepage = "https://github.com/SapphoSys/chiri";
+      homepage = "https://github.com/chiriapp/chiri";
       license = lib.licenses.zlib;
       maintainers = with lib.maintainers; [ SapphoSys ];
       mainProgram = "chiri";
@@ -145,7 +145,7 @@ else
 
     meta = {
       description = "A cross-platform CalDAV task management app. Currently in very early alpha! (pre-built binary)";
-      homepage = "https://github.com/SapphoSys/chiri";
+      homepage = "https://github.com/chiriapp/chiri";
       license = lib.licenses.zlib;
       maintainers = with lib.maintainers; [ SapphoSys ];
       mainProgram = "Chiri";

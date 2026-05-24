@@ -15,8 +15,8 @@ import { AboutSettingsSection } from '$components/settings/AboutSettings/AboutSe
 import { useChangelog } from '$hooks/useChangelog';
 import { getAppInfo } from '$utils/version';
 
-const GITHUB_URL = 'https://github.com/SapphoSys/chiri';
-const NEW_ISSUE_URL = 'https://github.com/SapphoSys/chiri/issues/new';
+const GITHUB_URL = 'https://github.com/chiriapp/chiri';
+const NEW_ISSUE_URL = 'https://github.com/chiriapp/chiri/issues/new';
 const CONTACT_EMAIL = 'contact@sapphic.moe';
 const FIND_US_ELSEWHERE = 'https://sapphic.moe/contact';
 

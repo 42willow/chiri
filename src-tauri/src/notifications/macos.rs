@@ -10,10 +10,10 @@ use super::manager::{
 };
 
 // Action identifiers — macOS uses reverse-DNS strings; other platforms use plain strings
-pub const ACTION_COMPLETE: &str = "moe.sapphic.Chiri.action.complete";
-pub const ACTION_SNOOZE_15MIN: &str = "moe.sapphic.Chiri.action.snooze.15min";
-pub const ACTION_SNOOZE_1HR: &str = "moe.sapphic.Chiri.action.snooze.1hr";
-pub const ACTION_VIEW: &str = "moe.sapphic.Chiri.action.view";
+pub const ACTION_COMPLETE: &str = "garden.chiri.Chiri.action.complete";
+pub const ACTION_SNOOZE_15MIN: &str = "garden.chiri.Chiri.action.snooze.15min";
+pub const ACTION_SNOOZE_1HR: &str = "garden.chiri.Chiri.action.snooze.1hr";
+pub const ACTION_VIEW: &str = "garden.chiri.Chiri.action.view";
 
 impl NotificationManagerState {
     pub fn register_categories_and_handler(&self, app: AppHandle<impl tauri::Runtime>) {

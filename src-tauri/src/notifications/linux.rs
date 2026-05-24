@@ -4,7 +4,7 @@ use super::manager::{NotificationActionEvent, NotificationType, SendNotification
 
 /// Search the system hicolor icon theme for the first matching candidate name.
 /// The icon name differs by package type:
-///   Flatpak  → moe.sapphic.Chiri  (bundle ID, detected separately via FLATPAK_ID)
+///   Flatpak  → garden.chiri.Chiri (bundle ID, detected separately via FLATPAK_ID)
 ///   AUR      → chiri              (lowercase binary name)
 ///   deb/rpm  → Chiri              (package name)
 fn find_installed_icon_name(candidates: &[&str]) -> Option<String> {

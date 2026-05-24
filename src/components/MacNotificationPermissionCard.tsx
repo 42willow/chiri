@@ -67,7 +67,7 @@ export const MacNotificationPermissionCard = ({
   const handleOpenSystemSettings = async () => {
     try {
       await openUrl(
-        'x-apple.systempreferences:com.apple.preference.notifications?id=moe.sapphic.Chiri',
+        'x-apple.systempreferences:com.apple.preference.notifications?id=garden.chiri.Chiri',
       );
     } catch (error) {
       console.error('Failed to open system settings:', error);

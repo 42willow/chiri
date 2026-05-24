@@ -3,8 +3,8 @@ use tauri::State;
 use user_notify::{get_notification_manager, NotificationBuilder, NotificationManager};
 
 // Shared constants for notification categories
-pub const TASK_OVERDUE_CATEGORY: &str = "moe.sapphic.Chiri.task.overdue";
-pub const TASK_REMINDER_CATEGORY: &str = "moe.sapphic.Chiri.task.reminder";
+pub const TASK_OVERDUE_CATEGORY: &str = "garden.chiri.Chiri.task.overdue";
+pub const TASK_REMINDER_CATEGORY: &str = "garden.chiri.Chiri.task.reminder";
 
 pub const USER_INFO_TASK_ID: &str = "taskId";
 pub const USER_INFO_NOTIFICATION_TYPE: &str = "notificationType";
