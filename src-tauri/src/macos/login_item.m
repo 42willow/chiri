@@ -108,6 +108,12 @@ int chiri_macos_login_item_enable(char **out_error) {
 }
 
 int chiri_macos_login_item_disable(char **out_error) {
+  int status = chiri_macos_login_item_status();
+  if (status == ChiriSMAppServiceStatusNotRegistered ||
+      status == ChiriSMAppServiceStatusNotFound) {
+    return 1;
+  }
+
   id service = chiri_main_app_service();
   SEL unregisterSelector = NSSelectorFromString(@"unregisterAndReturnError:");
   if (service == nil || ![service respondsToSelector:unregisterSelector]) {

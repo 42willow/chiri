@@ -47,7 +47,15 @@ const enableMacAutostart = async (): Promise<AutostartState> => {
 };
 
 const disableMacAutostart = async (): Promise<AutostartState> => {
-  const status = await invoke<MacLaunchAtLoginStatus>('disable_macos_launch_at_login');
+  const status = await invoke<MacLaunchAtLoginStatus>('disable_macos_launch_at_login').catch(
+    async (error) => {
+      const currentState = await loadMacAutostartState();
+      if (!currentState.enabled) {
+        return 'disabled' as MacLaunchAtLoginStatus;
+      }
+      throw error;
+    }
+  );
   return getMacAutostartState(status);
 };
 
