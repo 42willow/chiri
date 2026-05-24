@@ -56,6 +56,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'confirmBeforePermanentDelete',
       'confirmBeforeDeleteCalendar',
       'confirmBeforeDeleteAccount',
+      'confirmBeforeDeleteFilter',
       'confirmBeforeDeleteTag',
       'deleteSubtasksWithParent',
       'startOfWeek',

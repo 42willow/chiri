@@ -75,6 +75,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (confirm: boolean) => settingsStore.setConfirmBeforeDeleteAccount(confirm),
     [],
   );
+  const setConfirmBeforeDeleteFilter = useCallback(
+    (confirm: boolean) => settingsStore.setConfirmBeforeDeleteFilter(confirm),
+    [],
+  );
   const setConfirmBeforeDeleteTag = useCallback(
     (confirm: boolean) => settingsStore.setConfirmBeforeDeleteTag(confirm),
     [],
@@ -326,6 +330,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setConfirmBeforePermanentDelete,
     setConfirmBeforeDeleteCalendar,
     setConfirmBeforeDeleteAccount,
+    setConfirmBeforeDeleteFilter,
     setConfirmBeforeDeleteTag,
     setDeleteSubtasksWithParent,
     setStartOfWeek,

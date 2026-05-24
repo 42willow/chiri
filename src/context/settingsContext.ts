@@ -197,6 +197,8 @@ export const settingsStore = {
     setState({ confirmBeforeDeleteCalendar }),
   setConfirmBeforeDeleteAccount: (confirmBeforeDeleteAccount: boolean) =>
     setState({ confirmBeforeDeleteAccount }),
+  setConfirmBeforeDeleteFilter: (confirmBeforeDeleteFilter: boolean) =>
+    setState({ confirmBeforeDeleteFilter }),
   setConfirmBeforeDeleteTag: (confirmBeforeDeleteTag: boolean) =>
     setState({ confirmBeforeDeleteTag }),
   setDeleteSubtasksWithParent: (deleteSubtasksWithParent: SubtaskDeletionBehavior) =>

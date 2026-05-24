@@ -31,7 +31,7 @@ interface SidebarContextMenuProps {
   onDeleteCalendar: (calendarId: string, accountId: string) => Promise<void>;
   onDeleteTag: (tagId: string) => Promise<void>;
   onEditFilter: (filterId: string) => void;
-  onDeleteFilter: (filterId: string) => void;
+  onDeleteFilter: (filterId: string) => Promise<void>;
   onExpandAll: () => void;
   onCollapseAll: () => void;
 }

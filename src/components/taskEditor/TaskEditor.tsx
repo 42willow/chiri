@@ -17,6 +17,7 @@ import { TaskEditorSubtasks } from '$components/taskEditor/TaskEditorSubtasks';
 import { TaskEditorTags } from '$components/taskEditor/TaskEditorTags';
 import { TaskEditorTitle } from '$components/taskEditor/TaskEditorTitle';
 import { TaskEditorUrl } from '$components/taskEditor/TaskEditorUrl';
+import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
 import {
@@ -33,8 +34,6 @@ import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useEscapeKey } from '$hooks/ui/useEscapeKey';
 import { useModalEscapeKey } from '$hooks/ui/useModalEscapeKey';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import { useConfirmPermanentTaskDelete } from '$hooks/useConfirmPermanentTaskDelete';
-import { useConfirmTaskDelete } from '$hooks/useConfirmTaskDelete';
 import type { Task, TaskStatus } from '$types';
 import type { EditorFieldKey } from '$types/settings';
 import { getContrastTextColor } from '$utils/color';
@@ -77,8 +76,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
     useAccentColorForCheckboxes,
   } = useSettingsStore();
   const resolvedAccentColor = useResolvedAccentColor();
-  const { confirmAndDelete } = useConfirmTaskDelete();
-  const { confirmAndDeletePermanently } = useConfirmPermanentTaskDelete();
+  const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
 
   const isReadOnly = !!task.deletedAt;
   const checkmarkColor = getContrastTextColor(resolvedAccentColor);
@@ -221,7 +219,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   };
 
   const handleDelete = async () => {
-    const deleted = await confirmAndDelete(task.id);
+    const deleted = await moveTaskToRecentlyDeleted(task.id);
     if (deleted) {
       setEditorOpenMutation.mutate(false);
     }
@@ -233,7 +231,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   };
 
   const handlePermanentDelete = async () => {
-    const deleted = await confirmAndDeletePermanently(task.id);
+    const deleted = await deleteTaskPermanently(task.id);
     if (deleted) {
       setEditorOpenMutation.mutate(false);
     }
@@ -324,7 +322,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
           checkmarkColor={checkmarkColor}
           useAccentColorForCheckboxes={useAccentColorForCheckboxes}
           updateTask={(id, updates) => updateTaskMutation.mutate({ id, updates })}
-          confirmAndDelete={confirmAndDelete}
+          moveTaskToRecentlyDeleted={moveTaskToRecentlyDeleted}
           readOnly={isReadOnly}
         />
       ) : null,

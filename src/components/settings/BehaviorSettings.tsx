@@ -12,6 +12,8 @@ export const BehaviorSettings = () => {
     setConfirmBeforeDeleteCalendar,
     confirmBeforeDeleteAccount,
     setConfirmBeforeDeleteAccount,
+    confirmBeforeDeleteFilter,
+    setConfirmBeforeDeleteFilter,
     confirmBeforeDeleteTag,
     setConfirmBeforeDeleteTag,
     deleteSubtasksWithParent,
@@ -74,13 +76,27 @@ export const BehaviorSettings = () => {
                 <div>
                   <p className="text-sm text-surface-600 dark:text-surface-400">Tags</p>
                   <p className="text-xs text-surface-500 dark:text-surface-400">
-                    Leaves tagged tasks untouched
+                    Affects tags, leaves tasks untouched
                   </p>
                 </div>
                 <input
                   type="checkbox"
                   checked={confirmBeforeDeleteTag}
                   onChange={(e) => setConfirmBeforeDeleteTag(e.target.checked)}
+                  className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden"
+                />
+              </label>
+              <label className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-surface-600 dark:text-surface-400">Filters</p>
+                  <p className="text-xs text-surface-500 dark:text-surface-400">
+                    Affects saved filters, leaves tasks untouched
+                  </p>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={confirmBeforeDeleteFilter}
+                  onChange={(e) => setConfirmBeforeDeleteFilter(e.target.checked)}
                   className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden"
                 />
               </label>

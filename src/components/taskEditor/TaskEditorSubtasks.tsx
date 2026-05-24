@@ -16,7 +16,7 @@ interface SubtasksProps {
   checkmarkColor: string;
   useAccentColorForCheckboxes: boolean;
   updateTask: (id: string, updates: Partial<Task>) => void;
-  confirmAndDelete: (id: string) => Promise<boolean>;
+  moveTaskToRecentlyDeleted: (id: string) => Promise<boolean>;
   readOnly?: boolean;
 }
 
@@ -25,7 +25,7 @@ export const TaskEditorSubtasks = ({
   checkmarkColor,
   useAccentColorForCheckboxes,
   updateTask,
-  confirmAndDelete,
+  moveTaskToRecentlyDeleted,
   readOnly = false,
 }: SubtasksProps) => {
   const createTaskMutation = useCreateTask();
@@ -152,7 +152,7 @@ export const TaskEditorSubtasks = ({
                       expandedSubtasks={expandedSubtasks}
                       setExpandedSubtasks={setExpandedSubtasks}
                       updateTask={updateTask}
-                      confirmAndDelete={confirmAndDelete}
+                      moveTaskToRecentlyDeleted={moveTaskToRecentlyDeleted}
                       isDragEnabled={anySubtaskDragEnabled}
                       readOnly={readOnly}
                     />
@@ -179,7 +179,7 @@ export const TaskEditorSubtasks = ({
                         expandedSubtasks={expandedSubtasks}
                         setExpandedSubtasks={setExpandedSubtasks}
                         updateTask={updateTask}
-                        confirmAndDelete={confirmAndDelete}
+                        moveTaskToRecentlyDeleted={moveTaskToRecentlyDeleted}
                         isDragEnabled={false}
                         readOnly={readOnly}
                         isOverlay

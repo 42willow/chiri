@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import { queryKeys } from '$lib/queryClient';
 import { dataStore } from '$lib/store';
 import { createAccount, deleteAccount, getAllAccounts, updateAccount } from '$lib/store/accounts';
-import { addCalendar, deleteCalendar } from '$lib/store/calendars';
+import { addCalendar } from '$lib/store/calendars';
 import { moveItem } from '$lib/store/reorder';
 import { reorderAccounts } from '$lib/store/reorder/accounts';
 import { reorderCalendars } from '$lib/store/reorder/calendars';
@@ -74,24 +74,6 @@ export const useDeleteAccount = () => {
   return useMutation({
     mutationFn: (id: string) => {
       deleteAccount(id);
-      return Promise.resolve();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });
-      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
-    },
-  });
-};
-
-/**
- * Hook to delete a calendar from an account
- */
-export const useDeleteCalendar = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ accountId, calendarId }: { accountId: string; calendarId: string }) => {
-      deleteCalendar(accountId, calendarId);
       return Promise.resolve();
     },
     onSuccess: () => {

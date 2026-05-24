@@ -11,11 +11,9 @@ import X from 'lucide-react/icons/x';
 import { useMemo, useState } from 'react';
 import { Tooltip } from '$components/Tooltip';
 import { MENU_EVENTS } from '$constants/menu';
-import { useDeleteAccount } from '$hooks/queries/useAccounts';
+import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useTasks } from '$hooks/queries/useTasks';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { useConnectionStore } from '$hooks/store/useConnectionStore';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { CalDAVClient } from '$lib/caldav';
 import type { Account } from '$types';
 import { pluralize } from '$utils/misc';
@@ -26,9 +24,7 @@ interface ConnectionsSettingsProps {
 
 export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettingsProps) => {
   const accounts = allAccounts.filter((a) => a.caldav);
-  const deleteAccountMutation = useDeleteAccount();
-  const { confirm, close } = useConfirmDialog();
-  const { confirmBeforeDeletion, confirmBeforeDeleteAccount } = useSettingsStore();
+  const { deleteAccount } = useAccountDeletion();
   const { hasConnection } = useConnectionStore();
   const { data: tasks = [] } = useTasks();
 
@@ -47,21 +43,7 @@ export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettin
   }, [accounts, tasks]);
 
   const handleDeleteAccount = async (account: { id: string; name: string }) => {
-    if (confirmBeforeDeletion && confirmBeforeDeleteAccount) {
-      const confirmed = await confirm({
-        title: 'Remove account',
-        subtitle: account.name,
-        message: `Are you sure? All tasks from this account will be removed from the app. They will remain on the server.`,
-        confirmLabel: 'Remove',
-        cancelLabel: 'Cancel',
-        destructive: true,
-      });
-      if (!confirmed) {
-        return;
-      }
-    }
-    deleteAccountMutation.mutate(account.id);
-    close();
+    await deleteAccount(account.id, allAccounts);
   };
 
   const handleEditAccount = (accountId: string) => {

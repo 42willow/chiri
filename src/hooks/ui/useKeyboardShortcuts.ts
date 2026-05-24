@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { DEFAULT_SORT_CONFIG } from '$constants';
 import { useModalState } from '$context/modalStateContext';
+import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useFilters } from '$hooks/queries/useFilters';
 import { useTags } from '$hooks/queries/useTags';
@@ -21,7 +22,6 @@ import {
 } from '$hooks/queries/useUIState';
 import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
-import { useConfirmTaskDelete } from '$hooks/useConfirmTaskDelete';
 import { getSortedTasks } from '$lib/store/filters';
 import { getChildTasks } from '$lib/store/tasks';
 import type { KeyboardShortcut } from '$types';
@@ -134,7 +134,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const setActiveFilterMutation = useSetActiveFilter();
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
-  const { confirmAndDelete } = useConfirmTaskDelete();
+  const { moveTaskToRecentlyDeleted } = useTaskDeletion();
   const { isOpen: isConfirmDialogOpen } = useConfirmDialog();
   const { isAnyModalOpen } = useModalState();
 
@@ -186,9 +186,9 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const handleDelete = useCallback(async () => {
     if (activeView === 'recently-deleted') return;
     if (selectedTaskId) {
-      await confirmAndDelete(selectedTaskId);
+      await moveTaskToRecentlyDeleted(selectedTaskId);
     }
-  }, [activeView, selectedTaskId, confirmAndDelete]);
+  }, [activeView, selectedTaskId, moveTaskToRecentlyDeleted]);
 
   const handleToggleComplete = useCallback(() => {
     if (activeView === 'recently-deleted') return;

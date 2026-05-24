@@ -16,12 +16,11 @@ import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { SubtaskModal } from '$components/modals/SubtaskModal';
 import { PRIORITIES } from '$constants/priority';
+import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useCreateTask, useRestoreTask, useUpdateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
 import { useContextMenuPosition } from '$hooks/ui/useContextMenu';
-import { useConfirmPermanentTaskDelete } from '$hooks/useConfirmPermanentTaskDelete';
-import { useConfirmTaskDelete } from '$hooks/useConfirmTaskDelete';
 import { exportTaskAndChildren } from '$lib/store/tasks';
 import type { Priority, Task, TaskStatus } from '$types';
 
@@ -45,8 +44,7 @@ export const TaskItemContextMenu = ({
   const createTaskMutation = useCreateTask();
   const restoreTaskMutation = useRestoreTask();
   const setSelectedTaskMutation = useSetSelectedTask();
-  const { confirmAndDelete } = useConfirmTaskDelete();
-  const { confirmAndDeletePermanently } = useConfirmPermanentTaskDelete();
+  const { moveTaskToRecentlyDeleted, deleteTaskPermanently } = useTaskDeletion();
   const { menuRef, position } = useContextMenuPosition(contextMenu);
 
   const [showExportModal, setShowExportModal] = useState(false);
@@ -79,7 +77,7 @@ export const TaskItemContextMenu = ({
 
   const handleDelete = async () => {
     setContextMenu(null);
-    await confirmAndDelete(task.id);
+    await moveTaskToRecentlyDeleted(task.id);
   };
 
   const handleRestore = () => {
@@ -89,7 +87,7 @@ export const TaskItemContextMenu = ({
 
   const handlePermanentDelete = async () => {
     setContextMenu(null);
-    await confirmAndDeletePermanently(task.id);
+    await deleteTaskPermanently(task.id);
   };
 
   const handleExport = () => {

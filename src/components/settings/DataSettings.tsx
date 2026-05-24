@@ -4,9 +4,9 @@ import Download from 'lucide-react/icons/download';
 import FileText from 'lucide-react/icons/file-text';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Upload from 'lucide-react/icons/upload';
+import { useDatabaseDeletion } from '$hooks/deletion/useDatabaseDeletion';
 import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
-import { deleteDatabase } from '$lib/bootstrap';
 import { setEditorOpen } from '$lib/store/ui';
 import { exportSettingsToFile, importSettingsFromFile } from '$utils/settings';
 
@@ -17,6 +17,7 @@ interface DataSettingsProps {
 export const DataSettings = ({ onClose }: DataSettingsProps) => {
   const { exportSettings, importSettings, resetSettings } = useSettingsStore();
   const { confirm, close } = useConfirmDialog();
+  const { deleteLocalDatabase } = useDatabaseDeletion();
 
   const handleResetPreferences = async () => {
     const confirmed = await confirm({
@@ -43,26 +44,7 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
   };
 
   const handleResetDatabase = async () => {
-    const confirmed = await confirm({
-      title: 'Reset Database',
-      message: (
-        <div className="space-y-2">
-          <p>
-            <span className="font-bold">Are you sure?</span> This will not affect data on your
-            CalDAV servers, but local data will be lost and accounts will need to be set up again.
-          </p>
-          <p className="text-sm text-semantic-warning">
-            Not recommended unless you are experiencing issues or want to start fresh.
-          </p>
-        </div>
-      ),
-      confirmLabel: 'Reset Database',
-      destructive: true,
-      delayConfirmSeconds: 5,
-    });
-
-    close();
-    if (confirmed) await deleteDatabase();
+    await deleteLocalDatabase();
   };
 
   return (

@@ -22,6 +22,7 @@ export const defaultState: SettingsState = {
   confirmBeforePermanentDelete: true,
   confirmBeforeDeleteCalendar: true,
   confirmBeforeDeleteAccount: true,
+  confirmBeforeDeleteFilter: true,
   confirmBeforeDeleteTag: true,
   deleteSubtasksWithParent: 'delete',
   startOfWeek: DEFAULT_DAY_OF_WEEK,

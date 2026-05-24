@@ -5,7 +5,7 @@ interface SidebarFilterItemContextMenuProps {
   filterId: string;
   onClose: () => void;
   onEditFilter: (filterId: string) => void;
-  onDeleteFilter: (filterId: string) => void;
+  onDeleteFilter: (filterId: string) => Promise<void>;
 }
 
 export const SidebarFilterItemContextMenu = ({
@@ -31,9 +31,9 @@ export const SidebarFilterItemContextMenu = ({
 
     <button
       type="button"
-      onClick={() => {
-        onDeleteFilter(filterId);
+      onClick={async () => {
         onClose();
+        await onDeleteFilter(filterId);
       }}
       className="w-full rounded-b-md flex items-center gap-2 px-3 py-2 text-sm text-semantic-error hover:bg-semantic-error/15 outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
     >

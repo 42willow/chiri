@@ -60,7 +60,7 @@ interface TaskEditorSubtaskItemProps {
   expandedSubtasks: Set<string>;
   setExpandedSubtasks: React.Dispatch<React.SetStateAction<Set<string>>>;
   updateTask: (id: string, updates: Partial<Task>) => void;
-  confirmAndDelete: (id: string) => Promise<boolean>;
+  moveTaskToRecentlyDeleted: (id: string) => Promise<boolean>;
   isDragEnabled: boolean;
   readOnly?: boolean;
   isOverlay?: boolean;
@@ -74,7 +74,7 @@ export const TaskEditorSubtaskItem = ({
   expandedSubtasks,
   setExpandedSubtasks,
   updateTask,
-  confirmAndDelete,
+  moveTaskToRecentlyDeleted,
   isDragEnabled,
   readOnly = false,
   isOverlay = false,
@@ -124,7 +124,7 @@ export const TaskEditorSubtaskItem = ({
     const trimmed = editValue.trim();
     if (!trimmed) {
       setIsEditing(false);
-      confirmAndDelete(task.id);
+      moveTaskToRecentlyDeleted(task.id);
       return;
     }
     if (trimmed !== task.title) {
@@ -218,7 +218,7 @@ export const TaskEditorSubtaskItem = ({
           <button
             type="button"
             onClick={async () => {
-              await confirmAndDelete(task.id);
+              await moveTaskToRecentlyDeleted(task.id);
             }}
             className="cursor-pointer opacity-0 group-hover/row:opacity-100 p-0.5 shrink-0 rounded-sm text-surface-400 hover:text-semantic-error hover:bg-semantic-error/10 transition-all outline-hidden focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-semantic-error"
           >

@@ -81,6 +81,7 @@ export interface SettingsState {
   confirmBeforePermanentDelete: boolean;
   confirmBeforeDeleteCalendar: boolean;
   confirmBeforeDeleteAccount: boolean;
+  confirmBeforeDeleteFilter: boolean;
   confirmBeforeDeleteTag: boolean;
   deleteSubtasksWithParent: SubtaskDeletionBehavior;
   startOfWeek: StartOfWeek;
@@ -160,6 +161,7 @@ export interface SettingsActions {
   setConfirmBeforePermanentDelete: (confirm: boolean) => void;
   setConfirmBeforeDeleteCalendar: (confirm: boolean) => void;
   setConfirmBeforeDeleteAccount: (confirm: boolean) => void;
+  setConfirmBeforeDeleteFilter: (confirm: boolean) => void;
   setConfirmBeforeDeleteTag: (confirm: boolean) => void;
   setDeleteSubtasksWithParent: (behavior: SubtaskDeletionBehavior) => void;
   setStartOfWeek: (day: StartOfWeek) => void;

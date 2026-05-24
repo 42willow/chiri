@@ -1,5 +1,8 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { useAccounts, useDeleteAccount, useDeleteCalendar } from '$hooks/queries/useAccounts';
+import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
+import { useCalendarDeletion } from '$hooks/deletion/useCalendarDeletion';
+import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
+import { useAccounts } from '$hooks/queries/useAccounts';
 import { useFilters } from '$hooks/queries/useFilters';
 import { useTags } from '$hooks/queries/useTags';
 import { useCreateTask } from '$hooks/queries/useTasks';
@@ -16,10 +19,8 @@ import {
   useSetSortConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useMenuEvents } from '$hooks/system/useMenuEvents';
-import { useConfirmTaskDelete } from '$hooks/useConfirmTaskDelete';
 import type { SettingsCategory, SettingsSubtab, SortDirection, SortMode } from '$types';
 
 export const useMenuHandlers = (
@@ -64,10 +65,9 @@ export const useMenuHandlers = (
   const setAllTasksViewMutation = useSetAllTasksView();
   const setRecentlyDeletedViewMutation = useSetRecentlyDeletedView();
   const { toggleSidebarCollapsed } = useSettingsStore();
-  const { confirmAndDelete } = useConfirmTaskDelete();
-  const deleteAccountMutation = useDeleteAccount();
-  const deleteCalendarMutation = useDeleteCalendar();
-  const { confirm, close } = useConfirmDialog();
+  const { moveTaskToRecentlyDeleted } = useTaskDeletion();
+  const { deleteAccount } = useAccountDeletion();
+  const { deleteCalendar } = useCalendarDeletion();
 
   // Separate refs for each callback to avoid object reference changes
   const onNewTaskRef = useRef<(() => void) | null>(null);
@@ -208,9 +208,9 @@ export const useMenuHandlers = (
     if (uiState?.activeView === 'recently-deleted') return;
     const selectedTaskId = uiState?.selectedTaskId ?? null;
     if (selectedTaskId) {
-      await confirmAndDelete(selectedTaskId);
+      await moveTaskToRecentlyDeleted(selectedTaskId);
     }
-  }, [uiState?.activeView, uiState?.selectedTaskId, confirmAndDelete]);
+  }, [uiState?.activeView, uiState?.selectedTaskId, moveTaskToRecentlyDeleted]);
 
   type ListItem =
     | { type: 'all' }
@@ -298,19 +298,9 @@ export const useMenuHandlers = (
 
   const handleRemoveAccount = useCallback(
     async (accountId: string) => {
-      const account = accounts.find((a) => a.id === accountId);
-      const name = account?.name ?? 'this account';
-      const confirmed = await confirm({
-        title: 'Remove Account',
-        message: `Are you sure you want to remove "${name}"? All associated calendars and tasks will be deleted.`,
-        confirmLabel: 'Remove',
-      });
-      close();
-      if (confirmed) {
-        deleteAccountMutation.mutate(accountId);
-      }
+      await deleteAccount(accountId, accounts);
     },
-    [accounts, close, confirm, deleteAccountMutation],
+    [accounts, deleteAccount],
   );
 
   const handleSyncCalendar = useCallback(
@@ -332,21 +322,9 @@ export const useMenuHandlers = (
 
   const handleDeleteCalendar = useCallback(
     async (calendarId: string, accountId: string) => {
-      const account = accounts.find((a) => a.id === accountId);
-      const calendar = account?.calendars.find((c) => c.id === calendarId);
-      const confirmed = await confirm({
-        title: 'Delete calendar',
-        subtitle: calendar?.displayName,
-        message: 'Are you sure? This calendar and all its tasks will be deleted from the server.',
-        confirmLabel: 'Delete',
-        destructive: true,
-      });
-      close();
-      if (confirmed) {
-        deleteCalendarMutation.mutate({ accountId, calendarId });
-      }
+      await deleteCalendar(calendarId, accountId, accounts, activeCalendarId);
     },
-    [accounts, close, confirm, deleteCalendarMutation],
+    [accounts, activeCalendarId, deleteCalendar],
   );
 
   // Update refs with latest callbacks
