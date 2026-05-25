@@ -9,6 +9,8 @@ import type {
 
 export const DEFAULT_DAY_OF_WEEK = 'monday';
 
+export const DEFAULT_CALENDAR_NAME = 'Default calendar';
+
 // Default time for date pickers when no time is specified
 export const DEFAULT_TIME = {
   hours: 12,

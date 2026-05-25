@@ -1,4 +1,5 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
+import { DEFAULT_CALENDAR_NAME } from '$constants';
 import { getAllAccounts } from '$lib/database/accounts';
 import { rowToCalendar } from '$lib/database/converters';
 import { getTasksByCalendar } from '$lib/database/tasks';
@@ -22,7 +23,7 @@ export const addCalendar = async (
   }
 
   const calendarId = calendarData.id ?? generateUUID();
-  const displayName = calendarData.displayName ?? 'Tasks';
+  const displayName = calendarData.displayName ?? DEFAULT_CALENDAR_NAME;
   const url = calendarData.url ?? '';
 
   await conn.execute(

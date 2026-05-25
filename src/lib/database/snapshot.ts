@@ -1,4 +1,5 @@
 import type DatabasePlugin from '@tauri-apps/plugin-sql';
+import { DEFAULT_CALENDAR_NAME } from '$constants';
 import { createAccount, getAllAccounts } from '$lib/database/accounts';
 import { addCalendar } from '$lib/database/calendars';
 import { bootstrapDefaultFilters, getAllFilters } from '$lib/database/filters';
@@ -22,7 +23,7 @@ const bootstrapLocalAccount = async (conn: DatabasePlugin) => {
   });
   await addCalendar(conn, accountId, {
     id: calendarId,
-    displayName: 'Tasks',
+    displayName: DEFAULT_CALENDAR_NAME,
     url: `local://${calendarId}`,
     icon: 'calendar',
   });

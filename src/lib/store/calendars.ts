@@ -1,3 +1,4 @@
+import { DEFAULT_CALENDAR_NAME } from '$constants';
 import { db } from '$lib/database';
 import { loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
@@ -17,7 +18,7 @@ export const addCalendar = (accountId: string, calendarData: Partial<Calendar>) 
   const calendar: Calendar = {
     ...calendarData,
     id: calendarData.id ?? generateUUID(),
-    displayName: calendarData.displayName ?? 'Tasks',
+    displayName: calendarData.displayName ?? DEFAULT_CALENDAR_NAME,
     url: calendarData.url ?? '',
     accountId,
     sortOrder,
