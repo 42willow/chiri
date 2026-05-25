@@ -43,6 +43,7 @@ import { useWebDAVPush } from '$hooks/useWebDAVPush';
 import { getTasksByCalendar } from '$lib/store/tasks';
 
 import type { CalDAVConfig } from '$utils/mobileconfig';
+import { shouldShowOnboarding } from '$utils/onboarding';
 
 const App = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -137,6 +138,7 @@ const App = () => {
   }, [checkForUpdates]);
 
   const { data: accounts = [], isPending: accountsPending } = useAccounts();
+  const { data: tasks = [], isPending: tasksPending } = useTasks();
   const {
     sidebarCollapsed,
     sidebarWidth,
@@ -174,7 +176,13 @@ const App = () => {
     };
   }, [isEditorResizing, setTaskEditorWidth]);
 
-  const showOnboarding = !onboardingCompleted && !accountsPending && accounts.length === 0;
+  const showOnboarding = shouldShowOnboarding({
+    onboardingCompleted,
+    accountsPending,
+    tasksPending,
+    accounts,
+    tasks,
+  });
 
   // system tray integration (sync button, status updates)
   useTray({
@@ -241,7 +249,6 @@ const App = () => {
   });
 
   const { data: uiState } = useUIState();
-  const { data: tasks = [] } = useTasks();
   const isEditorOpen = uiState?.isEditorOpen ?? false;
   const selectedTaskId = uiState?.selectedTaskId ?? null;
   const selectedTask = tasks.find((t) => t.id === selectedTaskId);

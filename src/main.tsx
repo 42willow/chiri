@@ -1,13 +1,14 @@
 import { QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
-import ReactDOM from 'react-dom/client';
+import React, { type ReactNode } from 'react';
+import ReactDOM, { type Root } from 'react-dom/client';
+import { BootstrapErrorScreen } from '$components/BootstrapErrorScreen';
 import { ErrorBoundary } from '$components/ErrorBoundary';
 import {
   applyHiddenWindowDockIconState,
+  deleteDatabase,
   forceShowWindow,
   initializeApp,
   shouldShowWindowOnStartup,
-  showBootstrapError,
   showWindow,
 } from '$lib/bootstrap';
 import { loggers } from '$lib/logger';
@@ -26,31 +27,45 @@ import '$styles/index.css';
 
 const log = loggers.main;
 
+let root: Root | null = null;
+
+const renderRoot = (children: ReactNode) => {
+  const rootElement = document.getElementById('root');
+  if (!rootElement) {
+    throw new Error('Root element not found');
+  }
+
+  root ??= ReactDOM.createRoot(rootElement);
+  root.render(<React.StrictMode>{children}</React.StrictMode>);
+};
+
 const renderApp = () => {
-  ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        <QueryClientProvider client={queryClient}>
-          <SettingsProvider>
-            <NotificationProvider>
-              <ConnectionProvider>
-                <SyncProvider>
-                  <DismissableLayerProvider>
-                    <ModalStateProvider>
-                      <ConfirmDialogProvider>
-                        <ToastProvider />
-                        <App />
-                      </ConfirmDialogProvider>
-                    </ModalStateProvider>
-                  </DismissableLayerProvider>
-                </SyncProvider>
-              </ConnectionProvider>
-            </NotificationProvider>
-          </SettingsProvider>
-        </QueryClientProvider>
-      </ErrorBoundary>
-    </React.StrictMode>,
+  renderRoot(
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <SettingsProvider>
+          <NotificationProvider>
+            <ConnectionProvider>
+              <SyncProvider>
+                <DismissableLayerProvider>
+                  <ModalStateProvider>
+                    <ConfirmDialogProvider>
+                      <ToastProvider />
+                      <App />
+                    </ConfirmDialogProvider>
+                  </ModalStateProvider>
+                </DismissableLayerProvider>
+              </SyncProvider>
+            </ConnectionProvider>
+          </NotificationProvider>
+        </SettingsProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>,
   );
+};
+
+const renderBootstrapError = (error: unknown) => {
+  renderRoot(<BootstrapErrorScreen error={error} onResetDatabase={deleteDatabase} />);
 };
 
 const bootstrap = async () => {
@@ -65,7 +80,9 @@ const bootstrap = async () => {
 
 await bootstrap().catch(async (error) => {
   log.error('Failed to initialize app:', error);
-  showBootstrapError(error);
+  renderBootstrapError(error);
   // still show window so user can see the error
-  forceShowWindow();
+  await forceShowWindow().catch((windowError) => {
+    log.error('Failed to show bootstrap error window:', windowError);
+  });
 });

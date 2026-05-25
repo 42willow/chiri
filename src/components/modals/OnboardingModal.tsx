@@ -2,7 +2,6 @@ import AlertTriangle from 'lucide-react/icons/alert-triangle';
 import ArrowRight from 'lucide-react/icons/arrow-right';
 import Bell from 'lucide-react/icons/bell';
 import ChevronDown from 'lucide-react/icons/chevron-down';
-import HardDrive from 'lucide-react/icons/hard-drive';
 import Monitor from 'lucide-react/icons/monitor';
 import Palette from 'lucide-react/icons/palette';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
@@ -16,7 +15,7 @@ import { getColorSchemeAccentColors } from '$constants/colorSchemes';
 import { ONBOARDING_STEPS } from '$constants/onboarding';
 import { SYNC_INTERVAL_OPTIONS } from '$constants/settings';
 import { THEME_OPTIONS } from '$constants/theme';
-import { useAccounts, useAddCalendar, useCreateAccount } from '$hooks/queries/useAccounts';
+import { useAccounts } from '$hooks/queries/useAccounts';
 import { useNotificationContext } from '$hooks/store/useNotificationContext';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { usePlatform } from '$hooks/system/usePlatform';
@@ -60,8 +59,6 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
     setNotifyReminders,
   } = useSettingsStore();
   const { data: accounts = [] } = useAccounts();
-  const createAccountMutation = useCreateAccount();
-  const addCalendarMutation = useAddCalendar();
   const resolvedAccentColor = useResolvedAccentColor();
   const { isGNOME } = usePlatform();
   const isMac = isMacPlatform();
@@ -116,31 +113,6 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
     onAddAccount();
   };
 
-  const handleUseLocally = async () => {
-    const accountId = crypto.randomUUID();
-    const calendarId = crypto.randomUUID();
-    await createAccountMutation.mutateAsync({
-      id: accountId,
-      name: 'Local',
-      caldav: null,
-      calendars: [],
-      isActive: true,
-      sortOrder: 0,
-    });
-    addCalendarMutation.mutate({
-      accountId,
-      calendarData: {
-        id: calendarId,
-        displayName: 'Tasks',
-        color: resolvedAccentColor,
-        icon: 'calendar',
-        emoji: '',
-        url: `local://${calendarId}`,
-      },
-    });
-    setCurrentStep(currentStep + 1);
-  };
-
   const handleSkip = () => {
     setOnboardingCompleted(true);
     onComplete();
@@ -171,14 +143,6 @@ export const OnboardingModal = ({ onComplete, onAddAccount }: OnboardingModalPro
           >
             <User className="w-5 h-5" />
             Add CalDAV Account
-          </button>
-          <button
-            type="button"
-            onClick={handleUseLocally}
-            className="w-full px-4 py-3 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 font-medium rounded-lg transition-colors flex items-center justify-center gap-2 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-          >
-            <HardDrive className="w-5 h-5" />
-            Use locally
           </button>
           <button
             type="button"

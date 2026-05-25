@@ -6,7 +6,6 @@ import { relaunch } from '@tauri-apps/plugin-process';
 import { settingsStore } from '$context/settingsContext';
 import { preloadAutostartState } from '$hooks/system/useAutostart';
 import { db } from '$lib/database';
-import { createBootstrapErrorUI } from '$lib/errorUI';
 import { initLogger, loggers } from '$lib/logger';
 import { dataStore } from '$lib/store';
 import { initAppMenu } from '$utils/menu';
@@ -197,15 +196,6 @@ export const deleteDatabase = async () => {
     log.error('Failed to delete database:', error);
     throw error;
   }
-};
-
-/**
- * display an error message in the DOM when initialization fails
- *
- * @param error - the error that occurred during initialization
- */
-export const showBootstrapError = async (error: unknown): Promise<void> => {
-  await createBootstrapErrorUI(error);
 };
 
 export const forceShowWindow = async () => {

@@ -2,6 +2,8 @@ import { openUrl } from '@tauri-apps/plugin-opener';
 import { arch, exeExtension, locale, platform, version } from '@tauri-apps/plugin-os';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 import { loggers } from '$lib/logger';
+import { createErrorReportIssueUrl } from '$utils/githubIssue';
+import { formatPlatformName } from '$utils/platform';
 import { getAppInfo } from '$utils/version';
 
 const log = loggers.errorBoundary;
@@ -74,38 +76,24 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     try {
       const [currentPlatform, currentArch, currentVersion, currentExtension, currentLocale] =
         await Promise.all([platform(), arch(), version(), exeExtension(), locale()]);
+      const displayPlatform = formatPlatformName(currentPlatform);
 
-      const errorTitle = `Runtime error on ${currentPlatform} ${currentVersion}`;
-      const errorBody = `**System Information:**
-\`\`\`
-App Version: ${getAppInfo().version}
-OS: ${currentPlatform}
-Version: ${currentVersion}
-Architecture: ${currentArch}
-App Extension: ${currentExtension || 'Unknown'}
-System Locale: ${currentLocale}
-\`\`\`
+      const errorTitle = `Runtime error on ${displayPlatform} ${currentVersion}`;
+      const systemInformation = `- App Version: ${getAppInfo().version}
+- OS: ${displayPlatform}
+- Version: ${currentVersion}
+- Architecture: ${currentArch}
+- App Extension: ${currentExtension || 'Unknown'}
+- System Locale: ${currentLocale}`;
 
-**Error Message:**
-\`\`\`
-${error.message}
-
-Stack Trace:
-${error.stack || 'No stack trace available'}
-\`\`\`
-
-**Component Stack:**
-\`\`\`
-${errorInfo?.componentStack || 'No component stack available'}
-\`\`\`
-
-**Steps to reproduce:**
-<!-- Describe what you were doing when this happened -->
-
-**Additional context:**
-<!-- Any other relevant information -->`;
-
-      const issueUrl = `https://github.com/chiriapp/chiri/issues/new?title=${encodeURIComponent(errorTitle)}&body=${encodeURIComponent(errorBody)}`;
+      const issueUrl = createErrorReportIssueUrl({
+        title: errorTitle,
+        steps: '<!-- Describe what you were doing when this happened -->',
+        errorMessage: error.message,
+        stackTrace: error.stack || 'No stack trace available',
+        componentStack: errorInfo?.componentStack || 'No component stack available',
+        systemInformation,
+      });
       await openUrl(issueUrl);
     } catch (err) {
       log.error('Failed to open issue report:', err);

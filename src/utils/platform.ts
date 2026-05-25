@@ -5,6 +5,34 @@ import { loggers } from '$lib/logger';
 let isCefRuntime: boolean | null = null;
 const log = loggers.platform;
 
+const platformDisplayNames: Record<string, string> = {
+  android: 'Android',
+  dragonfly: 'DragonFly BSD',
+  freebsd: 'FreeBSD',
+  ios: 'iOS',
+  linux: 'Linux',
+  macos: 'macOS',
+  netbsd: 'NetBSD',
+  openbsd: 'OpenBSD',
+  solaris: 'Solaris',
+  windows: 'Windows',
+};
+
+export const formatPlatformName = (platformName: string) => {
+  const normalizedPlatform = platformName.toLowerCase();
+  const displayName = platformDisplayNames[normalizedPlatform];
+
+  if (displayName) {
+    return displayName;
+  }
+
+  return platformName
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1).toLowerCase()}`)
+    .join(' ');
+};
+
 /**
  * Detect if running under CEF (Chromium Embedded Framework) runtime
  */
