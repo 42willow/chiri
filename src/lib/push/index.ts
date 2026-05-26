@@ -70,20 +70,21 @@ const RENEWAL_THRESHOLD_HOURS = 48;
  * Global message handler - set via initializePushManager
  */
 let globalMessageHandler: PushMessageHandler | null = null;
+const pushEnableInFlight = new Map<string, Promise<boolean>>();
 
-/**
- * Helper to get cached subscriptions for a calendar, falling back to DB
- */
-const getCalendarSubscriptions = async (calendarId: string) => {
-  // Try to get from cache first
-  const cached = queryClient.getQueryData<PushSubscription[]>(
-    queryKeys.pushSubscriptions.byCalendar(calendarId),
-  );
-  if (cached) {
-    return cached;
-  }
+const getPushSetupKey = (
+  accountId: string,
+  calendar: Calendar,
+  providerConfig: PushProviderConfig,
+): string =>
+  [
+    accountId,
+    calendar.id,
+    providerConfig.providerId,
+    providerConfig.ntfyConfig?.serverUrl ?? '',
+  ].join('|');
 
-  // Fetch from DB and cache it
+const getFreshCalendarSubscriptions = async (calendarId: string) => {
   const subscriptions = await db.getPushSubscriptionsByCalendar(calendarId);
   queryClient.setQueryData(queryKeys.pushSubscriptions.byCalendar(calendarId), subscriptions);
   return subscriptions;
@@ -173,6 +174,63 @@ const subscriptionMatchesProvider = (
     : true;
 };
 
+const isRenewablyValidSubscription = (
+  subscription: PushSubscription,
+  providerConfig: PushProviderConfig,
+): boolean =>
+  subscription.expiresAt > new Date(Date.now() + RENEWAL_THRESHOLD_HOURS * 60 * 60 * 1000) &&
+  subscriptionMatchesProvider(subscription, providerConfig);
+
+const isActiveProviderSubscription = (
+  subscription: PushSubscription,
+  providerConfig: PushProviderConfig,
+): boolean =>
+  subscription.expiresAt > new Date() && subscriptionMatchesProvider(subscription, providerConfig);
+
+const unregisterStoredSubscription = async (
+  accountId: string,
+  subscription: PushSubscription,
+): Promise<void> => {
+  if (!isConnected(accountId)) return;
+
+  try {
+    const conn = getConnection(accountId);
+    await unregisterPushSubscription(subscription.registrationUrl, conn.credentials);
+  } catch (error) {
+    log.warn('Failed to unregister push subscription from server:', error);
+  }
+};
+
+const removeStoredSubscription = async (subscription: PushSubscription): Promise<void> => {
+  await removeProviderSubscription(subscription);
+  await db.deletePushSubscription(subscription.id);
+  removeSubscriptionFromCaches(subscription);
+};
+
+const removeDuplicateProviderSubscriptions = async (
+  accountId: string,
+  keptSubscription: PushSubscription,
+  subscriptions: PushSubscription[],
+  providerConfig: PushProviderConfig,
+): Promise<number> => {
+  const duplicates = subscriptions.filter(
+    (subscription) =>
+      subscription.id !== keptSubscription.id &&
+      isActiveProviderSubscription(subscription, providerConfig),
+  );
+
+  for (const subscription of duplicates) {
+    await unregisterStoredSubscription(accountId, subscription);
+    await removeStoredSubscription(subscription);
+  }
+
+  if (duplicates.length > 0) {
+    invalidatePushCaches(keptSubscription.calendarId);
+  }
+
+  return duplicates.length;
+};
+
 const restoreProviderSubscription = async (
   subscription: PushSubscription,
   calendar: Calendar,
@@ -208,15 +266,22 @@ export const subscribeCalendarToPush = async (
     return null;
   }
 
-  // Check if we already have a valid subscription (use cached data)
-  const existingSubscriptions = await getCalendarSubscriptions(calendar.id);
-  const validSubscription = existingSubscriptions.find(
-    (sub) =>
-      sub.expiresAt > new Date(Date.now() + RENEWAL_THRESHOLD_HOURS * 60 * 60 * 1000) &&
-      subscriptionMatchesProvider(sub, providerConfig),
+  // Check fresh storage so stale query data can't race a just-created subscription.
+  const existingSubscriptions = await getFreshCalendarSubscriptions(calendar.id);
+  const validSubscription = existingSubscriptions.find((sub) =>
+    isRenewablyValidSubscription(sub, providerConfig),
   );
 
   if (validSubscription) {
+    const removed = await removeDuplicateProviderSubscriptions(
+      accountId,
+      validSubscription,
+      existingSubscriptions,
+      providerConfig,
+    );
+    if (removed > 0) {
+      log.info(`Removed ${removed} duplicate push subscription(s) for ${calendar.displayName}`);
+    }
     log.debug(`Calendar ${calendar.displayName} already has a valid push subscription`);
     return validSubscription;
   }
@@ -233,14 +298,8 @@ export const subscribeCalendarToPush = async (
   );
 
   for (const subscription of mismatchedSubscriptions) {
-    try {
-      await unregisterPushSubscription(subscription.registrationUrl, conn.credentials);
-    } catch (error) {
-      log.warn('Failed to unregister push subscription from previous push provider:', error);
-    }
-
-    await removeProviderSubscription(subscription);
-    await db.deletePushSubscription(subscription.id);
+    await unregisterStoredSubscription(accountId, subscription);
+    await removeStoredSubscription(subscription);
   }
 
   if (mismatchedSubscriptions.length > 0) {
@@ -306,7 +365,7 @@ export const subscribeCalendarToPush = async (
  * Unsubscribe a calendar from WebDAV Push
  */
 export const unsubscribeCalendarFromPush = async (accountId: string, calendarId: string) => {
-  const subscriptions = await getCalendarSubscriptions(calendarId);
+  const subscriptions = await getFreshCalendarSubscriptions(calendarId);
 
   if (subscriptions.length === 0) {
     log.debug(`No push subscriptions to remove for calendar ${calendarId}`);
@@ -461,19 +520,27 @@ export const initializePushManager = (onPushMessage: PushMessageHandler) => {
  * 2. Registers with the CalDAV server
  * 3. Starts listening for messages
  */
-export const enablePushForCalendar = async (
+const enablePushForCalendarInner = async (
   accountId: string,
   calendar: Calendar,
   providerConfig: PushProviderConfig = DEFAULT_PUSH_PROVIDER_CONFIG,
 ) => {
-  const subscriptions = await getCalendarSubscriptions(calendar.id);
-  const validSubscription = subscriptions.find(
-    (sub) =>
-      sub.expiresAt > new Date(Date.now() + RENEWAL_THRESHOLD_HOURS * 60 * 60 * 1000) &&
-      subscriptionMatchesProvider(sub, providerConfig),
+  const subscriptions = await getFreshCalendarSubscriptions(calendar.id);
+  const validSubscription = subscriptions.find((sub) =>
+    isRenewablyValidSubscription(sub, providerConfig),
   );
 
   if (validSubscription) {
+    const removed = await removeDuplicateProviderSubscriptions(
+      accountId,
+      validSubscription,
+      subscriptions,
+      providerConfig,
+    );
+    if (removed > 0) {
+      log.info(`Removed ${removed} duplicate push subscription(s) for ${calendar.displayName}`);
+    }
+
     const restored = await restoreProviderSubscription(validSubscription, calendar, providerConfig);
     if (restored) {
       return startPushListeningForSubscription(validSubscription, providerConfig);
@@ -513,6 +580,30 @@ export const enablePushForCalendar = async (
   return true;
 };
 
+export const enablePushForCalendar = async (
+  accountId: string,
+  calendar: Calendar,
+  providerConfig: PushProviderConfig = DEFAULT_PUSH_PROVIDER_CONFIG,
+) => {
+  const setupKey = getPushSetupKey(accountId, calendar, providerConfig);
+  const inFlight = pushEnableInFlight.get(setupKey);
+  if (inFlight) {
+    log.debug(`Push setup already in flight for ${calendar.displayName}`);
+    return inFlight;
+  }
+
+  const setup = enablePushForCalendarInner(accountId, calendar, providerConfig);
+  pushEnableInFlight.set(setupKey, setup);
+
+  try {
+    return await setup;
+  } finally {
+    if (pushEnableInFlight.get(setupKey) === setup) {
+      pushEnableInFlight.delete(setupKey);
+    }
+  }
+};
+
 /**
  * Disable push for a calendar
  *
@@ -523,7 +614,7 @@ export const disablePushForCalendar = async (accountId: string, calendarId: stri
   stopPushListening(calendarId);
 
   // Remove provider subscription
-  const subscriptions = await getCalendarSubscriptions(calendarId);
+  const subscriptions = await getFreshCalendarSubscriptions(calendarId);
   for (const subscription of subscriptions) {
     await removeProviderSubscription(subscription);
   }

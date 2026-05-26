@@ -238,9 +238,16 @@ export const registerPushSubscription = async (
       return null;
     }
 
-    const registrationUrl = response.headers.location || response.headers.Location;
-    if (!registrationUrl) {
+    const registrationLocation = response.headers.location || response.headers.Location;
+    if (!registrationLocation) {
       log.error('Push registration response missing Location header');
+      return null;
+    }
+    let registrationUrl: string;
+    try {
+      registrationUrl = new URL(registrationLocation, resourceUrl).toString();
+    } catch {
+      log.error(`Invalid push registration Location header: ${registrationLocation}`);
       return null;
     }
 
