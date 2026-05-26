@@ -88,7 +88,7 @@
               cargo-tauri
 
               # Node.js
-              nodejs_20
+              nodejs_22
               pnpm
 
               # Build tools
