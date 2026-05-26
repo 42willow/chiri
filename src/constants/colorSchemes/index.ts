@@ -1,5 +1,7 @@
 import { catppuccinColorScheme } from '$constants/colorSchemes/catppuccin';
 import { defaultColorScheme } from '$constants/colorSchemes/default';
+import { everforestColorScheme } from '$constants/colorSchemes/everforest';
+import { githubColorScheme } from '$constants/colorSchemes/github';
 import { gruvboxColorScheme } from '$constants/colorSchemes/gruvbox';
 import { nordColorScheme } from '$constants/colorSchemes/nord';
 import { tokyoNightColorScheme } from '$constants/colorSchemes/tokyoNight';
@@ -8,6 +10,8 @@ import type { ColorSchemeDefinition, ColorSchemeFlavor, ColorSchemeMode } from '
 export const COLOR_SCHEMES: ColorSchemeDefinition[] = [
   defaultColorScheme,
   catppuccinColorScheme,
+  everforestColorScheme,
+  githubColorScheme,
   gruvboxColorScheme,
   nordColorScheme,
   tokyoNightColorScheme,
@@ -45,11 +49,12 @@ export const getColorSchemeColorPresets = (
 
 export const getDefaultAccentColor = () => defaultColorScheme.flavors[0].defaultAccent;
 
+export const getColorSchemeFlavorDefaultAccentColor = (flavor: ColorSchemeFlavor) =>
+  flavor.accentColors.find((color) => color.name === flavor.defaultAccent)?.value ??
+  flavor.accentColors[0]?.value ??
+  '#f085cc';
+
 export const getFallbackItemColor = () => {
   const flavor = defaultColorScheme.flavors[0];
-  return (
-    flavor.accentColors.find((color) => color.name === flavor.defaultAccent)?.value ??
-    flavor.accentColors[0]?.value ??
-    '#f085cc'
-  );
+  return getColorSchemeFlavorDefaultAccentColor(flavor);
 };
