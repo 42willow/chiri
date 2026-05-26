@@ -51,7 +51,7 @@ let
       allow_password_login = true
 
       [dav_push]
-      enabled = false
+      enabled = true
 
       [nextcloud_login]
       enabled = true

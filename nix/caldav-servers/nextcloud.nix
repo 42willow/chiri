@@ -1,4 +1,5 @@
 # Nextcloud test server. Full PHP groupware stack with CalDAV/CardDAV
+# and the DAV Push extension enabled for WebDAV Push integration tests.
 #
 # defaults:
 #   - port 8081 (so it doesn't collide with Baikal on 8080)
@@ -21,11 +22,8 @@ let
     pkgs.lib.findFirst (name: builtins.hasAttr name pkgs)
       (throw "No supported Nextcloud package found in nixpkgs")
       [
-        "nextcloud35"
-        "nextcloud34"
         "nextcloud33"
         "nextcloud32"
-        "nextcloud31"
       ];
 
   nextcloud = pkgs.${nextcloudPackageName}.overrideAttrs (old: {
@@ -49,10 +47,29 @@ let
     ])
   );
 
+  davPushApp = pkgs.fetchurl {
+    url = "https://github.com/bitfireAT/nc_ext_dav_push/releases/download/v1.0.1/dav_push.tar.gz";
+    hash = "sha256-tSLsSgPHdpfcKPzJubwchBqQykLf9WV/mXfKKM2CSxs=";
+  };
+
+  davPushTestCa = pkgs.writeText "chiri-dav-push-test-ca.pem" ''
+    -----BEGIN CERTIFICATE-----
+    MIIBMjCB2AIJAIRABrIYORE/MAoGCCqGSM49BAMCMCExHzAdBgNVBAMMFkNoaXJp
+    IERBViBQdXNoIFRlc3QgQ0EwHhcNMjYwNTI2MTU0ODI0WhcNMzYwNTIzMTU0ODI0
+    WjAhMR8wHQYDVQQDDBZDaGlyaSBEQVYgUHVzaCBUZXN0IENBMFkwEwYHKoZIzj0C
+    AQYIKoZIzj0DAQcDQgAEUVmS2qVHAJLbTLnQ4+GnOBk3Da5rKfzzzR1pxf/DvwL+
+    RdJWhc0/IoInaQ6/jUP57gZb4yI0LouI0AfGKudVSzAKBggqhkjOPQQDAgNJADBG
+    AiEAvtv58XgOuNJYEbzcErRV7AwUoUklKadI7Z9akuZ99HECIQCJorop36ry147T
+    N4L7KueS1wV8nDYw/NX4p4i/iI+IsQ==
+    -----END CERTIFICATE-----
+  '';
+
   script = pkgs.writeShellApplication {
     name = "caldav-nextcloud";
     runtimeInputs = [
       php
+      pkgs.gnutar
+      pkgs.gzip
       pkgs.rsync
     ];
     text = ''
@@ -79,6 +96,10 @@ let
       fi
       chmod -R u+w "$INSTALL_DIR"
       mkdir -p "$CONFIG_DIR" "$NEXTCLOUD_DATA_DIR"
+
+      rm -rf "$INSTALL_DIR/apps/dav_push"
+      tar -xzf "${davPushApp}" -C "$INSTALL_DIR/apps"
+      chmod -R u+w "$INSTALL_DIR/apps/dav_push"
 
       export NEXTCLOUD_CONFIG_DIR="$CONFIG_DIR"
       export CI=1
@@ -111,6 +132,11 @@ let
         # case a future Nextcloud version creates it during installation.
         occ dav:create-calendar "$USERNAME" default || true
       fi
+
+      occ config:system:set allow_local_remote_servers --type=boolean --value=true
+      occ config:system:set dns_pinning --type=boolean --value=false
+      occ security:certificates:import "${davPushTestCa}" || true
+      occ app:enable dav_push || true
 
       ROUTER="$DATA_DIR/router.php"
       cat > "$ROUTER" <<'EOF'
