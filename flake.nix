@@ -113,18 +113,37 @@
               export CXXFLAGS_x86_64_apple_darwin="-isysroot ${pkgs.apple-sdk_14}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
             ''}
 
-            echo "Chiri dev environment"
-            echo ""
-            echo "commands:"
-            echo "  just install    - install dependencies"
-            echo "  just dev        - start development server"
-            echo "  just build      - build app"
-            echo "  nix build       - build app with nix"
-            echo ""
-            echo "CEF build:"
-            echo "  just build-cef  - build with Chromium"
-            echo "  just dev-cef    - dev mode with Chromium"
-            echo ""
+            bold="$(tput bold 2>/dev/null || true)"
+            green="$(tput setaf 2 2>/dev/null || true)"
+            cyan="$(tput setaf 6 2>/dev/null || true)"
+            dim="$(tput dim 2>/dev/null || true)"
+            reset="$(tput sgr0 2>/dev/null || true)"
+
+            os_name="$(uname -s)"
+            case "$os_name" in
+              Darwin)
+                os_label="macOS $(sw_vers -productVersion 2>/dev/null || uname -r)"
+                ;;
+              Linux)
+                if [ -r /etc/os-release ]; then
+                  os_label="$(. /etc/os-release && printf "%s" "$PRETTY_NAME")"
+                else
+                  os_label="Linux $(uname -r)"
+                fi
+                ;;
+              *)
+                os_label="$os_name $(uname -r)"
+                ;;
+            esac
+
+            printf "🍃%b%b Chiri dev environment%b\n\n" "$green" "$bold" "$reset"
+            printf "%bThe following commands are available:%b\n" "$bold" "$reset"
+            printf "  %b%-14s%b %b%s%b\n" "$cyan" "just install" "$reset" "$dim" "install dependencies with pnpm" "$reset"
+            printf "  %b%-14s%b %b%s%b\n" "$cyan" "just dev" "$reset" "$dim" "start development server" "$reset"
+            printf "  %b%-14s%b %b%s%b\n" "$cyan" "just build" "$reset" "$dim" "build app" "$reset"
+            printf "  %b%-14s%b %b%s%b\n" "$cyan" "nix build" "$reset" "$dim" "build app with Nix" "$reset"
+            printf "\nRunning Node ${pkgs.nodejs_20.version}, pnpm ${pkgs.pnpm.version}, Rust ${rustToolchain.version}"
+            printf "\n%bUsing %s (${pkgs.stdenv.hostPlatform.system})%b\n" "$dim" "$os_label" "$reset"
           '';
 
           # Required for Tauri on macOS
