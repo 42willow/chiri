@@ -37,6 +37,8 @@ import type { SettingsCategory, SettingsSubtab } from '$types';
 
 interface SettingsModalProps {
   onClose: () => void;
+  onAddAccount: () => void;
+  onEditAccount: (accountId: string) => void;
   initialCategory?: SettingsCategory;
   initialSubtab?: SettingsSubtab;
 }
@@ -47,7 +49,13 @@ type SettingsSubtabInfo = {
   icon: React.ReactNode;
 };
 
-export const SettingsModal = ({ onClose, initialCategory, initialSubtab }: SettingsModalProps) => {
+export const SettingsModal = ({
+  onClose,
+  onAddAccount,
+  onEditAccount,
+  initialCategory,
+  initialSubtab,
+}: SettingsModalProps) => {
   const [activeCategory, setActiveCategory] = useState<SettingsCategory>(initialCategory || 'app');
   const [activeSubtabs, setActiveSubtabs] = useState<Record<SettingsCategory, SettingsSubtab>>({
     tasks: initialCategory === 'tasks' && initialSubtab ? initialSubtab : 'defaults',
@@ -187,7 +195,13 @@ export const SettingsModal = ({ onClose, initialCategory, initialSubtab }: Setti
 
           {activeCategory === 'accounts' && (
             <>
-              {currentSubtab === 'connections' && <ConnectionsSettings accounts={accounts} />}
+              {currentSubtab === 'connections' && (
+                <ConnectionsSettings
+                  accounts={accounts}
+                  onAddAccount={onAddAccount}
+                  onEditAccount={onEditAccount}
+                />
+              )}
               {currentSubtab === 'sync' && <SyncSettings />}
             </>
           )}

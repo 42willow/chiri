@@ -2,6 +2,7 @@ import { listen } from '@tauri-apps/api/event';
 import { useEffect } from 'react';
 import { DEFAULT_SORT_CONFIG } from '$constants';
 import { MENU_EVENTS } from '$constants/menu';
+import { useModalState } from '$context/modalStateContext';
 import { useUIState } from '$hooks/queries/useUIState';
 import { loggers } from '$lib/logger';
 import type { SortDirection, SortMode } from '$types';
@@ -131,6 +132,47 @@ const SORT_MODE_MAP: Record<string, SortMode> = {
   [MENU_EVENTS.SORT_MODIFIED]: 'modified',
 };
 
+const MODAL_BLOCKED_MENU_EVENTS = new Set<string>([
+  MENU_EVENTS.NEW_TASK,
+  MENU_EVENTS.SYNC,
+  MENU_EVENTS.PREFERENCES,
+  MENU_EVENTS.ADD_ACCOUNT,
+  MENU_EVENTS.EDIT_ACCOUNT,
+  MENU_EVENTS.ADD_CALENDAR,
+  MENU_EVENTS.IMPORT_TASKS,
+  MENU_EVENTS.SEARCH,
+  MENU_EVENTS.SHOW_KEYBOARD_SHORTCUTS,
+  MENU_EVENTS.TOGGLE_COMPLETED,
+  MENU_EVENTS.TOGGLE_UNSTARTED,
+  MENU_EVENTS.SORT_MANUAL,
+  MENU_EVENTS.SORT_SMART,
+  MENU_EVENTS.SORT_START_DATE,
+  MENU_EVENTS.SORT_DUE_DATE,
+  MENU_EVENTS.SORT_PRIORITY,
+  MENU_EVENTS.SORT_TITLE,
+  MENU_EVENTS.SORT_CREATED,
+  MENU_EVENTS.SORT_MODIFIED,
+  MENU_EVENTS.SORT_DIRECTION_ASC,
+  MENU_EVENTS.SORT_DIRECTION_DESC,
+  MENU_EVENTS.TOGGLE_SIDEBAR,
+  MENU_EVENTS.DELETE_TASK,
+  MENU_EVENTS.NAV_PREV_LIST,
+  MENU_EVENTS.NAV_NEXT_LIST,
+  MENU_EVENTS.CHECK_FOR_UPDATES,
+  MENU_EVENTS.SHOW_CHANGELOG,
+  MENU_EVENTS.ABOUT,
+  MENU_EVENTS.REMOVE_ACCOUNT,
+  MENU_EVENTS.SYNC_CALENDAR,
+  MENU_EVENTS.EDIT_CALENDAR,
+  MENU_EVENTS.EXPORT_CALENDAR,
+  MENU_EVENTS.DELETE_CALENDAR,
+]);
+
+export const isMenuEventBlockedByModal = (event: string, isModalOpen: boolean) =>
+  isModalOpen && MODAL_BLOCKED_MENU_EVENTS.has(event);
+
+type MenuEventBlocker = (event: string, label: string) => boolean;
+
 /**
  * Register a single listener and track cleanup
  */
@@ -154,11 +196,13 @@ const registerSimpleEvents = async (
   callbacks: MenuCallbacks,
   unlistenCallbacks: (() => void)[],
   isActiveRef: { current: boolean },
+  isBlocked: MenuEventBlocker,
 ): Promise<boolean> => {
   for (const config of SIMPLE_EVENTS) {
     const success = await registerListener(
       config.event,
       () => {
+        if (isBlocked(config.event, config.label)) return;
         log.debug(`${config.label} triggered`);
         const cb = callbacks[config.callback];
         if (cb && 'current' in cb) {
@@ -178,11 +222,13 @@ const registerParamEvents = async (
   callbacks: MenuCallbacks,
   unlistenCallbacks: (() => void)[],
   isActiveRef: { current: boolean },
+  isBlocked: MenuEventBlocker,
 ): Promise<boolean> => {
   for (const config of PARAM_EVENTS) {
     const success = await registerListener<Record<string, unknown>>(
       config.event,
       (payload) => {
+        if (isBlocked(config.event, config.label)) return;
         log.debug(`${config.label} triggered`, payload);
         config.handler(callbacks, payload);
       },
@@ -200,11 +246,13 @@ const registerSortModeEvents = async (
   uiState: ReturnType<typeof useUIState>['data'],
   unlistenCallbacks: (() => void)[],
   isActiveRef: { current: boolean },
+  isBlocked: MenuEventBlocker,
 ): Promise<boolean> => {
   for (const [event, mode] of Object.entries(SORT_MODE_MAP)) {
     const success = await registerListener(
       event,
       () => {
+        if (isBlocked(event, `Sort ${mode}`)) return;
         log.debug(`Sort ${mode} triggered`);
         const currentMode = uiState?.sortConfig?.mode ?? DEFAULT_SORT_CONFIG.mode;
         const currentDirection = uiState?.sortConfig?.direction ?? DEFAULT_SORT_CONFIG.direction;
@@ -224,6 +272,7 @@ const registerSortDirectionEvents = async (
   uiState: ReturnType<typeof useUIState>['data'],
   unlistenCallbacks: (() => void)[],
   isActiveRef: { current: boolean },
+  isBlocked: MenuEventBlocker,
 ): Promise<boolean> => {
   const sortDirections: Array<{ event: string; direction: SortDirection; label: string }> = [
     { event: MENU_EVENTS.SORT_DIRECTION_ASC, direction: 'asc', label: 'Ascending' },
@@ -234,6 +283,7 @@ const registerSortDirectionEvents = async (
     const success = await registerListener(
       event,
       () => {
+        if (isBlocked(event, `Sort Direction ${label}`)) return;
         log.debug(`Sort Direction ${label} triggered`);
         const currentMode = uiState?.sortConfig?.mode ?? DEFAULT_SORT_CONFIG.mode;
         callbacks.onSetSortDirection?.current?.(direction, currentMode);
@@ -252,6 +302,7 @@ const registerSortDirectionEvents = async (
  */
 export const useMenuEvents = (callbacks: MenuCallbacks) => {
   const { data: uiState } = useUIState();
+  const { isAnyModalOpen } = useModalState();
 
   useEffect(() => {
     // Skip menu event listeners under CEF - menu IPC causes deadlocks
@@ -262,15 +313,22 @@ export const useMenuEvents = (callbacks: MenuCallbacks) => {
 
     const isActiveRef = { current: true };
     const unlistenCallbacks: (() => void)[] = [];
+    const isBlocked: MenuEventBlocker = (event, label) => {
+      if (!isMenuEventBlockedByModal(event, isAnyModalOpen)) return false;
+      log.debug(`${label} ignored while a modal is open`);
+      return true;
+    };
 
     const setupListeners = async () => {
       // Register simple events (no payload)
-      if (!(await registerSimpleEvents(callbacks, unlistenCallbacks, isActiveRef))) return;
+      if (!(await registerSimpleEvents(callbacks, unlistenCallbacks, isActiveRef, isBlocked)))
+        return;
 
       // Register toggle events (need current UI state)
       const toggleSuccess = await registerListener(
         MENU_EVENTS.TOGGLE_COMPLETED,
         () => {
+          if (isBlocked(MENU_EVENTS.TOGGLE_COMPLETED, 'Toggle Completed')) return;
           log.debug('Toggle Completed triggered');
           callbacks.onToggleCompleted?.current?.(uiState?.showCompletedTasks ?? true);
         },
@@ -282,6 +340,7 @@ export const useMenuEvents = (callbacks: MenuCallbacks) => {
       const toggleUnstartedSuccess = await registerListener(
         MENU_EVENTS.TOGGLE_UNSTARTED,
         () => {
+          if (isBlocked(MENU_EVENTS.TOGGLE_UNSTARTED, 'Toggle Unstarted')) return;
           log.debug('Toggle Unstarted triggered');
           callbacks.onToggleUnstarted?.current?.(uiState?.showUnstartedTasks ?? true);
         },
@@ -291,14 +350,31 @@ export const useMenuEvents = (callbacks: MenuCallbacks) => {
       if (!toggleUnstartedSuccess) return;
 
       // Register parameterized events (with payload)
-      if (!(await registerParamEvents(callbacks, unlistenCallbacks, isActiveRef))) return;
+      if (!(await registerParamEvents(callbacks, unlistenCallbacks, isActiveRef, isBlocked)))
+        return;
 
       // Register sort mode events
-      if (!(await registerSortModeEvents(callbacks, uiState, unlistenCallbacks, isActiveRef)))
+      if (
+        !(await registerSortModeEvents(
+          callbacks,
+          uiState,
+          unlistenCallbacks,
+          isActiveRef,
+          isBlocked,
+        ))
+      )
         return;
 
       // Register sort direction events
-      if (!(await registerSortDirectionEvents(callbacks, uiState, unlistenCallbacks, isActiveRef)))
+      if (
+        !(await registerSortDirectionEvents(
+          callbacks,
+          uiState,
+          unlistenCallbacks,
+          isActiveRef,
+          isBlocked,
+        ))
+      )
         return;
     };
 
@@ -312,5 +388,5 @@ export const useMenuEvents = (callbacks: MenuCallbacks) => {
         unlisten();
       }
     };
-  }, [callbacks, uiState]);
+  }, [callbacks, uiState, isAnyModalOpen]);
 };

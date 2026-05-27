@@ -52,10 +52,16 @@ interface AccountModalProps {
   account: Account | null;
   onClose: () => void;
   preloadedConfig?: CalDAVConfig;
+  zIndex?: 'z-60' | 'z-70';
 }
 
 // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: This modal owns a multi-step account setup flow whose branches share state and confirmation dialogs.
-export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModalProps) => {
+export function AccountModal({
+  account,
+  onClose,
+  preloadedConfig,
+  zIndex = 'z-60',
+}: AccountModalProps) {
   const queryClient = useQueryClient();
   const { confirm } = useConfirmDialog();
   const createAccountMutation = useCreateAccount();
@@ -567,7 +573,7 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
       title={modalTitle}
       description={modalDescription}
       size={step === 'pick-type' ? 'xl' : 'md'}
-      zIndex="z-60"
+      zIndex={zIndex}
       contentPadding={false}
       preventClose={quickConnectLoginStep === 'processing'}
       footerLeft={backButton}
@@ -711,4 +717,4 @@ export const AccountModal = ({ account, onClose, preloadedConfig }: AccountModal
       </div>
     </ModalWrapper>
   );
-};
+}

@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from 'react';
+import { useModalState } from '$context/modalStateContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useUIState } from '$hooks/queries/useUIState';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
@@ -11,6 +12,7 @@ import { isCEF } from '$utils/platform';
 export const useAppMenu = (isSyncing?: boolean) => {
   const { data: accounts = [] } = useAccounts();
   const { data: uiState } = useUIState();
+  const { isAnyModalOpen } = useModalState();
   const { keyboardShortcuts } = useSettingsStore();
 
   // Skip menu operations under CEF - IPC causes deadlocks
@@ -47,6 +49,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
       sortDirection,
       isSyncing: isSyncing ?? false,
       isEditorOpen,
+      isModalOpen: isAnyModalOpen,
     });
   }, [
     caldavAccountCount,
@@ -57,6 +60,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
     uiState?.isEditorOpen,
     uiState?.selectedTaskId,
     isSyncing,
+    isAnyModalOpen,
     skipMenu,
   ]);
 
@@ -78,6 +82,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
       caldavAccountCount,
       isSyncing: isSyncing ?? false,
       isEditorOpen,
+      isModalOpen: isAnyModalOpen,
     });
   }, [
     keyboardShortcuts,
@@ -90,6 +95,7 @@ export const useAppMenu = (isSyncing?: boolean) => {
     uiState?.isEditorOpen,
     uiState?.selectedTaskId,
     isSyncing,
+    isAnyModalOpen,
     skipMenu,
   ]);
 };

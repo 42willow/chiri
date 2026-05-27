@@ -20,6 +20,7 @@ import { TaskList } from '$components/TaskList';
 import { TaskEditor } from '$components/taskEditor/TaskEditor';
 
 import { MAX_EDITOR_WIDTH, MIN_EDITOR_WIDTH } from '$constants';
+import { useModalState } from '$context/modalStateContext';
 
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
@@ -201,6 +202,8 @@ const App = () => {
     handleMenuShowChangelog,
     handleMenuSyncCalendar,
   );
+  const { isAnyModalOpen } = useModalState();
+  const canHandleGlobalFileDrop = !isAnyModalOpen && !menuHandlers.showImport;
 
   // file drop handling via hook
   const {
@@ -212,16 +215,18 @@ const App = () => {
     handleDragLeave,
     clearDragState,
   } = useFileDrop({
-    // only process file drops when import modal is NOT open
-    // when modal is open, the modal handles its own drops
+    // Only the app shell opens import/account flows from drops.
+    // Active modals either handle drops themselves or block global file-drop workflows.
     onFileDrop: (file) => {
-      if (menuHandlers.showImport) return;
+      if (!canHandleGlobalFileDrop) return;
       setPreloadedFile(file);
       menuHandlers.setShowImport(true);
     },
     onConfigProfileDrop: (config) => {
-      if (menuHandlers.showImport) return;
+      if (!canHandleGlobalFileDrop) return;
       setPreloadedConfig(config);
+      menuHandlers.setEditingAccountId(null);
+      menuHandlers.setAccountModalZIndex('z-60');
       menuHandlers.setShowAccountModal(true);
     },
   });
@@ -282,7 +287,7 @@ const App = () => {
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
     >
-      {isDragOver && !menuHandlers.showImport && (
+      {isDragOver && canHandleGlobalFileDrop && (
         <DragOverlay isUnsupportedFile={isUnsupportedFile} />
       )}
 
@@ -351,6 +356,16 @@ const App = () => {
             menuHandlers.setShowSettings(false);
             menuHandlers.setSettingsInitialTab({});
           }}
+          onAddAccount={() => {
+            menuHandlers.setEditingAccountId(null);
+            menuHandlers.setAccountModalZIndex('z-70');
+            menuHandlers.setShowAccountModal(true);
+          }}
+          onEditAccount={(accountId) => {
+            menuHandlers.setEditingAccountId(accountId);
+            menuHandlers.setAccountModalZIndex('z-70');
+            menuHandlers.setShowAccountModal(true);
+          }}
           initialCategory={menuHandlers.settingsInitialTab.category}
           initialSubtab={menuHandlers.settingsInitialTab.subtab}
         />
@@ -371,9 +386,11 @@ const App = () => {
               : null
           }
           preloadedConfig={preloadedConfig ?? undefined}
+          zIndex={menuHandlers.accountModalZIndex}
           onClose={() => {
             menuHandlers.setShowAccountModal(false);
             menuHandlers.setEditingAccountId(null);
+            menuHandlers.setAccountModalZIndex('z-60');
             setPreloadedConfig(null);
           }}
         />
@@ -438,6 +455,8 @@ const App = () => {
         <OnboardingModal
           onComplete={() => {}}
           onAddAccount={() => {
+            menuHandlers.setEditingAccountId(null);
+            menuHandlers.setAccountModalZIndex('z-70');
             menuHandlers.setShowAccountModal(true);
           }}
         />

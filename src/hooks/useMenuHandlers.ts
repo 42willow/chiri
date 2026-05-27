@@ -38,6 +38,7 @@ export const useMenuHandlers = (
   const [showImport, setShowImport] = useState(false);
   const [showAccountModal, setShowAccountModal] = useState(false);
   const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
+  const [accountModalZIndex, setAccountModalZIndex] = useState<'z-60' | 'z-70'>('z-60');
   const [showCreateCalendar, setShowCreateCalendar] = useState(false);
   const [showTaskActions, setShowTaskActions] = useState(false);
   const [taskActionsId, setTaskActionsId] = useState<string | null>(null);
@@ -131,6 +132,7 @@ export const useMenuHandlers = (
   const handleOpenAccount = useCallback(() => {
     if (isAnyModalOpen) return;
     setEditingAccountId(null);
+    setAccountModalZIndex('z-60');
     setShowAccountModal(true);
   }, [isAnyModalOpen]);
 
@@ -140,6 +142,7 @@ export const useMenuHandlers = (
       const account = accounts.find((a) => a.id === accountId);
       if (!account?.caldav) return;
       setEditingAccountId(accountId);
+      setAccountModalZIndex('z-60');
       setShowAccountModal(true);
     },
     [accounts, isAnyModalOpen],
@@ -416,6 +419,7 @@ export const useMenuHandlers = (
     showSettings,
     showImport,
     showAccountModal,
+    accountModalZIndex,
     editingAccountId,
     showCreateCalendar,
     settingsInitialTab,
@@ -431,6 +435,7 @@ export const useMenuHandlers = (
     setShowSettings,
     setShowImport,
     setShowAccountModal,
+    setAccountModalZIndex,
     setEditingAccountId,
     setShowCreateCalendar,
     setSettingsInitialTab,

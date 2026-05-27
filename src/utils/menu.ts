@@ -72,6 +72,8 @@ const getAcceleratorById = (shortcuts: KeyboardShortcut[] | undefined, id: strin
   return shortcutToAccelerator(shortcut);
 };
 
+const isEnabledOutsideModal = (isModalOpen: boolean, enabled = true) => !isModalOpen && enabled;
+
 /**
  * creates and sets the macOS application menu
  * only called on macOS
@@ -97,6 +99,7 @@ export const createMacMenu = async (options?: {
   caldavAccountCount?: number;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
+  isModalOpen?: boolean;
 }) => {
   const showCompleted = options?.showCompleted ?? true;
   const showUnstarted = options?.showUnstarted ?? true;
@@ -108,6 +111,8 @@ export const createMacMenu = async (options?: {
   const hasCaldavAccounts = (options?.caldavAccountCount ?? accounts.length) > 0;
   const isSyncing = options?.isSyncing ?? false;
   const isEditorOpen = options?.isEditorOpen ?? false;
+  const isAppActionEnabled = (enabled = true) =>
+    isEnabledOutsideModal(options?.isModalOpen ?? false, enabled);
 
   // App menu (Chiri)
   const appSubmenu = await Submenu.new({
@@ -116,6 +121,7 @@ export const createMacMenu = async (options?: {
       await MenuItem.new({
         id: 'about',
         text: 'About Chiri',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.ABOUT);
         },
@@ -125,6 +131,7 @@ export const createMacMenu = async (options?: {
         id: 'preferences',
         text: 'Settings...',
         accelerator: getAcceleratorById(shortcuts, 'settings') ?? 'CmdOrCtrl+,',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.PREFERENCES);
         },
@@ -167,6 +174,7 @@ export const createMacMenu = async (options?: {
         id: 'new-task',
         text: 'New Task',
         accelerator: getAcceleratorById(shortcuts, 'new-task') ?? 'CmdOrCtrl+N',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.NEW_TASK);
         },
@@ -176,6 +184,7 @@ export const createMacMenu = async (options?: {
         id: 'import',
         text: 'Import Tasks...',
         accelerator: 'CmdOrCtrl+I',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.IMPORT_TASKS);
         },
@@ -222,6 +231,7 @@ export const createMacMenu = async (options?: {
         id: 'search',
         text: 'Search Tasks...',
         accelerator: getAcceleratorById(shortcuts, 'search') ?? 'CmdOrCtrl+F',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.SEARCH);
         },
@@ -232,7 +242,7 @@ export const createMacMenu = async (options?: {
           id: 'delete-task',
           text: 'Delete Task',
           accelerator: getAcceleratorById(shortcuts, 'delete') ?? 'CmdOrCtrl+Backspace',
-          enabled: isEditorOpen,
+          enabled: isAppActionEnabled(isEditorOpen),
           action: () => {
             emit(MENU_EVENTS.DELETE_TASK);
           },
@@ -249,6 +259,7 @@ export const createMacMenu = async (options?: {
     text: 'Show Completed Tasks',
     accelerator: getAcceleratorById(shortcuts, 'toggle-show-completed') ?? 'CmdOrCtrl+Shift+H',
     checked: showCompleted,
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.TOGGLE_COMPLETED);
     },
@@ -260,6 +271,7 @@ export const createMacMenu = async (options?: {
     text: 'Show Unstarted Tasks',
     accelerator: getAcceleratorById(shortcuts, 'toggle-show-unstarted') ?? 'CmdOrCtrl+U',
     checked: showUnstarted,
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.TOGGLE_UNSTARTED);
     },
@@ -269,6 +281,7 @@ export const createMacMenu = async (options?: {
   const sortManualItem = await MenuItem.new({
     id: 'sort-manual',
     text: sortMode === 'manual' ? '✓ Manual' : 'Manual',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_MANUAL);
     },
@@ -278,6 +291,7 @@ export const createMacMenu = async (options?: {
   const sortSmartItem = await MenuItem.new({
     id: 'sort-smart',
     text: sortMode === 'smart' ? '✓ Smart Sort' : 'Smart Sort',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_SMART);
     },
@@ -287,6 +301,7 @@ export const createMacMenu = async (options?: {
   const sortPriorityItem = await MenuItem.new({
     id: 'sort-priority',
     text: sortMode === 'priority' ? '✓ Priority' : 'Priority',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_PRIORITY);
     },
@@ -296,6 +311,7 @@ export const createMacMenu = async (options?: {
   const sortStartDateItem = await MenuItem.new({
     id: 'sort-start-date',
     text: sortMode === 'start-date' ? '✓ Start Date' : 'Start Date',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_START_DATE);
     },
@@ -305,6 +321,7 @@ export const createMacMenu = async (options?: {
   const sortDueDateItem = await MenuItem.new({
     id: 'sort-due-date',
     text: sortMode === 'due-date' ? '✓ Due Date' : 'Due Date',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_DUE_DATE);
     },
@@ -314,6 +331,7 @@ export const createMacMenu = async (options?: {
   const sortTitleItem = await MenuItem.new({
     id: 'sort-title',
     text: sortMode === 'title' ? '✓ Title' : 'Title',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_TITLE);
     },
@@ -323,6 +341,7 @@ export const createMacMenu = async (options?: {
   const sortCreatedItem = await MenuItem.new({
     id: 'sort-created',
     text: sortMode === 'created' ? '✓ Date Created' : 'Date Created',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_CREATED);
     },
@@ -332,6 +351,7 @@ export const createMacMenu = async (options?: {
   const sortModifiedItem = await MenuItem.new({
     id: 'sort-modified',
     text: sortMode === 'modified' ? '✓ Date Modified' : 'Date Modified',
+    enabled: isAppActionEnabled(),
     action: () => {
       emit(MENU_EVENTS.SORT_MODIFIED);
     },
@@ -341,7 +361,7 @@ export const createMacMenu = async (options?: {
   const sortDirectionAscItem = await MenuItem.new({
     id: 'sort-direction-asc',
     text: sortDirection === 'asc' ? '✓ Ascending' : 'Ascending',
-    enabled: sortMode !== 'manual',
+    enabled: isAppActionEnabled(sortMode !== 'manual'),
     action: () => {
       emit(MENU_EVENTS.SORT_DIRECTION_ASC);
     },
@@ -351,7 +371,7 @@ export const createMacMenu = async (options?: {
   const sortDirectionDescItem = await MenuItem.new({
     id: 'sort-direction-desc',
     text: sortDirection === 'desc' ? '✓ Descending' : 'Descending',
-    enabled: sortMode !== 'manual',
+    enabled: isAppActionEnabled(sortMode !== 'manual'),
     action: () => {
       emit(MENU_EVENTS.SORT_DIRECTION_DESC);
     },
@@ -392,6 +412,7 @@ export const createMacMenu = async (options?: {
         id: 'toggle-sidebar',
         text: 'Toggle Sidebar',
         accelerator: getAcceleratorById(shortcuts, 'toggle-sidebar') ?? 'CmdOrCtrl+E',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.TOGGLE_SIDEBAR);
         },
@@ -409,7 +430,7 @@ export const createMacMenu = async (options?: {
     id: 'sync',
     text: 'Sync',
     accelerator: getAcceleratorById(shortcuts, 'sync') ?? 'CmdOrCtrl+R',
-    enabled: hasCaldavAccounts && !isSyncing,
+    enabled: isAppActionEnabled(hasCaldavAccounts && !isSyncing),
     action: () => {
       emit(MENU_EVENTS.SYNC);
     },
@@ -428,6 +449,7 @@ export const createMacMenu = async (options?: {
             items: [
               await MenuItem.new({
                 text: 'Sync',
+                enabled: isAppActionEnabled(),
                 action: () => {
                   emit(MENU_EVENTS.SYNC_CALENDAR, {
                     calendarId: calendar.id,
@@ -437,6 +459,7 @@ export const createMacMenu = async (options?: {
               }),
               await MenuItem.new({
                 text: 'Edit Calendar',
+                enabled: isAppActionEnabled(),
                 action: () => {
                   emit(MENU_EVENTS.EDIT_CALENDAR, {
                     calendarId: calendar.id,
@@ -446,6 +469,7 @@ export const createMacMenu = async (options?: {
               }),
               await MenuItem.new({
                 text: 'Export Tasks',
+                enabled: isAppActionEnabled(),
                 action: () => {
                   emit(MENU_EVENTS.EXPORT_CALENDAR, {
                     calendarId: calendar.id,
@@ -456,6 +480,7 @@ export const createMacMenu = async (options?: {
               await PredefinedMenuItem.new({ item: 'Separator' }),
               await MenuItem.new({
                 text: 'Delete Calendar',
+                enabled: isAppActionEnabled(),
                 action: () => {
                   emit(MENU_EVENTS.DELETE_CALENDAR, {
                     calendarId: calendar.id,
@@ -482,18 +507,21 @@ export const createMacMenu = async (options?: {
           ...calendarItems,
           await MenuItem.new({
             text: 'New Calendar...',
+            enabled: isAppActionEnabled(),
             action: () => {
               emit(MENU_EVENTS.ADD_CALENDAR, { accountId: account.id });
             },
           }),
           await MenuItem.new({
             text: 'Edit Account',
+            enabled: isAppActionEnabled(),
             action: () => {
               emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId: account.id });
             },
           }),
           await MenuItem.new({
             text: 'Remove Account',
+            enabled: isAppActionEnabled(),
             action: () => {
               emit(MENU_EVENTS.REMOVE_ACCOUNT, { accountId: account.id });
             },
@@ -523,6 +551,7 @@ export const createMacMenu = async (options?: {
       await MenuItem.new({
         id: 'add-account',
         text: 'Add Account...',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.ADD_ACCOUNT);
         },
@@ -538,6 +567,7 @@ export const createMacMenu = async (options?: {
         id: 'nav-prev-list',
         text: 'Previous List',
         accelerator: getAcceleratorById(shortcuts, 'nav-prev-list') ?? 'CmdOrCtrl+[',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.NAV_PREV_LIST);
         },
@@ -546,6 +576,7 @@ export const createMacMenu = async (options?: {
         id: 'nav-next-list',
         text: 'Next List',
         accelerator: getAcceleratorById(shortcuts, 'nav-next-list') ?? 'CmdOrCtrl+]',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.NAV_NEXT_LIST);
         },
@@ -578,6 +609,7 @@ export const createMacMenu = async (options?: {
         id: 'keyboard-shortcuts',
         text: 'Keyboard Shortcuts',
         accelerator: getAcceleratorById(shortcuts, 'keyboard-shortcuts') ?? 'CmdOrCtrl+/',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.SHOW_KEYBOARD_SHORTCUTS);
         },
@@ -586,6 +618,7 @@ export const createMacMenu = async (options?: {
       await MenuItem.new({
         id: 'whats-new',
         text: "What's New",
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.SHOW_CHANGELOG);
         },
@@ -593,6 +626,7 @@ export const createMacMenu = async (options?: {
       await MenuItem.new({
         id: 'check-for-updates',
         text: 'Check for Updates',
+        enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.CHECK_FOR_UPDATES);
         },
@@ -630,6 +664,7 @@ export const initAppMenu = async (options?: {
   caldavAccountCount?: number;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
+  isModalOpen?: boolean;
 }) => {
   // Only create menu on macOS
   if (!isMacPlatform()) return;
@@ -659,6 +694,7 @@ export const rebuildAppMenu = async (options?: {
   caldavAccountCount?: number;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
+  isModalOpen?: boolean;
 }) => {
   await initAppMenu(options);
 };
@@ -752,14 +788,18 @@ export const updateMenuState = async (options: {
   sortDirection?: SortDirection;
   isSyncing?: boolean;
   isEditorOpen?: boolean;
+  isModalOpen?: boolean;
 }) => {
+  const isAppActionEnabled = (enabled = true) =>
+    isEnabledOutsideModal(options.isModalOpen ?? false, enabled);
+
   if (options.accountCount !== undefined || options.isSyncing !== undefined) {
     const hasAccounts = (options.accountCount ?? 1) > 0;
     const isSyncing = options.isSyncing ?? false;
-    await updateMenuItem('sync', { enabled: hasAccounts && !isSyncing });
+    await updateMenuItem('sync', { enabled: isAppActionEnabled(hasAccounts && !isSyncing) });
   }
   if (options.isEditorOpen !== undefined) {
-    await updateMenuItem('delete-task', { enabled: options.isEditorOpen });
+    await updateMenuItem('delete-task', { enabled: isAppActionEnabled(options.isEditorOpen) });
   }
   if (options.showCompleted !== undefined) {
     await updateMenuItem('toggle-completed', { checked: options.showCompleted });
@@ -788,10 +828,11 @@ export const updateMenuState = async (options: {
     }
 
     // Enable/disable sort direction submenu and items based on sort mode
-    const directionEnabled = options.sortMode !== 'manual';
-    await updateMenuItem('sort-direction-submenu', { enabled: directionEnabled });
-    await updateMenuItem('sort-direction-asc', { enabled: directionEnabled });
-    await updateMenuItem('sort-direction-desc', { enabled: directionEnabled });
+    const directionSubmenuEnabled = options.sortMode !== 'manual';
+    const directionItemEnabled = isAppActionEnabled(directionSubmenuEnabled);
+    await updateMenuItem('sort-direction-submenu', { enabled: directionSubmenuEnabled });
+    await updateMenuItem('sort-direction-asc', { enabled: directionItemEnabled });
+    await updateMenuItem('sort-direction-desc', { enabled: directionItemEnabled });
   }
   if (options.sortDirection !== undefined) {
     await updateMenuItem('sort-direction-asc', {
