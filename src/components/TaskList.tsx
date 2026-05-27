@@ -1,6 +1,5 @@
 import { closestCenter, DndContext, DragOverlay } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import type { LucideIcon } from 'lucide-react';
 import ClipboardPlus from 'lucide-react/icons/clipboard-plus';
 import FunnelX from 'lucide-react/icons/funnel-x';
 import Plus from 'lucide-react/icons/plus';
@@ -13,6 +12,7 @@ import { useCreateTask, useFilteredTasks } from '$hooks/queries/useTasks';
 import { useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { getSortedTasks } from '$lib/store/filters';
+import type { LucideIcon } from '$types/lucide';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 import { flattenTasks } from '$utils/tree';
 

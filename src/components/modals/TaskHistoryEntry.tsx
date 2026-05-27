@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import Activity from 'lucide-react/icons/activity';
 import AlignLeft from 'lucide-react/icons/align-left';
 import Bell from 'lucide-react/icons/bell';
@@ -19,6 +18,7 @@ import Tag from 'lucide-react/icons/tag';
 import Type from 'lucide-react/icons/type';
 import type { ReactNode } from 'react';
 import type { TaskHistoryEntry as TaskHistoryEntryRecord } from '$types/database';
+import type { LucideIcon } from '$types/lucide';
 import { formatDate, formatTime } from '$utils/date';
 import { rruleToText } from '$utils/recurrence';
 

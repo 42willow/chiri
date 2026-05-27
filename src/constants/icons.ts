@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
 import Activity from 'lucide-react/icons/activity';
 import Apple from 'lucide-react/icons/apple';
 import Book from 'lucide-react/icons/book';
@@ -58,6 +57,7 @@ import Users from 'lucide-react/icons/users';
 import Wallet from 'lucide-react/icons/wallet';
 import Wrench from 'lucide-react/icons/wrench';
 import Zap from 'lucide-react/icons/zap';
+import type { LucideIcon } from '$types/lucide';
 
 /**
  * Available icons for calendars and tags

@@ -1,5 +1,5 @@
 import { EmojiPicker } from 'frimousse';
-import { Search } from 'lucide-react';
+import Search from 'lucide-react/icons/search';
 import { useRef, useState } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { CALENDAR_ICONS, getIconByName } from '$constants/icons';

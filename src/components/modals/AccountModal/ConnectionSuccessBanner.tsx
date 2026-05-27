@@ -1,5 +1,5 @@
-import { Zap } from 'lucide-react';
 import AlertTriangle from 'lucide-react/icons/triangle-alert';
+import Zap from 'lucide-react/icons/zap';
 import { pluralize } from '$utils/misc';
 
 interface ConnectionNotice {

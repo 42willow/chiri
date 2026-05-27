@@ -8,7 +8,7 @@
  */
 
 declare module 'lucide-react/icons/*' {
-  import type { LucideIcon } from 'lucide-react';
+  import type { LucideIcon } from '$types/lucide';
 
   const Icon: LucideIcon;
   export default Icon;
