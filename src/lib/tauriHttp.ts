@@ -108,7 +108,7 @@ export const tauriRequest = async (
   //    some servers, including Fastmail, reject)
   let response: HttpResponse;
   if (credentials.acceptInvalidCerts || credentials.bearerToken) {
-    response = await invoke<HttpResponse>('caldav_request', {
+    response = await invoke<HttpResponse>('http_request', {
       url,
       method,
       headers: requestHeaders,

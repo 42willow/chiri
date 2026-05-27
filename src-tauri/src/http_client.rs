@@ -4,26 +4,26 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 #[derive(Serialize, Deserialize)]
-pub struct CaldavResponse {
+pub struct HttpResponse {
     pub status: u16,
     pub headers: HashMap<String, String>,
     pub body: String,
 }
 
-/// Low-level CalDAV HTTP request executor with optional certificate validation bypass.
+/// Low-level HTTP request executor with optional certificate validation bypass.
 ///
 /// This command is used instead of the Tauri HTTP plugin when the account has
 /// `accept_invalid_certs = true`, allowing connections to servers with self-signed
 /// or privately-signed certificates. Redirect following is disabled — the TypeScript
 /// layer handles redirects to keep behaviour consistent with the normal path.
 #[tauri::command]
-pub async fn caldav_request(
+pub async fn http_request(
     url: String,
     method: String,
     headers: HashMap<String, String>,
     body: Option<String>,
     accept_invalid_certs: bool,
-) -> Result<CaldavResponse, String> {
+) -> Result<HttpResponse, String> {
     let client = reqwest::Client::builder()
         .danger_accept_invalid_certs(accept_invalid_certs)
         .redirect(reqwest::redirect::Policy::none())
@@ -56,7 +56,7 @@ pub async fn caldav_request(
 
     let body_text = response.text().await.map_err(|e| e.to_string())?;
 
-    Ok(CaldavResponse {
+    Ok(HttpResponse {
         status,
         headers: resp_headers,
         body: body_text,

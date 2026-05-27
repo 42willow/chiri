@@ -95,7 +95,7 @@ fn main() {
         .manage(linux::unifiedpush::UnifiedPushState::default())
         .invoke_handler(tauri::generate_handler![
             force_quit,
-            http_client::caldav_request,
+            http_client::http_request,
             install_type::get_install_type,
             install_type::should_disable_updates,
             linux::desktop::is_gnome_desktop,

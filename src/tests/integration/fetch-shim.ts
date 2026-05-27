@@ -1,7 +1,7 @@
 /**
  * node-fetch shim of $lib/tauriHttp for integration tests.
  *
- * the production module routes through Tauri IPC (`invoke('caldav_request', ...)`
+ * the production module routes through Tauri IPC (`invoke('http_request', ...)`
  * or `tauriFetch`). neither is available in plain Node. this shim re-implements
  * the same exports (put, propfind, report, proppatch, mkcalendar, del,
  * tauriRequest, parseMultiStatus) using Node's built-in fetch

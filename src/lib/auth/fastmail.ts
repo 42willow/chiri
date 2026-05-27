@@ -130,9 +130,9 @@ const exchangeCodeForTokens = async (code: string, verifier: string): Promise<Fa
     code_verifier: verifier,
   });
 
-  // route through caldav_request (pure Rust reqwest) to avoid the WebView
+  // route through http_request (pure Rust reqwest) to avoid the WebView
   // adding an Origin header that Fastmail's token endpoint rejects
-  const res = await invoke<HttpResponse>('caldav_request', {
+  const res = await invoke<HttpResponse>('http_request', {
     url: TOKEN_URL,
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -155,7 +155,7 @@ export const refreshFastmailToken = async (refreshToken: string): Promise<Fastma
     refresh_token: refreshToken,
   });
 
-  const res = await invoke<HttpResponse>('caldav_request', {
+  const res = await invoke<HttpResponse>('http_request', {
     url: TOKEN_URL,
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
