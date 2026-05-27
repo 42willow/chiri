@@ -123,34 +123,30 @@ export const SidebarTagsList = ({
   return (
     <div>
       <div className="relative">
-        {/* biome-ignore lint/a11y/useSemanticElements: Section header toggle div contains icon+text layout that button element can't replicate */}
-        <div
-          onClick={onToggleTagsSection}
-          onKeyDown={(e) => e.key === 'Enter' && onToggleTagsSection()}
-          role="button"
-          tabIndex={0}
-          aria-expanded={!tagsSectionCollapsed}
-          className="flex items-center justify-between px-2.5 py-2 rounded-lg cursor-pointer hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-        >
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={onToggleTagsSection}
+            aria-expanded={!tagsSectionCollapsed}
+            className="flex h-9 min-w-0 flex-1 items-center gap-1.5 px-2.5 rounded-lg text-left cursor-pointer hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          >
             <ChevronDown
               className={`w-4 h-4 text-surface-400 motion-safe:transition-transform motion-safe:duration-200 ${tagsSectionCollapsed ? '-rotate-90' : 'rotate-0'}`}
             />
             <span className="text-sm font-semibold text-surface-500 dark:text-surface-400">
               Tags
             </span>
-          </div>
+          </button>
 
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <Tooltip content="Tag order" position="top">
               <button
                 ref={sortButtonRef}
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
                   setShowSortMenu((v) => !v);
                 }}
-                className={`p-1 rounded transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   showSortMenu
                     ? 'bg-surface-300 dark:bg-surface-600 text-surface-700 dark:text-surface-200'
                     : `text-surface-500 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''}`
@@ -163,11 +159,10 @@ export const SidebarTagsList = ({
             <Tooltip content="Add a new tag" position="top">
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
+                onClick={() => {
                   onAddTag();
                 }}
-                className={`p-1 rounded-sm ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+                className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
               >
                 <Plus className="w-4 h-4" />
               </button>

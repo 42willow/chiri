@@ -50,7 +50,7 @@ export const SidebarAccountItem = ({
   const AccountIcon = getIconByName(account.icon ?? 'user');
   const transformStr = sortable && transform ? `translate3d(0, ${transform.y}px, 0)` : undefined;
   const dragHandleProps = sortable
-    ? ({ ...attributes, ...listeners } as React.HTMLAttributes<HTMLDivElement>)
+    ? ({ ...attributes, ...listeners } as React.HTMLAttributes<HTMLButtonElement>)
     : undefined;
 
   return (
@@ -60,48 +60,48 @@ export const SidebarAccountItem = ({
       data-context-menu
       className={isDragging ? 'opacity-50' : ''}
     >
-      {/* biome-ignore lint/a11y/useSemanticElements: Account toggle div contains icon+text layout that button element can't replicate */}
       <div
-        onClick={() => onToggleAccount(account.id)}
-        onKeyDown={(e) => e.key === 'Enter' && onToggleAccount(account.id)}
-        onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
-        role="button"
-        tabIndex={0}
-        className={`relative w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors group cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-          contextMenu?.type === 'account' && contextMenu.id === account.id
-            ? 'bg-surface-200 dark:bg-surface-700'
-            : !isAnyModalOpen && !isAnyAccountDragging
-              ? 'hover:bg-surface-200 dark:hover:bg-surface-700'
-              : ''
-        } ${isAnyAccountDragging && !isDragging ? 'pointer-events-none' : ''}`}
-        {...dragHandleProps}
+        className={`group/account-row relative flex items-center gap-1 ${isAnyAccountDragging && !isDragging ? 'pointer-events-none' : ''}`}
       >
-        <ChevronDown
-          className={`w-4 h-4 text-surface-400 shrink-0 motion-safe:transition-transform motion-safe:duration-200 ${expandedAccounts.has(account.id) ? 'rotate-0' : '-rotate-90'}`}
-        />
-        {account.emoji ? (
-          <span className="w-4 text-xs leading-none text-center shrink-0">{account.emoji}</span>
-        ) : (
-          <AccountIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 shrink-0" />
-        )}
-        <span className="flex-1 text-left truncate min-w-0 text-surface-600 dark:text-surface-400 group-hover:pr-2">
-          {account.name}
-        </span>
+        <button
+          type="button"
+          onClick={() => onToggleAccount(account.id)}
+          onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
+          className={`flex h-8 min-w-0 flex-1 items-center gap-2 px-3 rounded-lg text-sm transition-colors cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            contextMenu?.type === 'account' && contextMenu.id === account.id
+              ? 'bg-surface-200 dark:bg-surface-700'
+              : !isAnyModalOpen && !isAnyAccountDragging
+                ? 'hover:bg-surface-200 dark:hover:bg-surface-700'
+                : ''
+          }`}
+          {...dragHandleProps}
+        >
+          <ChevronDown
+            className={`w-4 h-4 text-surface-400 shrink-0 motion-safe:transition-transform motion-safe:duration-200 ${expandedAccounts.has(account.id) ? 'rotate-0' : '-rotate-90'}`}
+          />
+          {account.emoji ? (
+            <span className="w-4 text-xs leading-none text-center shrink-0">{account.emoji}</span>
+          ) : (
+            <AccountIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 shrink-0" />
+          )}
+          <span className="flex-1 text-left truncate min-w-0 text-surface-600 dark:text-surface-400 group-hover/account-row:pr-2">
+            {account.name}
+          </span>
+        </button>
+
         <div
-          className={`flex items-center gap-1 w-0 overflow-hidden focus-within:w-auto transition-all ${!isDragging && !isAnyAccountDragging ? 'group-hover:w-auto' : ''}`}
+          className={`flex shrink-0 items-center gap-1 w-0 overflow-hidden focus-within:w-auto transition-all ${!isDragging && !isAnyAccountDragging ? 'group-hover/account-row:w-auto' : ''}`}
         >
           <Tooltip content="Add a new calendar" position="top">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
+              onClick={() => {
                 onCreateCalendar(account.id);
               }}
               onContextMenu={(e) => {
-                e.stopPropagation();
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`p-1.5 rounded-sm bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 transition-colors shrink-0 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+              className={`flex h-8 w-7 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -110,14 +110,12 @@ export const SidebarAccountItem = ({
             <button
               type="button"
               onClick={(e) => {
-                e.stopPropagation();
-                onContextMenu(e as React.MouseEvent<HTMLButtonElement>, 'account', account.id);
-              }}
-              onContextMenu={(e) => {
-                e.stopPropagation();
                 onContextMenu(e, 'account', account.id);
               }}
-              className="p-1.5 rounded-sm bg-transparent hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors shrink-0 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              onContextMenu={(e) => {
+                onContextMenu(e, 'account', account.id);
+              }}
+              className="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg bg-transparent hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
             >
               <MoreVertical className="w-4 h-4" />
             </button>
