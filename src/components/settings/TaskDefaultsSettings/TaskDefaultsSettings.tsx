@@ -301,7 +301,7 @@ export const TaskDefaultsSettings = () => {
                 <option value="">No accounts available</option>
               ) : (
                 <>
-                  <option value="">Use active calendar</option>
+                  <option value="">Use selected calendar</option>
                   {accounts.map((account) => (
                     <optgroup key={account.id} label={account.name}>
                       {account.calendars.map((cal) => (

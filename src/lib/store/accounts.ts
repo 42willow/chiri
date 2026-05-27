@@ -93,7 +93,7 @@ export const deleteAccount = (id: string) => {
 
   db.deleteAccount(id).catch((e) => log.error('Failed to persist account deletion:', e));
 
-  // check if the active calendar belongs to the deleted account
+  // check if the selected calendar belongs to the deleted account
   const isActiveCalendarDeleted = deletedCalendarIds.includes(data.ui.activeCalendarId ?? '');
 
   dataStore.save({

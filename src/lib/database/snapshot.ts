@@ -54,7 +54,7 @@ export const getSnapshot = async (conn: DatabasePlugin): Promise<DataStore> => {
       a.calendars.some((cal) => cal.id === ui.activeCalendarId),
     );
     if (!calendarExists) {
-      log.warn('Active calendar no longer exists, clearing UI state');
+      log.warn('Selected calendar no longer exists, clearing UI state');
       cleanedUI = {
         ...cleanedUI,
         activeCalendarId: null,

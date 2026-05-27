@@ -427,9 +427,9 @@ export const syncCalendarsForAccount = async (accountId: string, queryClient: Qu
     updateCalendar(accountId, calendarId, updates);
   }
 
-  // if active calendar was deleted, redirect to All Tasks
+  // if selected calendar was deleted, redirect to All Tasks
   if (needsRedirectToAllTasks) {
-    syncLog.info('Active calendar was deleted on server, redirecting to All Tasks');
+    syncLog.info('Selected calendar was deleted on server, redirecting to All Tasks');
     setAllTasksView();
     queryClient.invalidateQueries({ queryKey: ['uiState'] });
   }

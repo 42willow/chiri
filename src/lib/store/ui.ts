@@ -49,12 +49,12 @@ export const setActiveCalendar = (id: string | null) => {
       account.calendars.some((calendar) => calendar.id === id),
     );
     if (!calendarExists) {
-      log.warn('Attempted to set non-existent calendar as active, ignoring', { calendarId: id });
+      log.warn('Attempted to set non-existent calendar as selected, ignoring', { calendarId: id });
       return;
     }
   }
 
-  db.setActiveCalendar(id).catch((e) => log.error('Failed to persist active calendar:', e));
+  db.setActiveCalendar(id).catch((e) => log.error('Failed to persist selected calendar:', e));
 
   dataStore.save({
     ...data,

@@ -51,7 +51,7 @@ export const useUIState = () => {
 };
 
 /**
- * Hook to get active calendar ID
+ * Hook to get selected calendar ID
  */
 export const useActiveCalendarId = () => {
   const { data: uiState } = useUIState();
@@ -173,7 +173,7 @@ export const useSetActiveAccount = () => {
 };
 
 /**
- * Hook to set active calendar
+ * Hook to set selected calendar
  */
 export const useSetActiveCalendar = () => {
   const queryClient = useQueryClient();

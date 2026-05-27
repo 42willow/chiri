@@ -122,7 +122,7 @@ export const deleteCalendar = (accountId: string, calendarId: string) => {
       })),
   ];
 
-  // check if the active calendar is being deleted
+  // check if the selected calendar is being deleted
   const isActiveCalendarDeleted = data.ui.activeCalendarId === calendarId;
 
   dataStore.save({
