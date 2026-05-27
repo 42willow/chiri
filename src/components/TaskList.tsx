@@ -5,16 +5,16 @@ import FunnelX from 'lucide-react/icons/funnel-x';
 import Plus from 'lucide-react/icons/plus';
 import SearchX from 'lucide-react/icons/search-x';
 import Trash2 from 'lucide-react/icons/trash-2';
-import { type ReactNode, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { TaskItem } from '$components/taskItem/TaskItem';
 import { DEFAULT_SORT_CONFIG } from '$constants';
-import { useCreateTask, useFilteredTasks } from '$hooks/queries/useTasks';
+import { useCreateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask, useUIState } from '$hooks/queries/useUIState';
+import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
-import { getSortedTasks } from '$lib/store/filters';
+import { useTaskListSelection } from '$hooks/ui/useTaskListSelection';
 import type { LucideIcon } from '$types/lucide';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
-import { flattenTasks } from '$utils/tree';
 
 const getEmptyState = (
   isRecentlyDeleted: boolean,
@@ -69,48 +69,13 @@ const getEmptyState = (
 
 export const TaskList = () => {
   const { data: uiState } = useUIState();
-  const { data: filteredTasksData = [] } = useFilteredTasks();
+  const flattenedTasks = useVisibleTasks();
   const createTaskMutation = useCreateTask();
   const setSelectedTaskMutation = useSetSelectedTask();
 
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const searchQuery = uiState?.searchQuery ?? '';
-  const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const activeView = uiState?.activeView ?? 'tasks';
-
-  const filteredTasks = filteredTasksData;
-
-  // filter out child tasks - top level only for the root
-  const topLevelTasks = useMemo(
-    () => filteredTasks.filter((task) => !task.parentUid),
-    [filteredTasks],
-  );
-
-  const sortedTasks = useMemo(
-    () => getSortedTasks(topLevelTasks, sortConfig),
-    [topLevelTasks, sortConfig],
-  );
-
-  const getFilteredChildTasks = useCallback(
-    (parentUid: string) => {
-      const children = filteredTasks.filter((task) => task.parentUid === parentUid);
-      if (!showCompletedTasks) {
-        return children.filter(
-          (task) => task.status !== 'completed' && task.status !== 'cancelled',
-        );
-      }
-      return children;
-    },
-    [filteredTasks, showCompletedTasks],
-  );
-
-  const flattenedTasks = useMemo(
-    () =>
-      flattenTasks(sortedTasks, getFilteredChildTasks, (tasks) =>
-        getSortedTasks(tasks, sortConfig),
-      ),
-    [sortedTasks, getFilteredChildTasks, sortConfig],
-  );
 
   const {
     activeItem: activeTask,
@@ -125,7 +90,17 @@ export const TaskList = () => {
     handleDragCancel,
   } = useSortableDrag({ flattenedItems: flattenedTasks, minIndent: 0 });
 
+  const {
+    clearSelection,
+    handleSelectionCheckboxClick,
+    handleTaskClick,
+    handleTaskContextMenu,
+    isSelectionMode,
+    selectedTaskIdSet,
+  } = useTaskListSelection({ visibleTasks: visibleFlattenedTasks });
+
   const handleQuickAdd = () => {
+    clearSelection();
     createTaskMutation.mutate(
       { title: '' },
       {
@@ -195,7 +170,12 @@ export const TaskList = () => {
                 task={task}
                 depth={task.depth}
                 ancestorIds={task.ancestorIds}
-                isDragEnabled={isDragEnabled}
+                isDragEnabled={isDragEnabled && !isSelectionMode}
+                isMultiSelected={selectedTaskIdSet.has(task.id)}
+                isSelectionMode={isSelectionMode}
+                onTaskClick={handleTaskClick}
+                onSelectionCheckboxClick={handleSelectionCheckboxClick}
+                onTaskContextMenu={handleTaskContextMenu}
               />
             ))}
           </div>
@@ -225,7 +205,7 @@ export const TaskList = () => {
         </DragOverlay>
       </DndContext>
 
-      {!isRecentlyDeleted && (
+      {!isRecentlyDeleted && !isSelectionMode && (
         <button
           type="button"
           onClick={handleQuickAdd}

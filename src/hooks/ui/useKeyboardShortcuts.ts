@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo } from 'react';
-import { DEFAULT_SORT_CONFIG } from '$constants';
 import { useModalState } from '$context/modalStateContext';
+import { useTaskSelection } from '$context/taskSelectionContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useFilters } from '$hooks/queries/useFilters';
 import { useTags } from '$hooks/queries/useTags';
-import { useCreateTask, useFilteredTasks, useToggleTaskComplete } from '$hooks/queries/useTasks';
+import { useCreateTask, useToggleTaskComplete } from '$hooks/queries/useTasks';
 import {
   useSetActiveAccount,
   useSetActiveCalendar,
@@ -20,10 +20,9 @@ import {
   useSetShowUnstartedTasks,
   useUIState,
 } from '$hooks/queries/useUIState';
+import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
 import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
-import { getSortedTasks } from '$lib/store/filters';
-import { getChildTasks } from '$lib/store/tasks';
 import type { KeyboardShortcut } from '$types';
 import {
   getAltKeyLabel,
@@ -31,11 +30,11 @@ import {
   getModifierJoiner,
   getShiftKeyLabel,
 } from '$utils/keyboard';
-import { flattenTasks } from '$utils/tree';
 
 // Shortcuts that should NOT work when a modal is open
 const BLOCKED_IN_MODAL = new Set([
   'new-task',
+  'select-all-tasks',
   'search',
   'sync',
   'delete',
@@ -109,7 +108,7 @@ interface UseKeyboardShortcutsOptions {
 export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) => {
   const { onOpenSettings, onOpenKeyboardShortcuts, onSync } = options;
   const { data: uiState } = useUIState();
-  const { data: filteredTasks = [] } = useFilteredTasks();
+  const flattenedTasks = useVisibleTasks();
   const createTaskMutation = useCreateTask();
   const setSearchQueryMutation = useSetSearchQuery();
   const toggleTaskCompleteMutation = useToggleTaskComplete();
@@ -117,6 +116,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const setEditorOpenMutation = useSetEditorOpen();
   const setShowCompletedMutation = useSetShowCompletedTasks();
   const setShowUnstartedMutation = useSetShowUnstartedTasks();
+  const { selectedTaskIds, setSelection, clearSelection } = useTaskSelection();
 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
   const activeCalendarId = uiState?.activeCalendarId ?? null;
@@ -125,7 +125,6 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const activeView = uiState?.activeView ?? 'tasks';
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
-  const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
 
   const { keyboardShortcuts, toggleSidebarCollapsed } = useSettingsStore();
   const { data: accounts = [] } = useAccounts();
@@ -140,28 +139,6 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
   const { moveTaskToRecentlyDeleted } = useTaskDeletion();
   const { isOpen: isConfirmDialogOpen } = useConfirmDialog();
   const { isAnyModalOpen } = useModalState();
-
-  // build the flattened task list that matches visual rendering order of tasks when using keyboard navigation
-  const flattenedTasks = useMemo(() => {
-    const topLevelTasks = filteredTasks.filter((task) => !task.parentUid);
-    const sortedTopLevel = getSortedTasks(topLevelTasks, sortConfig);
-
-    const getFilteredChildTasks = (parentUid: string) => {
-      const children = getChildTasks(parentUid).filter((task) =>
-        activeView === 'recently-deleted' ? !!task.deletedAt : !task.deletedAt,
-      );
-      if (!showCompletedTasks) {
-        return children.filter(
-          (task) => task.status !== 'completed' && task.status !== 'cancelled',
-        );
-      }
-      return children;
-    };
-
-    return flattenTasks(sortedTopLevel, getFilteredChildTasks, (tasks) =>
-      getSortedTasks(tasks, sortConfig),
-    );
-  }, [filteredTasks, sortConfig, showCompletedTasks, activeView]);
 
   const handleNewTask = useCallback(() => {
     createTaskMutation.mutate(
@@ -188,24 +165,45 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
 
   const handleDelete = useCallback(async () => {
     if (activeView === 'recently-deleted') return;
-    if (selectedTaskId) {
-      await moveTaskToRecentlyDeleted(selectedTaskId);
+    const taskIds =
+      selectedTaskIds.length > 0 ? selectedTaskIds : selectedTaskId ? [selectedTaskId] : [];
+    for (const taskId of taskIds) {
+      await moveTaskToRecentlyDeleted(taskId);
     }
-  }, [activeView, selectedTaskId, moveTaskToRecentlyDeleted]);
+    if (selectedTaskIds.length > 0) clearSelection();
+  }, [activeView, clearSelection, selectedTaskId, selectedTaskIds, moveTaskToRecentlyDeleted]);
 
   const handleToggleComplete = useCallback(() => {
     if (activeView === 'recently-deleted') return;
-    if (selectedTaskId) {
-      toggleTaskCompleteMutation.mutate(selectedTaskId);
+    const taskIds =
+      selectedTaskIds.length > 0 ? selectedTaskIds : selectedTaskId ? [selectedTaskId] : [];
+    for (const taskId of taskIds) {
+      toggleTaskCompleteMutation.mutate(taskId);
     }
-  }, [activeView, selectedTaskId, toggleTaskCompleteMutation]);
+  }, [activeView, selectedTaskId, selectedTaskIds, toggleTaskCompleteMutation]);
+
+  const handleSelectAllTasks = useCallback(() => {
+    if (flattenedTasks.length === 0) return;
+
+    if (selectedTaskIds.length > 0) {
+      clearSelection();
+      return;
+    }
+
+    setEditorOpenMutation.mutate(false);
+    setSelection(
+      flattenedTasks.map((task) => task.id),
+      flattenedTasks[0].id,
+    );
+  }, [clearSelection, flattenedTasks, selectedTaskIds.length, setEditorOpenMutation, setSelection]);
 
   const handleEscape = useCallback(() => {
+    clearSelection();
     setSearchQueryMutation.mutate('');
     setEditorOpenMutation.mutate(false);
     const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
     searchInput?.blur();
-  }, [setSearchQueryMutation, setEditorOpenMutation]);
+  }, [clearSelection, setSearchQueryMutation, setEditorOpenMutation]);
 
   const handleNavigateUp = useCallback(() => {
     if (flattenedTasks.length === 0) return;
@@ -350,6 +348,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       sync: handleSync,
       delete: handleDelete,
       'toggle-complete': handleToggleComplete,
+      'select-all-tasks': handleSelectAllTasks,
       'toggle-show-completed': handleToggleShowCompleted,
       'toggle-show-unstarted': handleToggleShowUnstarted,
       close: handleEscape,
@@ -367,6 +366,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       handleSync,
       handleDelete,
       handleToggleComplete,
+      handleSelectAllTasks,
       handleToggleShowCompleted,
       handleToggleShowUnstarted,
       handleEscape,
@@ -401,8 +401,8 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
   }, [keyboardShortcuts, actionHandlers, isConfirmDialogOpen, isAnyModalOpen]);
 
   return { shortcuts: keyboardShortcuts };

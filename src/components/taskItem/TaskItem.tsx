@@ -13,8 +13,6 @@ import {
   useSetActiveAccount,
   useSetActiveCalendar,
   useSetActiveTag,
-  useSetEditorOpen,
-  useSetSelectedTask,
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useSettingsStore } from '$hooks/store/useSettingsStore';
@@ -38,14 +36,61 @@ interface TaskItemProps {
   ancestorIds: string[];
   isDragEnabled: boolean;
   isOverlay?: boolean;
+  isMultiSelected?: boolean;
+  isSelectionMode?: boolean;
+  onTaskClick?: (task: Task, e: React.MouseEvent) => void;
+  onSelectionCheckboxClick?: (task: Task, e: React.MouseEvent) => void;
+  onTaskContextMenu?: (task: Task, e: React.MouseEvent) => void;
 }
 
-export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }: TaskItemProps) => {
+const getBackgroundClass = (
+  isMultiSelected: boolean,
+  isOverlay: boolean | undefined,
+  contextMenu: unknown,
+) => {
+  if (isMultiSelected && !isOverlay) return 'bg-surface-100 dark:bg-surface-700';
+  if (contextMenu && !isOverlay) return 'bg-surface-100 dark:bg-surface-700/60';
+  return 'bg-white dark:bg-surface-800';
+};
+
+const getBorderClass = (isVisuallySelected: boolean, priority: Task['priority']) => {
+  if (isVisuallySelected) return '';
+  if (priority === 'none') return 'border-surface-200 dark:border-surface-700';
+  return '';
+};
+
+const getOpacityClass = (status: Task['status'], isUnstarted: boolean) => {
+  if (status === 'completed' || status === 'cancelled') return 'opacity-60';
+  if (isUnstarted) return 'opacity-70';
+  return '';
+};
+
+const getSelectionClass = (
+  isSelected: boolean,
+  isMultiSelected: boolean,
+  priority: Task['priority'],
+) => {
+  if (isMultiSelected)
+    return 'border-surface-400 dark:border-surface-500 ring-1 ring-surface-300 dark:ring-surface-600';
+  if (isSelected) return `border-transparent ${getPriorityRingColor(priority)}`;
+  return '';
+};
+
+export const TaskItem = ({
+  task,
+  depth,
+  ancestorIds,
+  isDragEnabled,
+  isOverlay,
+  isMultiSelected = false,
+  isSelectionMode = false,
+  onTaskClick,
+  onSelectionCheckboxClick,
+  onTaskContextMenu,
+}: TaskItemProps) => {
   const { data: uiState } = useUIState();
   const { data: accounts = [] } = useAccounts();
   const toggleTaskCompleteMutation = useToggleTaskComplete();
-  const setSelectedTaskMutation = useSetSelectedTask();
-  const setEditorOpenMutation = useSetEditorOpen();
   const setActiveTagMutation = useSetActiveTag();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveAccountMutation = useSetActiveAccount();
@@ -61,15 +106,20 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
   const selectedTaskId = uiState?.selectedTaskId ?? null;
   const activeCalendarId = uiState?.activeCalendarId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
-  const isEditorOpen = uiState?.isEditorOpen ?? false;
   const isSelected = selectedTaskId === task.id;
+  const isVisuallySelected = isSelected || isMultiSelected;
 
   // Focus the task element when it becomes selected via keyboard navigation
   useEffect(() => {
-    if (isSelected && !isOverlay && document.activeElement !== taskElementRef.current) {
+    if (
+      isSelected &&
+      !isMultiSelected &&
+      !isOverlay &&
+      document.activeElement !== taskElementRef.current
+    ) {
       taskElementRef.current?.focus();
     }
-  }, [isSelected, isOverlay]);
+  }, [isSelected, isMultiSelected, isOverlay]);
 
   const checkmarkColor = getContrastTextColor(resolvedAccentColor);
 
@@ -104,12 +154,12 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
       return;
     }
 
-    if (isSelected && isEditorOpen) {
-      setEditorOpenMutation.mutate(false);
-      return;
-    }
+    onTaskClick?.(task, e);
+  };
 
-    setSelectedTaskMutation.mutate(task.id);
+  const handleTaskContextMenu = (e: React.MouseEvent) => {
+    onTaskContextMenu?.(task, e);
+    handleContextMenu(e);
   };
 
   const [flashComplete, setFlashComplete] = useState(false);
@@ -117,6 +167,14 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
 
   const handleCheckboxClick = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isSelectionMode) {
+      onSelectionCheckboxClick?.(task, e);
+      return;
+    }
+    if (e.metaKey || e.ctrlKey || e.shiftKey) {
+      onTaskClick?.(task, e);
+      return;
+    }
     if (task.deletedAt) return;
     if (task.rrule && task.status !== 'completed') {
       setFlashComplete(true);
@@ -149,19 +207,13 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
     'group relative flex items-start gap-3 pr-3 rounded-lg border transition-all outline-hidden',
     'focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-900',
     taskListDensity === 'compact' ? 'py-2' : 'py-3',
-    contextMenu && !isOverlay
-      ? 'bg-surface-100 dark:bg-surface-700/60'
-      : 'bg-white dark:bg-surface-800',
+    getBackgroundClass(isMultiSelected, isOverlay, contextMenu),
     isOverlay ? 'shadow-xl' : 'shadow-xs hover:shadow-md',
-    isSelected ? '' : task.priority === 'none' ? 'border-surface-200 dark:border-surface-700' : '',
-    task.status === 'completed' || task.status === 'cancelled'
-      ? 'opacity-60'
-      : isUnstarted
-        ? 'opacity-70'
-        : '',
+    getBorderClass(isVisuallySelected, task.priority),
+    getOpacityClass(task.status, isUnstarted),
     isDragEnabled ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer',
     !isOverlay ? 'hover:bg-surface-50 dark:hover:bg-surface-800/70' : '',
-    isSelected && `border-transparent ${getPriorityRingColor(task.priority)}`,
+    getSelectionClass(isSelected, isMultiSelected, task.priority),
     getPriorityColor(task.priority),
   ].join(' ');
 
@@ -187,8 +239,9 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
         {...(isDragEnabled ? listeners : {})}
         onClick={handleClick}
         onKeyDown={(e) => e.key === 'Enter' && handleClick(e as unknown as React.MouseEvent)}
-        onContextMenu={handleContextMenu}
+        onContextMenu={handleTaskContextMenu}
         role="button"
+        aria-pressed={isVisuallySelected}
         tabIndex={0}
         data-context-menu
         className={containerClass}
@@ -201,6 +254,9 @@ export const TaskItem = ({ task, depth, ancestorIds, isDragEnabled, isOverlay }:
             useAccentColor={useAccentColorForCheckboxes}
             onClick={handleCheckboxClick}
             disabled={!!task.deletedAt}
+            nativeDisabled={!!task.deletedAt && !onTaskClick}
+            selectionMode={isSelectionMode}
+            selected={isMultiSelected}
           />
         </div>
 

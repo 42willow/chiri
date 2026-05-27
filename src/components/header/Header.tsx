@@ -4,15 +4,17 @@ import Plus from 'lucide-react/icons/plus';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Search from 'lucide-react/icons/search';
 import SlidersHorizontal from 'lucide-react/icons/sliders-horizontal';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { HeaderSortDirectionButton } from '$components/header/HeaderSortDirectionButton';
 import { HeaderSortOptionButton } from '$components/header/HeaderSortOptionsButton';
 import { HeaderViewMenuCheckbox } from '$components/header/HeaderViewMenuCheckbox';
+import { TaskBatchActionsBar } from '$components/TaskBatchActionsBar';
 import { Tooltip } from '$components/Tooltip';
 import { DEFAULT_SORT_CONFIG, JUST_NOW_SYNC_TEXT_MS_THRESHOLD, SORT_OPTIONS } from '$constants';
 import { useModalState } from '$context/modalStateContext';
+import { useTaskSelection } from '$context/taskSelectionContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useCreateTask } from '$hooks/queries/useTasks';
 import {
@@ -23,6 +25,7 @@ import {
   useSetSortConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
+import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
 import type { SortDirection, SortMode } from '$types';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 import { pluralize } from '$utils/misc';
@@ -115,11 +118,14 @@ export const Header = ({
   const setShowUnstartedTasksMutation = useSetShowUnstartedTasks();
   const createTaskMutation = useCreateTask();
   const setSelectedTaskMutation = useSetSelectedTask();
+  const visibleTasks = useVisibleTasks();
+  const { selectedTaskIdSet, clearSelection } = useTaskSelection();
 
   const searchQuery = uiState?.searchQuery ?? '';
   const sortConfig = uiState?.sortConfig ?? DEFAULT_SORT_CONFIG;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const showUnstartedTasks = uiState?.showUnstartedTasks ?? true;
+  const activeView = uiState?.activeView ?? 'tasks';
 
   const { isAnyModalOpen } = useModalState();
   const [showViewMenu, setShowViewMenu] = useState(false);
@@ -136,6 +142,17 @@ export const Header = ({
     ? (accounts.flatMap((a) => a.calendars).find((c) => c.id === syncingCalendarId)?.displayName ??
       null)
     : null;
+
+  const selectedTasks = useMemo(
+    () => visibleTasks.filter((task) => selectedTaskIdSet.has(task.id)),
+    [selectedTaskIdSet, visibleTasks],
+  );
+
+  useEffect(() => {
+    if (selectedTasks.length > 0) {
+      setShowViewMenu(false);
+    }
+  }, [selectedTasks.length]);
 
   // Track when sync completes and show "just now" for 3 seconds
   useEffect(() => {
@@ -200,6 +217,18 @@ export const Header = ({
       direction,
     });
   };
+
+  if (selectedTasks.length > 0) {
+    return (
+      <header className="h-13.25 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 px-4 flex items-center">
+        <TaskBatchActionsBar
+          selectedTasks={selectedTasks}
+          onClearSelection={clearSelection}
+          mode={activeView === 'recently-deleted' ? 'deleted' : 'active'}
+        />
+      </header>
+    );
+  }
 
   return (
     <header className="h-13.25 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 px-4 flex items-center">

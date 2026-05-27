@@ -129,6 +129,39 @@ export const useUpdateTask = () => {
 };
 
 /**
+ * Hook to update multiple tasks while preserving the normal task update side effects.
+ */
+export const useBatchUpdateTasks = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (taskUpdates: Array<{ id: string; updates: Partial<Task> }>) => {
+      const updatedTasks: Task[] = [];
+
+      for (const { id, updates } of taskUpdates) {
+        const oldTask = getTaskById(id);
+        const result = updateTask(id, updates);
+        if (result && oldTask && updates.synced !== true) {
+          await db.logHistoryForTaskUpdate(result.uid, oldTask, updates);
+        }
+        if (result) updatedTasks.push(result);
+      }
+
+      return updatedTasks;
+    },
+    onSuccess: (updatedTasks) => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all });
+      queryClient.invalidateQueries({ queryKey: ['filteredTasks'] });
+
+      for (const task of updatedTasks) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.byId(task.id) });
+        queryClient.invalidateQueries({ queryKey: ['taskHistory', task.uid] });
+      }
+    },
+  });
+};
+
+/**
  * Hook to delete a task
  */
 export const useDeleteTask = () => {

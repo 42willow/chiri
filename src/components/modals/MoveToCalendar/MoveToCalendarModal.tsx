@@ -6,10 +6,13 @@ import { MoveToCalendarOption } from '$components/modals/MoveToCalendar/MoveToCa
 import type { Account, Task } from '$types';
 
 interface MoveToCalendarModalProps {
-  task: Task;
+  task?: Task;
   accounts: Account[];
   onMove: (calendarId: string) => void;
   onClose: () => void;
+  currentCalendarIds?: string[];
+  title?: string;
+  description?: string;
 }
 
 export const MoveToCalendarModal = ({
@@ -17,17 +20,25 @@ export const MoveToCalendarModal = ({
   accounts,
   onMove,
   onClose,
+  currentCalendarIds,
+  title = 'Move to Calendar',
+  description,
 }: MoveToCalendarModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
+
+  const excludedCalendarIds = useMemo(() => {
+    const ids = currentCalendarIds ?? (task ? [task.calendarId] : []);
+    return ids.length === 1 ? new Set(ids) : new Set<string>();
+  }, [currentCalendarIds, task]);
 
   const otherCalendars = useMemo(
     () =>
       accounts.flatMap((a) =>
         a.calendars
-          .filter((c) => c.id !== task.calendarId)
+          .filter((c) => !excludedCalendarIds.has(c.id))
           .map((c) => ({ ...c, accountName: a.name })),
       ),
-    [accounts, task.calendarId],
+    [accounts, excludedCalendarIds],
   );
 
   const filteredCalendars = useMemo(() => {
@@ -41,7 +52,8 @@ export const MoveToCalendarModal = ({
   return (
     <ModalWrapper
       onClose={onClose}
-      title="Move to Calendar"
+      title={title}
+      description={description}
       zIndex="z-60"
       className="max-w-sm"
       footer={

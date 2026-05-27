@@ -12,6 +12,7 @@ const SHORTCUT_GROUPS: { label: string; ids: string[] }[] = [
     label: 'Tasks',
     ids: [
       'new-task',
+      'select-all-tasks',
       'delete',
       'toggle-complete',
       'toggle-show-completed',

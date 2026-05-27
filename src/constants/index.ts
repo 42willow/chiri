@@ -75,6 +75,12 @@ export const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [
 
 export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [
   { id: 'new-task', key: 'n', meta: true, description: 'Create new task' },
+  {
+    id: 'select-all-tasks',
+    key: 'a',
+    meta: true,
+    description: 'Select all visible tasks',
+  },
   { id: 'search', key: 'f', meta: true, description: 'Focus search' },
   { id: 'settings', key: ',', meta: true, description: 'Open settings' },
   {

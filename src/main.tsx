@@ -20,6 +20,7 @@ import { ModalStateProvider } from '$providers/ModalStateProvider';
 import { NotificationProvider } from '$providers/NotificationProvider';
 import { SettingsProvider } from '$providers/SettingsProvider';
 import { SyncProvider } from '$providers/SyncProvider';
+import { TaskSelectionProvider } from '$providers/TaskSelectionProvider';
 import { ToastProvider } from '$providers/ToastProvider';
 
 import App from '~/App';
@@ -50,8 +51,10 @@ const renderApp = () => {
                 <DismissableLayerProvider>
                   <ModalStateProvider>
                     <ConfirmDialogProvider>
-                      <ToastProvider />
-                      <App />
+                      <TaskSelectionProvider>
+                        <ToastProvider />
+                        <App />
+                      </TaskSelectionProvider>
                     </ConfirmDialogProvider>
                   </ModalStateProvider>
                 </DismissableLayerProvider>
