@@ -81,6 +81,10 @@
 
         devShells.default = pkgs.mkShell {
           buildInputs =
+            let
+              nodejs = pkgs.nodejs_26;
+              pnpm = pkgs.pnpm.override { nodejs = pkgs.nodejs_26; };
+            in
             with pkgs;
             [
               # Rust
@@ -88,7 +92,7 @@
               cargo-tauri
 
               # Node.js
-              nodejs_22
+              nodejs
               pnpm
 
               # Build tools
