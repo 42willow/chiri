@@ -1,6 +1,5 @@
 import ArrowUpDown from 'lucide-react/icons/arrow-up-down';
 import ChevronDown from 'lucide-react/icons/chevron-down';
-import Import from 'lucide-react/icons/import';
 import Plus from 'lucide-react/icons/plus';
 import { useRef, useState } from 'react';
 import { SidebarCalendarList } from '$components/sidebar/SidebarCalendarList';
@@ -24,7 +23,6 @@ interface SidebarLocalListProps {
     accountId?: string,
   ) => void;
   onSelectCalendar: (accountId: string, calendarId: string) => void;
-  onOpenImport?: () => void;
   onAddCalendar: () => void;
 }
 
@@ -38,7 +36,6 @@ export const SidebarLocalList = ({
   onToggle,
   onContextMenu,
   onSelectCalendar,
-  onOpenImport,
   onAddCalendar,
 }: SidebarLocalListProps) => {
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -66,18 +63,6 @@ export const SidebarLocalList = ({
           </span>
         </button>
         <div className="flex shrink-0 items-center gap-1">
-          <Tooltip content="Import tasks" position="top">
-            <button
-              type="button"
-              onClick={() => {
-                onOpenImport?.();
-              }}
-              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
-            >
-              <Import className="w-4 h-4" />
-            </button>
-          </Tooltip>
-
           <Tooltip content="List order" position="top">
             <button
               ref={sortButtonRef}

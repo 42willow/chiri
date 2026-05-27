@@ -354,7 +354,6 @@ export const Sidebar = ({
                   setActiveAccountMutation.mutate(accountId);
                   setActiveCalendarMutation.mutate(calendarId);
                 }}
-                onOpenImport={onOpenImport}
                 onAddCalendar={handleAddLocalCalendar}
               />
 
@@ -374,7 +373,6 @@ export const Sidebar = ({
                   setActiveCalendarMutation.mutate(calendarId);
                 }}
                 onCreateCalendar={(accountId) => setShowCreateCalendarModal(accountId)}
-                onOpenImport={onOpenImport}
                 onAddAccount={() => {
                   setEditingAccount(null);
                   setShowAccountModal(true);
@@ -401,6 +399,7 @@ export const Sidebar = ({
             <SidebarFooter
               updateAvailable={updateAvailable}
               onUpdateClick={onUpdateClick}
+              onOpenImport={onOpenImport}
               onOpenSettings={onOpenSettings}
               settingsShortcut={settingsShortcut}
               isAnyModalOpen={isAnyModalOpen}
@@ -438,6 +437,7 @@ export const Sidebar = ({
             onSelectTag={(tagId) => setActiveTagMutation.mutate(tagId)}
             onSelectFilter={(filterId) => setActiveFilterMutation.mutate(filterId)}
             onContextMenu={handleContextMenu}
+            onOpenImport={onOpenImport}
             onOpenSettings={onOpenSettings}
             onUpdateClick={onUpdateClick}
           />

@@ -1,4 +1,5 @@
 import Download from 'lucide-react/icons/download';
+import Import from 'lucide-react/icons/import';
 import Inbox from 'lucide-react/icons/inbox';
 import Settings from 'lucide-react/icons/settings';
 import Trash2 from 'lucide-react/icons/trash-2';
@@ -34,6 +35,7 @@ interface SidebarCollapsedViewProps {
     id: string,
     accountId?: string,
   ) => void;
+  onOpenImport?: () => void;
   onOpenSettings?: () => void;
   onUpdateClick?: () => void;
 }
@@ -59,6 +61,7 @@ export const SidebarCollapsedView = ({
   onSelectTag,
   onSelectFilter,
   onContextMenu,
+  onOpenImport,
   onOpenSettings,
   onUpdateClick,
 }: SidebarCollapsedViewProps) => {
@@ -242,6 +245,15 @@ export const SidebarCollapsedView = ({
             </button>
           </Tooltip>
         )}
+        <Tooltip content="Import tasks..." position="right">
+          <button
+            type="button"
+            onClick={() => onOpenImport?.()}
+            className="p-2 mb-1 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          >
+            <Import className="w-5 h-5" />
+          </button>
+        </Tooltip>
         <Tooltip content="Settings" position="right">
           <button
             type="button"

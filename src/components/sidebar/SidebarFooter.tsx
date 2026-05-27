@@ -1,9 +1,11 @@
 import Download from 'lucide-react/icons/download';
+import Import from 'lucide-react/icons/import';
 import Settings from 'lucide-react/icons/settings';
 
 interface SidebarFooterProps {
   updateAvailable?: boolean;
   onUpdateClick?: () => void;
+  onOpenImport?: () => void;
   onOpenSettings?: () => void;
   settingsShortcut: string;
   isAnyModalOpen: boolean;
@@ -12,6 +14,7 @@ interface SidebarFooterProps {
 export const SidebarFooter = ({
   updateAvailable,
   onUpdateClick,
+  onOpenImport,
   onOpenSettings,
   settingsShortcut,
   isAnyModalOpen,
@@ -28,6 +31,14 @@ export const SidebarFooter = ({
           Update available!
         </button>
       )}
+      <button
+        type="button"
+        onClick={() => onOpenImport?.()}
+        className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''} transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+      >
+        <Import className="w-4 h-4" />
+        Import tasks...
+      </button>
       <button
         type="button"
         onClick={() => onOpenSettings?.()}
