@@ -7,12 +7,16 @@ alias c := cargo
 alias d := dev
 alias h := hash
 alias i := install
+alias l := clippy
 alias m := mac-build
 alias u := update
 alias v := vite
 
 cargo:
   cd src-tauri && cargo update
+
+clippy:
+  cargo clippy --manifest-path src-tauri/Cargo.toml --all-targets -- -D warnings
 
 build:
   pnpm tauri build

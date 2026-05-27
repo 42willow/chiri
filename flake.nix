@@ -29,6 +29,7 @@
           extensions = [
             "rust-src"
             "rust-analyzer"
+            "clippy"
           ];
           targets = pkgs.lib.optionals pkgs.stdenv.isDarwin [
             "x86_64-apple-darwin"
