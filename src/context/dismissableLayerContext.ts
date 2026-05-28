@@ -52,8 +52,7 @@ const fallbackContext: DismissableLayerContextValue = {
   registerLayer: () => () => {},
 };
 
-export const DismissableLayerContext =
-  createContext<DismissableLayerContextValue>(fallbackContext);
+export const DismissableLayerContext = createContext<DismissableLayerContextValue>(fallbackContext);
 
 export const useDismissableLayerContext = () => useContext(DismissableLayerContext);
 

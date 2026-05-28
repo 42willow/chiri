@@ -16,6 +16,8 @@ import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { PRIORITIES } from '$constants/priority';
+import { useConfirmDialog } from '$context/confirmDialogContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
@@ -24,8 +26,6 @@ import {
   usePermanentDeleteTask,
   useRestoreTask,
 } from '$hooks/queries/useTasks';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { exportTaskAndChildren } from '$lib/store/tasks';
 import type { Priority, Task, TaskStatus } from '$types';
 import { pluralize } from '$utils/misc';

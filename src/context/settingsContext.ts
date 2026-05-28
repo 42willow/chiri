@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import { DEFAULT_SHORTCUTS } from '$constants';
 import { getColorSchemeFlavor } from '$constants/colorSchemes';
 import { loggers } from '$lib/logger';
@@ -344,3 +344,11 @@ export const settingsStore = {
 
 // Context for React components
 export const SettingsContext = createContext<SettingsStore | null>(null);
+
+export const useSettingsStore = (): SettingsStore => {
+  const context = useContext(SettingsContext);
+  if (!context) {
+    throw new Error('useSettingsStore must be used within a SettingsProvider');
+  }
+  return context;
+};

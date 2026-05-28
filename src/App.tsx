@@ -21,12 +21,11 @@ import { TaskEditor } from '$components/taskEditor/TaskEditor';
 
 import { MAX_EDITOR_WIDTH, MIN_EDITOR_WIDTH } from '$constants';
 import { useModalState } from '$context/modalStateContext';
-
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
 import { useTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useConfirmQuit } from '$hooks/system/useConfirmQuit';
 import { useDeepLink } from '$hooks/system/useDeepLink';
 import { useFileDrop } from '$hooks/system/useFileDrop';

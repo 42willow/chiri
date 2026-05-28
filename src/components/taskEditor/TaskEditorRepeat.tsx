@@ -1,5 +1,5 @@
 import RefreshCw from 'lucide-react/icons/refresh-cw';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import type { Task } from '$types';
 import { rruleToText } from '$utils/recurrence';
 

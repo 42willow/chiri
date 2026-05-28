@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { COLOR_SCHEMES, getColorSchemeFlavor } from '$constants/colorSchemes';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import { DEFAULT_COLOR_SCHEME_ID } from '$types/color';
 import {
   applyAccentColor,

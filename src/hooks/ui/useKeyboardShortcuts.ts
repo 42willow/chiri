@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo } from 'react';
+import { useConfirmDialog } from '$context/confirmDialogContext';
 import { useModalState } from '$context/modalStateContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTaskSelection } from '$context/taskSelectionContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -21,8 +23,6 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import type { KeyboardShortcut } from '$types';
 import {
   getAltKeyLabel,

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { getColorSchemeColorPresets } from '$constants/colorSchemes';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import { resolveEffectiveTheme } from '$utils/color';
 
 /**

@@ -5,7 +5,7 @@ import { AppSelect } from '$components/AppSelect';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { DatePickerModal } from '$components/modals/DatePickerModal';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import { formatDate } from '$utils/date';
 import {
   buildRRule,

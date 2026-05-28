@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useState } from 'react';
 import { useModalState } from '$context/modalStateContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useCalendarDeletion } from '$hooks/deletion/useCalendarDeletion';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
@@ -20,7 +21,6 @@ import {
   useSetSortConfig,
   useUIState,
 } from '$hooks/queries/useUIState';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useMenuEvents } from '$hooks/system/useMenuEvents';
 import type { SettingsCategory, SettingsSubtab, SortDirection, SortMode } from '$types';
 

@@ -1,8 +1,8 @@
 import { listen } from '@tauri-apps/api/event';
 import { differenceInSeconds, isPast } from 'date-fns';
 import { useCallback, useEffect, useRef } from 'react';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTasks, useToggleTaskComplete } from '$hooks/queries/useTasks';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { loggers } from '$lib/logger';
 import {
   checkNotificationPermission,

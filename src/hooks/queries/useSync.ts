@@ -5,9 +5,8 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef } from 'react';
-import { settingsStore } from '$context/settingsContext';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
-import { useSyncStore } from '$hooks/store/useSyncStore';
+import { settingsStore, useSettingsStore } from '$context/settingsContext';
+import { useSyncStore } from '$context/syncContext';
 import { useOffline } from '$hooks/system/useOffline';
 import { toastManager } from '$hooks/ui/useToast';
 import { loggers } from '$lib/logger';

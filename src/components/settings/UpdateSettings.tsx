@@ -7,7 +7,7 @@ import RefreshCw from 'lucide-react/icons/refresh-cw';
 import X from 'lucide-react/icons/x';
 import { useState } from 'react';
 import { ChangelogModal } from '$components/modals/ChangelogModal';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import { useManagedInstallation } from '$hooks/system/useManagedInstallation';
 import { useUpdateChecker } from '$hooks/system/useUpdateChecker';
 import { getAppInfo } from '$utils/version';

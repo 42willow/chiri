@@ -15,8 +15,8 @@ import type {
 import { QuickConnectFlow } from '$components/modals/AccountModal/QuickConnectFlow';
 import { ServerTypePicker } from '$components/modals/AccountModal/ServerTypePicker';
 import { getPredefinedServerUrl, SERVER_TYPE_OPTIONS } from '$constants/settings';
+import { useConfirmDialog } from '$context/confirmDialogContext';
 import { useAddCalendar, useCreateAccount, useUpdateAccount } from '$hooks/queries/useAccounts';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
 import { CalDAVClient } from '$lib/caldav';
 import {
   type CalDAVSetupError,

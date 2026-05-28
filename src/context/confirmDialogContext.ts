@@ -1,4 +1,4 @@
-import { createContext, type ReactNode } from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 
 export interface ConfirmNotice {
   message: string;
@@ -36,6 +36,14 @@ export interface ConfirmDialogContextValue {
 }
 
 export const ConfirmDialogContext = createContext<ConfirmDialogContextValue | null>(null);
+
+export const useConfirmDialog = () => {
+  const context = useContext(ConfirmDialogContext);
+  if (!context) {
+    throw new Error('useConfirmDialog must be used within ConfirmDialogProvider');
+  }
+  return context;
+};
 
 export const defaultConfirmOptions: Required<
   Omit<

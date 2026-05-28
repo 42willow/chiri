@@ -1,4 +1,3 @@
-import { emit } from '@tauri-apps/api/event';
 import Activity from 'lucide-react/icons/activity';
 import CheckCircle from 'lucide-react/icons/check-circle';
 import CircleAlert from 'lucide-react/icons/circle-alert';
@@ -9,20 +8,26 @@ import Trash2 from 'lucide-react/icons/trash-2';
 import User from 'lucide-react/icons/user';
 import X from 'lucide-react/icons/x';
 import { useMemo, useState } from 'react';
+import { WebDAVPushAccountStatus } from '$components/settings/WebDAVPushAccountStatus';
 import { Tooltip } from '$components/Tooltip';
-import { MENU_EVENTS } from '$constants/menu';
+import { useConnectionStore } from '$context/connectionContext';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useTasks } from '$hooks/queries/useTasks';
-import { useConnectionStore } from '$hooks/store/useConnectionStore';
 import { CalDAVClient } from '$lib/caldav';
 import type { Account } from '$types';
 import { pluralize } from '$utils/misc';
 
 interface ConnectionsSettingsProps {
   accounts: Account[];
+  onAddAccount: () => void;
+  onEditAccount: (accountId: string) => void;
 }
 
-export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettingsProps) => {
+export const ConnectionsSettings = ({
+  accounts: allAccounts,
+  onAddAccount,
+  onEditAccount,
+}: ConnectionsSettingsProps) => {
   const accounts = allAccounts.filter((a) => a.caldav);
   const { deleteAccount } = useAccountDeletion();
   const { hasConnection } = useConnectionStore();
@@ -47,7 +52,7 @@ export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettin
   };
 
   const handleEditAccount = (accountId: string) => {
-    emit(MENU_EVENTS.EDIT_ACCOUNT, { accountId });
+    onEditAccount(accountId);
   };
 
   const handleDismissTestResult = (accountId: string) => {
@@ -95,7 +100,7 @@ export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettin
   };
 
   const handleAddAccount = () => {
-    emit(MENU_EVENTS.ADD_ACCOUNT);
+    onAddAccount();
   };
 
   return (
@@ -162,6 +167,8 @@ export const ConnectionsSettings = ({ accounts: allAccounts }: ConnectionsSettin
                           </>
                         )}
                       </div>
+
+                      <WebDAVPushAccountStatus account={account} />
                     </div>
 
                     <div className="flex justify-center items-center gap-1">

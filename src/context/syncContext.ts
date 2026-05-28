@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 
 interface SyncProgress {
   current: number;
@@ -28,3 +28,11 @@ export type SyncStore = SyncState & SyncActions;
 
 // Context for React components
 export const SyncContext = createContext<SyncStore | null>(null);
+
+export const useSyncStore = (): SyncStore => {
+  const context = useContext(SyncContext);
+  if (!context) {
+    throw new Error('useSyncStore must be used within a SyncProvider');
+  }
+  return context;
+};

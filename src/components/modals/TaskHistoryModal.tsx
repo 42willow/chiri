@@ -1,7 +1,7 @@
 import { ModalWrapper } from '$components/ModalWrapper';
 import { TaskHistoryEntry } from '$components/modals/TaskHistoryEntry';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTaskHistory } from '$hooks/queries/useTaskHistory';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 
 interface TaskHistoryModalProps {
   isOpen: boolean;

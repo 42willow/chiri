@@ -17,6 +17,7 @@ import { TaskEditorSubtasks } from '$components/taskEditor/TaskEditorSubtasks';
 import { TaskEditorTags } from '$components/taskEditor/TaskEditorTags';
 import { TaskEditorTitle } from '$components/taskEditor/TaskEditorTitle';
 import { TaskEditorUrl } from '$components/taskEditor/TaskEditorUrl';
+import { useSettingsStore } from '$context/settingsContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
@@ -30,7 +31,6 @@ import {
   useUpdateTask,
 } from '$hooks/queries/useTasks';
 import { useSetEditorOpen } from '$hooks/queries/useUIState';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { Task, TaskStatus } from '$types';

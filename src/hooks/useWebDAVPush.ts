@@ -6,8 +6,8 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { loggers } from '$lib/logger';
 import {
   enablePushForCalendar,

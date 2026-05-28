@@ -1,5 +1,5 @@
 import { AppSelect } from '$components/AppSelect';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import type { SubtaskDeletionBehavior } from '$types';
 
 export const BehaviorSettings = () => {

@@ -7,6 +7,7 @@ import { TaskItemCheckbox } from '$components/taskItem/TaskItemCheckbox';
 import { TaskItemContextMenu } from '$components/taskItem/TaskItemContextMenu';
 import { TaskItemTitle } from '$components/taskItem/TaskItemTitle';
 import { getPriorityColor, getPriorityRingColor } from '$constants/priority';
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useToggleTaskComplete } from '$hooks/queries/useTasks';
 import {
@@ -15,7 +16,6 @@ import {
   useSetActiveTag,
   useUIState,
 } from '$hooks/queries/useUIState';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useContextMenu } from '$hooks/ui/useContextMenu';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { filterCalDavDescription } from '$lib/ical/vtodo';

@@ -21,7 +21,7 @@ import {
   EditorSettingsSortableFields,
   type FieldConfig,
 } from '$components/settings/EditorSettings/EditorSettingsSortableFields';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import type { EditorFieldKey } from '$types/settings';
 
 const FIELDS: FieldConfig[] = [

@@ -17,7 +17,7 @@ import { SidebarLocalList } from '$components/sidebar/SidebarLocalList';
 import { SidebarTagsList } from '$components/sidebar/SidebarTagsList';
 import { getFilterPresetId } from '$constants/filters';
 import { useModalState } from '$context/modalStateContext';
-import { settingsStore } from '$context/settingsContext';
+import { settingsStore, useSettingsStore } from '$context/settingsContext';
 import { useAccountDeletion } from '$hooks/deletion/useAccountDeletion';
 import { useCalendarDeletion } from '$hooks/deletion/useCalendarDeletion';
 import { useFilterDeletion } from '$hooks/deletion/useFilterDeletion';
@@ -36,7 +36,6 @@ import {
   useSetRecentlyDeletedView,
   useUIState,
 } from '$hooks/queries/useUIState';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { CLOSE_CONTEXT_MENUS_EVENT, useContextMenuDismissal } from '$hooks/ui/useContextMenu';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { useSidebarResize } from '$hooks/ui/useSidebarResize';

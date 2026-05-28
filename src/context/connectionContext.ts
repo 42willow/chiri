@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import type { CalDAVCredentials } from '$lib/tauriHttp';
 import type { ServerType } from '$types';
 
@@ -72,3 +72,11 @@ export const connectionStore = {
 
 // Context for React components
 export const ConnectionContext = createContext<ConnectionStore | null>(null);
+
+export const useConnectionStore = (): ConnectionStore => {
+  const context = useContext(ConnectionContext);
+  if (!context) {
+    throw new Error('useConnectionStore must be used within a ConnectionProvider');
+  }
+  return context;
+};

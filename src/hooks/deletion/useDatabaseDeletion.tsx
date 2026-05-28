@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
+import { useConfirmDialog } from '$context/confirmDialogContext';
 import { deleteDatabase } from '$lib/bootstrap';
 
 export const useDatabaseDeletion = () => {

@@ -1,8 +1,8 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
+import { useConfirmDialog } from '$context/confirmDialogContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useSetAllTasksView } from '$hooks/queries/useUIState';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { CalDAVClient } from '$lib/caldav';
 import { loggers } from '$lib/logger';
 import { deleteCalendar as storeDeleteCalendar } from '$lib/store/calendars';

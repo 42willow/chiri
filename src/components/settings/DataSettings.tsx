@@ -4,9 +4,9 @@ import Download from 'lucide-react/icons/download';
 import FileText from 'lucide-react/icons/file-text';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import Upload from 'lucide-react/icons/upload';
+import { useConfirmDialog } from '$context/confirmDialogContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useDatabaseDeletion } from '$hooks/deletion/useDatabaseDeletion';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { setEditorOpen } from '$lib/store/ui';
 import { exportSettingsToFile, importSettingsFromFile } from '$utils/settings';
 

@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react';
 import { getColorSchemeFlavor } from '$constants/colorSchemes';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import { resolveAccentColor, resolveEffectiveTheme } from '$utils/color';
 
 export const useAccentColorResolver = () => {

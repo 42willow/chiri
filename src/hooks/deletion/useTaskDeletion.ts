@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
+import { useConfirmDialog } from '$context/confirmDialogContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useDeleteTask, usePermanentDeleteTask, useTasks } from '$hooks/queries/useTasks';
 import { useSetRecentlyDeletedView } from '$hooks/queries/useUIState';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { toastManager } from '$hooks/ui/useToast';
 import { pluralize } from '$utils/misc';
 

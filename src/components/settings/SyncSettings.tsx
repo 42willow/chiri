@@ -1,8 +1,8 @@
 import { Info, Zap, ZapOff } from 'lucide-react';
 import { AppSelect } from '$components/AppSelect';
 import { CONNECTIVITY_CHECK_INTERVAL_OPTIONS, SYNC_INTERVAL_OPTIONS } from '$constants/settings';
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { DEFAULT_CONNECTIVITY_CHECK_URL } from '$hooks/system/useOffline';
 import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/ntfyProvider';
 import {

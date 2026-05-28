@@ -4,7 +4,7 @@ import type { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import {
   checkNotificationPermission,
   requestNotificationPermission,

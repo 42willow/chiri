@@ -19,7 +19,7 @@ import {
   type BadgeConfig,
   BadgesSettingsSortableBadges,
 } from '$components/settings/BadgesSettings/BadgesSettingsSortableBadges';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import type { TaskBadgeKey } from '$types/settings';
 
 const BADGES: BadgeConfig[] = [

@@ -2,7 +2,7 @@ import Pencil from 'lucide-react/icons/pencil';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import { useEffect, useState } from 'react';
 import { KeyboardShortcutModal } from '$components/modals/KeyboardShortcutModal';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import type { KeyboardShortcut } from '$types';
 import { formatShortcut } from '$utils/keyboard';
 import { isMacPlatform } from '$utils/platform';

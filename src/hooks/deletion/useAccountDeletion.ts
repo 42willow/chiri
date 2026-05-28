@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
+import { useConfirmDialog } from '$context/confirmDialogContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { useDeleteAccount } from '$hooks/queries/useAccounts';
-import { useConfirmDialog } from '$hooks/store/useConfirmDialog';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import type { Account } from '$types';
 
 export const useAccountDeletion = () => {

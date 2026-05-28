@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { AppSelect } from '$components/AppSelect';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
 import { DATE_FORMAT_OPTIONS, WEEK_START_OPTIONS } from '$constants/settings';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import type { DateFormat, StartOfWeek } from '$types';
 import type { QuickTimePresets } from '$types/settings';
 import { formatTime } from '$utils/date';

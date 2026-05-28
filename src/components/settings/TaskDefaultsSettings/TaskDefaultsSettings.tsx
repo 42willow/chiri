@@ -15,9 +15,9 @@ import { TaskDefaultsReminderPickerModal } from '$components/modals/TaskDefaults
 import { TaskDefaultsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsColorPicker';
 import { getIconByName } from '$constants/icons';
 import { PRIORITIES } from '$constants/priority';
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { DefaultReminderOffset, TaskStatus } from '$types';

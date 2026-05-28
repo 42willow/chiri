@@ -10,7 +10,7 @@ import {
 } from '$components/settings/ColorSchemeSelect';
 import { COLOR_SCHEMES, getColorSchemeFlavor } from '$constants/colorSchemes';
 import { THEME_OPTIONS } from '$constants/theme';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useSettingsStore } from '$context/settingsContext';
 import {
   type ColorSchemeDefinition,
   type ColorSchemeFlavor,

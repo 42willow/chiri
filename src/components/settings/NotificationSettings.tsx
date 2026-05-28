@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { MacNotificationPermissionCard } from '$components/MacNotificationPermissionCard';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
-import { useNotificationContext } from '$hooks/store/useNotificationContext';
-import { useSettingsStore } from '$hooks/store/useSettingsStore';
+import { useNotificationContext } from '$context/notificationContext';
+import { useSettingsStore } from '$context/settingsContext';
 import { isMacPlatform } from '$utils/platform';
 
 const formatHour = (hour: number, use24h: boolean) => {

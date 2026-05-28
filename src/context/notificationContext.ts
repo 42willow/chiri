@@ -1,4 +1,4 @@
-import { createContext } from 'react';
+import { createContext, useContext } from 'react';
 import type {
   NotificationPermissionResult,
   NotificationPermissionStatus,
@@ -15,3 +15,11 @@ export interface NotificationContextValue {
 }
 
 export const NotificationContext = createContext<NotificationContextValue | null>(null);
+
+export const useNotificationContext = () => {
+  const context = useContext(NotificationContext);
+  if (!context) {
+    throw new Error('useNotificationContext must be used within a NotificationProvider');
+  }
+  return context;
+};
