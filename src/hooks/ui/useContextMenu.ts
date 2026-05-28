@@ -42,21 +42,21 @@ export const useContextMenuPosition = (contextMenu: ContextMenuPoint) => {
   );
 
   useLayoutEffect(() => {
-    const rect = menuRef.current?.getBoundingClientRect();
-    if (!rect) return;
+    const menu = menuRef.current;
+    if (!menu) return;
 
     const nextPosition = getContextMenuPosition(
       contextMenu.x,
       contextMenu.y,
-      rect.width,
-      rect.height,
+      menu.offsetWidth,
+      menu.offsetHeight,
     );
     setPosition((currentPosition) =>
       currentPosition.left === nextPosition.left && currentPosition.top === nextPosition.top
         ? currentPosition
         : nextPosition,
     );
-  });
+  }, [contextMenu.x, contextMenu.y]);
 
   return { menuRef, position };
 };
