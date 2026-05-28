@@ -1,5 +1,9 @@
-pub mod manager;
-pub mod permissions;
+mod actions;
+pub mod commands;
+pub mod permission;
+mod setup;
+mod state;
+mod types;
 
 #[cfg(target_os = "linux")]
 mod linux;
@@ -10,7 +14,5 @@ mod macos;
 #[cfg(target_os = "windows")]
 mod windows;
 
-pub use manager::NotificationManagerState;
-
-#[cfg(target_os = "windows")]
-pub use windows::ensure_notification_icon;
+pub use setup::initialize;
+pub use state::NotificationManagerState;

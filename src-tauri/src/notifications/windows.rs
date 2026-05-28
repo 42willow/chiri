@@ -1,6 +1,9 @@
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Manager};
 
-use super::manager::{NotificationActionEvent, NotificationType, SendNotificationRequest};
+use super::{
+    actions,
+    types::{NotificationType, SendNotificationRequest},
+};
 
 /// Ensure the app notification icon is present at a stable, known path.
 ///
@@ -50,15 +53,15 @@ pub fn send_notification(app: &AppHandle, request: &SendNotificationRequest) -> 
     match request.notification_type {
         NotificationType::Overdue => {
             toast
-                .action(Action::new("Complete", "complete", ""))
-                .action(Action::new("Snooze 1hr", "snooze-1hr", ""))
-                .action(Action::new("View Task", "view", ""));
+                .action(Action::new("Complete", actions::COMPLETE, ""))
+                .action(Action::new("Snooze 1hr", actions::SNOOZE_1HR, ""))
+                .action(Action::new("View Task", actions::VIEW, ""));
         }
         NotificationType::Reminder => {
             toast
-                .action(Action::new("Complete", "complete", ""))
-                .action(Action::new("Snooze 15min", "snooze-15min", ""))
-                .action(Action::new("View Task", "view", ""));
+                .action(Action::new("Complete", actions::COMPLETE, ""))
+                .action(Action::new("Snooze 15min", actions::SNOOZE_15MIN, ""))
+                .action(Action::new("View Task", actions::VIEW, ""));
         }
     }
 
@@ -67,31 +70,23 @@ pub fn send_notification(app: &AppHandle, request: &SendNotificationRequest) -> 
     ToastManager::new(&app_id)
         .on_activated(None, move |action| {
             let action_name = match &action {
-                Some(act) => match act.arg.as_str() {
-                    "complete" => "complete",
-                    "snooze-15min" => "snooze-15min",
-                    "snooze-1hr" => "snooze-1hr",
-                    "view" => "view",
-                    _ => return,
+                Some(act) => match actions::plain_action_name(act.arg.as_str()) {
+                    Some(action_name) => action_name,
+                    None => return,
                 },
                 // Body click with no button arg → treat as view/open
-                None => "view",
+                None => actions::VIEW,
             };
 
-            if action_name == "view" {
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                }
+            if action_name == actions::VIEW {
+                actions::show_main_window(&app);
             }
 
-            let _ = app.emit(
-                "notification-action",
-                NotificationActionEvent {
-                    action: action_name.to_string(),
-                    task_id: task_id.clone(),
-                    notification_type: notification_type.clone(),
-                },
+            actions::emit_action(
+                &app,
+                action_name,
+                task_id.clone(),
+                notification_type.clone(),
             );
         })
         .show(&toast)

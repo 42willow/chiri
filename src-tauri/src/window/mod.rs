@@ -1,8 +1,3 @@
-// Window event handling logic
-//
-// This module contains window event handlers that need to be separate from main.rs
-// to keep the main file clean and focused on application setup.
-
 #[cfg(target_os = "macos")]
 use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::{Manager, WindowEvent};
@@ -26,9 +21,7 @@ pub fn show_dock_icon<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
 }
 
 #[cfg(not(target_os = "macos"))]
-pub fn show_dock_icon<R: tauri::Runtime>(_app_handle: &tauri::AppHandle<R>) {
-    // No-op on non-macOS platforms
-}
+pub fn show_dock_icon<R: tauri::Runtime>(_app_handle: &tauri::AppHandle<R>) {}
 
 /// Hide the dock icon on macOS when the window is hidden
 #[cfg(target_os = "macos")]
@@ -37,9 +30,7 @@ fn hide_dock_icon<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
 }
 
 #[cfg(not(target_os = "macos"))]
-fn hide_dock_icon<R: tauri::Runtime>(_app_handle: &tauri::AppHandle<R>) {
-    // No-op on non-macOS platforms
-}
+fn hide_dock_icon<R: tauri::Runtime>(_app_handle: &tauri::AppHandle<R>) {}
 
 fn hide_dock_icon_if_configured<R: tauri::Runtime>(app_handle: &tauri::AppHandle<R>) {
     #[cfg(target_os = "macos")]
@@ -48,6 +39,20 @@ fn hide_dock_icon_if_configured<R: tauri::Runtime>(app_handle: &tauri::AppHandle
     }
 
     hide_dock_icon(app_handle);
+}
+
+fn is_tray_enabled<R: tauri::Runtime>(window: &tauri::Window<R>) -> bool {
+    match window
+        .app_handle()
+        .state::<crate::tray::TrayState>()
+        .is_enabled()
+    {
+        Ok(enabled) => enabled,
+        Err(e) => {
+            log::warn!("[Window] Failed to read tray state: {e}");
+            false
+        }
+    }
 }
 
 /// Handle window focus event
@@ -68,16 +73,11 @@ pub fn handle_focus_event<R: tauri::Runtime>(window: &tauri::Window<R>) {
 }
 
 #[cfg(not(target_os = "linux"))]
-pub fn handle_focus_event<R: tauri::Runtime>(_window: &tauri::Window<R>) {
-    // No-op on non-Linux platforms
-}
+pub fn handle_focus_event<R: tauri::Runtime>(_window: &tauri::Window<R>) {}
 
-/// Main window event dispatcher
-///
-/// This function routes window events to their appropriate handlers.
 pub fn handle_window_event<R: tauri::Runtime>(window: &tauri::Window<R>, event: &WindowEvent) {
     match event {
-        WindowEvent::CloseRequested { api, .. } if crate::tray::is_tray_enabled() => {
+        WindowEvent::CloseRequested { api, .. } if is_tray_enabled(window) => {
             // Handle close request with tray integration
             // When the close button is clicked:
             // - If tray is enabled: hide the window instead of closing

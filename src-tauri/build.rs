@@ -16,7 +16,7 @@ fn main() {
 #[cfg(target_os = "macos")]
 fn compile_macos_ffi() {
     cc::Build::new()
-        .files(["src/notifications/permissions.m", "src/macos/login_item.m"])
+        .files(["src/notifications/permission.m", "src/macos/login_item.m"])
         .flag("-fmodules")
         .flag("-fobjc-arc")
         .flag("-Wno-unguarded-availability-new")

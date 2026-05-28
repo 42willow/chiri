@@ -13,7 +13,7 @@ pub struct NotificationPermissionResult {
     pub status: String,
 }
 
-// macOS FFI bridge (companion: notifications.m)
+// macOS FFI bridge (companion: permission.m)
 #[cfg(target_os = "macos")]
 extern "C" {
     fn check_notification_permission_ffi(callback: extern "C" fn(*const std::os::raw::c_char));
@@ -31,17 +31,55 @@ static PERMISSION_REQUEST_RESULT: std::sync::Mutex<Option<(bool, String)>> =
     std::sync::Mutex::new(None);
 
 #[cfg(target_os = "macos")]
+fn set_status_result(value: Option<String>) -> Result<(), String> {
+    let mut result = PERMISSION_STATUS_RESULT
+        .lock()
+        .map_err(|e| format!("Notification permission status lock poisoned: {e}"))?;
+    *result = value;
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn status_result() -> Result<Option<String>, String> {
+    PERMISSION_STATUS_RESULT
+        .lock()
+        .map(|result| result.clone())
+        .map_err(|e| format!("Notification permission status lock poisoned: {e}"))
+}
+
+#[cfg(target_os = "macos")]
+fn set_request_result(value: Option<(bool, String)>) -> Result<(), String> {
+    let mut result = PERMISSION_REQUEST_RESULT
+        .lock()
+        .map_err(|e| format!("Notification permission request lock poisoned: {e}"))?;
+    *result = value;
+    Ok(())
+}
+
+#[cfg(target_os = "macos")]
+fn request_result() -> Result<Option<(bool, String)>, String> {
+    PERMISSION_REQUEST_RESULT
+        .lock()
+        .map(|result| result.clone())
+        .map_err(|e| format!("Notification permission request lock poisoned: {e}"))
+}
+
+#[cfg(target_os = "macos")]
 extern "C" fn check_permission_callback(status_ptr: *const std::os::raw::c_char) {
     if status_ptr.is_null() {
-        *PERMISSION_STATUS_RESULT.lock().unwrap() = Some("default".to_string());
+        if let Err(e) = set_status_result(Some("default".to_string())) {
+            log::warn!("[Notifications] {e}");
+        }
         return;
     }
     unsafe {
         let status = std::ffi::CStr::from_ptr(status_ptr)
             .to_string_lossy()
             .into_owned();
-        *PERMISSION_STATUS_RESULT.lock().unwrap() = Some(status);
         free_notification_string_ffi(status_ptr as *mut std::os::raw::c_char);
+        if let Err(e) = set_status_result(Some(status)) {
+            log::warn!("[Notifications] {e}");
+        }
     }
 }
 
@@ -58,7 +96,9 @@ extern "C" fn request_permission_callback(granted: bool, status_ptr: *const std:
             s
         }
     };
-    *PERMISSION_REQUEST_RESULT.lock().unwrap() = Some((granted, status));
+    if let Err(e) = set_request_result(Some((granted, status))) {
+        log::warn!("[Notifications] {e}");
+    }
 }
 
 // Tauri commands
@@ -68,11 +108,11 @@ pub async fn check_notification_permission() -> Result<NotificationPermissionSta
     #[cfg(target_os = "macos")]
     {
         use std::{thread, time::Duration};
-        *PERMISSION_STATUS_RESULT.lock().unwrap() = None;
+        set_status_result(None)?;
         unsafe { check_notification_permission_ffi(check_permission_callback) };
         for _ in 0..50 {
             thread::sleep(Duration::from_millis(10));
-            if let Some(status) = PERMISSION_STATUS_RESULT.lock().unwrap().clone() {
+            if let Some(status) = status_result()? {
                 return Ok(NotificationPermissionStatus { status });
             }
         }
@@ -92,11 +132,11 @@ pub async fn request_notification_permission() -> Result<NotificationPermissionR
     #[cfg(target_os = "macos")]
     {
         use std::{thread, time::Duration};
-        *PERMISSION_REQUEST_RESULT.lock().unwrap() = None;
+        set_request_result(None)?;
         unsafe { request_notification_permission_ffi(request_permission_callback) };
         for i in 0..3000 {
             thread::sleep(Duration::from_millis(10));
-            if let Some((granted, status)) = PERMISSION_REQUEST_RESULT.lock().unwrap().clone() {
+            if let Some((granted, status)) = request_result()? {
                 let normalized_status = if granted {
                     "granted".to_string()
                 } else if status.contains("not allowed")
@@ -113,13 +153,13 @@ pub async fn request_notification_permission() -> Result<NotificationPermissionR
                 });
             }
             if i > 0 && i % 100 == 0 {
-                eprintln!(
+                log::debug!(
                     "[Notifications] Still waiting for permission response... ({}s)",
                     i / 100
                 );
             }
         }
-        eprintln!("[Notifications] Permission request timed out after 30 seconds");
+        log::warn!("[Notifications] Permission request timed out after 30 seconds");
         Err("Request timed out".to_string())
     }
 

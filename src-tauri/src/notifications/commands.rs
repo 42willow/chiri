@@ -1,63 +1,14 @@
-use std::sync::Arc;
 use tauri::State;
-use user_notify::{get_notification_manager, NotificationBuilder, NotificationManager};
+use user_notify::NotificationBuilder;
 
-// Shared constants for notification categories
-pub const TASK_OVERDUE_CATEGORY: &str = "garden.chiri.Chiri.task.overdue";
-pub const TASK_REMINDER_CATEGORY: &str = "garden.chiri.Chiri.task.reminder";
-
-pub const USER_INFO_TASK_ID: &str = "taskId";
-pub const USER_INFO_NOTIFICATION_TYPE: &str = "notificationType";
-
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SendNotificationRequest {
-    pub title: String,
-    pub body: String,
-    pub task_id: String,
-    pub notification_type: NotificationType,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "lowercase")]
-pub enum NotificationType {
-    Overdue,
-    Reminder,
-}
-
-#[cfg(any(target_os = "macos", target_os = "linux", target_os = "windows"))]
-#[derive(Debug, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct NotificationActionEvent {
-    pub action: String,
-    pub task_id: String,
-    pub notification_type: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SimpleNotificationRequest {
-    pub title: String,
-    pub body: String,
-}
-
-// Notification state
-#[derive(Debug, Clone)]
-pub struct NotificationManagerState {
-    pub manager: Arc<dyn NotificationManager>,
-}
-
-impl NotificationManagerState {
-    pub fn new(app_id: String) -> Self {
-        Self {
-            manager: get_notification_manager(app_id, None),
-        }
-    }
-}
-
-// Tauri commands
+use super::{
+    state::NotificationManagerState,
+    types::{
+        NotificationType, SendNotificationRequest, SimpleNotificationRequest,
+        TASK_OVERDUE_CATEGORY, TASK_REMINDER_CATEGORY, USER_INFO_NOTIFICATION_TYPE,
+        USER_INFO_TASK_ID,
+    },
+};
 
 /// Send a notification with action buttons (Complete / Snooze / View Task).
 #[tauri::command]

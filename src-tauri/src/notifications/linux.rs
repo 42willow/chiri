@@ -1,6 +1,9 @@
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Manager};
 
-use super::manager::{NotificationActionEvent, NotificationType, SendNotificationRequest};
+use super::{
+    actions,
+    types::{NotificationType, SendNotificationRequest},
+};
 
 /// Search the system hicolor icon theme for the first matching candidate name.
 /// The icon name differs by package type:
@@ -65,15 +68,15 @@ pub async fn send_notification(
     match request.notification_type {
         NotificationType::Overdue => {
             notif
-                .action("complete", "Complete")
-                .action("snooze-1hr", "Snooze 1hr")
-                .action("view", "View Task");
+                .action(actions::COMPLETE, "Complete")
+                .action(actions::SNOOZE_1HR, "Snooze 1hr")
+                .action(actions::VIEW, "View Task");
         }
         NotificationType::Reminder => {
             notif
-                .action("complete", "Complete")
-                .action("snooze-15min", "Snooze 15min")
-                .action("view", "View Task");
+                .action(actions::COMPLETE, "Complete")
+                .action(actions::SNOOZE_15MIN, "Snooze 15min")
+                .action(actions::VIEW, "View Task");
         }
     }
 
@@ -86,29 +89,15 @@ pub async fn send_notification(
 
     tauri::async_runtime::spawn_blocking(move || {
         handle.wait_for_action(|action| {
-            let action_name = match action {
-                "complete" => "complete",
-                "snooze-15min" => "snooze-15min",
-                "snooze-1hr" => "snooze-1hr",
-                "view" | "__default" => "view",
-                _ => return,
+            let Some(action_name) = actions::plain_action_name(action) else {
+                return;
             };
 
-            if action_name == "view" {
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                }
+            if action_name == actions::VIEW {
+                actions::show_main_window(&app);
             }
 
-            let _ = app.emit(
-                "notification-action",
-                NotificationActionEvent {
-                    action: action_name.to_string(),
-                    task_id,
-                    notification_type,
-                },
-            );
+            actions::emit_action(&app, action_name, task_id, notification_type);
         });
     });
 

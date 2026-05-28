@@ -6,7 +6,10 @@ use tauri::command;
 /// Takes raw bytes and returns XML string if successful
 #[command]
 pub fn convert_plist_to_xml(data: Vec<u8>) -> Result<String, String> {
-    println!("convert_plist_to_xml called with {} bytes", data.len());
+    log::debug!(
+        "[Plist] convert_plist_to_xml called with {} bytes",
+        data.len()
+    );
 
     // First, try to parse as a standard plist (binary or XML)
     let cursor = Cursor::new(&data);
@@ -15,24 +18,24 @@ pub fn convert_plist_to_xml(data: Vec<u8>) -> Result<String, String> {
             // Successfully parsed as plist, convert to XML
             let mut xml_data = Vec::new();
             plist::to_writer_xml(&mut xml_data, &value).map_err(|e| {
-                eprintln!("Failed to convert to XML: {}", e);
+                log::warn!("[Plist] Failed to convert plist to XML: {e}");
                 format!("Failed to convert to XML: {}", e)
             })?;
 
             let xml_string = String::from_utf8(xml_data).map_err(|e| {
-                eprintln!("Failed to convert to UTF-8: {}", e);
+                log::warn!("[Plist] Failed to convert XML output to UTF-8: {e}");
                 format!("Failed to convert to UTF-8: {}", e)
             })?;
 
-            println!(
-                "Successfully converted plist to XML, {} bytes",
+            log::debug!(
+                "[Plist] Successfully converted plist to XML, {} bytes",
                 xml_string.len()
             );
             return Ok(xml_string);
         }
         Err(e) => {
-            eprintln!("Failed to parse as standard plist: {}", e);
-            println!("Attempting to decode as signed/encrypted CMS profile...");
+            log::debug!("[Plist] Failed to parse as standard plist: {e}");
+            log::debug!("[Plist] Attempting to decode as signed/encrypted CMS profile");
         }
     }
 
@@ -46,7 +49,10 @@ pub fn convert_plist_to_xml(data: Vec<u8>) -> Result<String, String> {
     let content_info = ContentInfo::from_ber(&data)
         .map_err(|e| format!("Failed to parse as CMS ContentInfo: {}", e))?;
 
-    println!("ContentInfo content_type: {}", content_info.content_type);
+    log::debug!(
+        "[Plist] ContentInfo content_type: {}",
+        content_info.content_type
+    );
 
     // Re-encode the content to DER bytes for SignedData parsing
     let content_bytes = content_info
@@ -54,7 +60,7 @@ pub fn convert_plist_to_xml(data: Vec<u8>) -> Result<String, String> {
         .to_der()
         .map_err(|e| format!("Failed to encode content to DER: {}", e))?;
 
-    println!("Content DER bytes length: {}", content_bytes.len());
+    log::debug!("[Plist] Content DER bytes length: {}", content_bytes.len());
 
     // Parse as SignedData (also use BER for leniency)
     let signed_data = SignedData::from_ber(&content_bytes)
@@ -67,7 +73,7 @@ pub fn convert_plist_to_xml(data: Vec<u8>) -> Result<String, String> {
         .ok_or_else(|| "No encapsulated content found in signed profile".to_string())?;
 
     let decoded_bytes = encap_content.value();
-    println!("Decoded CMS content, {} bytes", decoded_bytes.len());
+    log::debug!("[Plist] Decoded CMS content, {} bytes", decoded_bytes.len());
 
     // Now try to parse the decoded content as plist
     let cursor = Cursor::new(decoded_bytes);
@@ -82,8 +88,8 @@ pub fn convert_plist_to_xml(data: Vec<u8>) -> Result<String, String> {
     let xml_string =
         String::from_utf8(xml_data).map_err(|e| format!("Failed to convert to UTF-8: {}", e))?;
 
-    println!(
-        "Successfully decoded signed profile and converted to XML, {} bytes",
+    log::debug!(
+        "[Plist] Successfully decoded signed profile and converted to XML, {} bytes",
         xml_string.len()
     );
     Ok(xml_string)

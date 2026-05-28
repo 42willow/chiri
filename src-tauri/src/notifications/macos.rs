@@ -1,19 +1,20 @@
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::AppHandle;
 use user_notify::{
     NotificationCategory, NotificationCategoryAction, NotificationResponse,
     NotificationResponseAction,
 };
 
-use super::manager::{
-    NotificationActionEvent, NotificationManagerState, TASK_OVERDUE_CATEGORY,
-    TASK_REMINDER_CATEGORY, USER_INFO_NOTIFICATION_TYPE, USER_INFO_TASK_ID,
+use super::{
+    actions::{
+        emit_action, macos_action_name, show_main_window, MACOS_COMPLETE, MACOS_SNOOZE_15MIN,
+        MACOS_SNOOZE_1HR, MACOS_VIEW, VIEW,
+    },
+    state::NotificationManagerState,
+    types::{
+        TASK_OVERDUE_CATEGORY, TASK_REMINDER_CATEGORY, USER_INFO_NOTIFICATION_TYPE,
+        USER_INFO_TASK_ID,
+    },
 };
-
-// Action identifiers — macOS uses reverse-DNS strings; other platforms use plain strings
-pub const ACTION_COMPLETE: &str = "garden.chiri.Chiri.action.complete";
-pub const ACTION_SNOOZE_15MIN: &str = "garden.chiri.Chiri.action.snooze.15min";
-pub const ACTION_SNOOZE_1HR: &str = "garden.chiri.Chiri.action.snooze.1hr";
-pub const ACTION_VIEW: &str = "garden.chiri.Chiri.action.view";
 
 impl NotificationManagerState {
     pub fn register_categories_and_handler(&self, app: AppHandle<impl tauri::Runtime>) {
@@ -22,15 +23,15 @@ impl NotificationManagerState {
                 identifier: TASK_OVERDUE_CATEGORY.to_string(),
                 actions: vec![
                     NotificationCategoryAction::Action {
-                        identifier: ACTION_COMPLETE.to_string(),
+                        identifier: MACOS_COMPLETE.to_string(),
                         title: "Complete".to_string(),
                     },
                     NotificationCategoryAction::Action {
-                        identifier: ACTION_SNOOZE_1HR.to_string(),
+                        identifier: MACOS_SNOOZE_1HR.to_string(),
                         title: "Snooze 1hr".to_string(),
                     },
                     NotificationCategoryAction::Action {
-                        identifier: ACTION_VIEW.to_string(),
+                        identifier: MACOS_VIEW.to_string(),
                         title: "View Task".to_string(),
                     },
                 ],
@@ -39,15 +40,15 @@ impl NotificationManagerState {
                 identifier: TASK_REMINDER_CATEGORY.to_string(),
                 actions: vec![
                     NotificationCategoryAction::Action {
-                        identifier: ACTION_COMPLETE.to_string(),
+                        identifier: MACOS_COMPLETE.to_string(),
                         title: "Complete".to_string(),
                     },
                     NotificationCategoryAction::Action {
-                        identifier: ACTION_SNOOZE_15MIN.to_string(),
+                        identifier: MACOS_SNOOZE_15MIN.to_string(),
                         title: "Snooze 15min".to_string(),
                     },
                     NotificationCategoryAction::Action {
-                        identifier: ACTION_VIEW.to_string(),
+                        identifier: MACOS_VIEW.to_string(),
                         title: "View Task".to_string(),
                     },
                 ],
@@ -65,18 +66,18 @@ impl NotificationManagerState {
                 categories,
             )
             .unwrap_or_else(|err| {
-                eprintln!("[Notifications] Failed to register notification categories: {err:?}");
+                log::warn!("[Notifications] Failed to register notification categories: {err:?}");
             });
     }
 }
 
 async fn handle_response(app: &AppHandle<impl tauri::Runtime>, response: NotificationResponse) {
-    eprintln!("[Notifications] Received response: {response:?}");
+    log::debug!("[Notifications] Received response: {response:?}");
 
     let task_id = match response.user_info.get(USER_INFO_TASK_ID) {
         Some(id) => id.clone(),
         None => {
-            eprintln!("[Notifications] No task ID in notification response");
+            log::warn!("[Notifications] No task ID in notification response");
             return;
         }
     };
@@ -89,52 +90,22 @@ async fn handle_response(app: &AppHandle<impl tauri::Runtime>, response: Notific
 
     match response.action {
         NotificationResponseAction::Default => {
-            if let Some(window) = app.get_webview_window("main") {
-                let _ = window.show();
-                let _ = window.set_focus();
-                crate::window_events::show_dock_icon(app);
-            }
-            let _ = app.emit(
-                "notification-action",
-                NotificationActionEvent {
-                    action: "view".to_string(),
-                    task_id,
-                    notification_type,
-                },
-            );
+            show_main_window(app);
+            emit_action(app, VIEW, task_id, notification_type);
         }
         NotificationResponseAction::Dismiss => {
-            eprintln!("[Notifications] Notification dismissed");
+            log::debug!("[Notifications] Notification dismissed");
         }
         NotificationResponseAction::Other(action_id) => {
-            let action_name = if action_id == ACTION_COMPLETE {
-                "complete"
-            } else if action_id == ACTION_SNOOZE_15MIN {
-                "snooze-15min"
-            } else if action_id == ACTION_SNOOZE_1HR {
-                "snooze-1hr"
-            } else if action_id == ACTION_VIEW {
-                "view"
-            } else {
-                eprintln!("[Notifications] Unknown action: {action_id}");
+            let Some(action_name) = macos_action_name(&action_id) else {
+                log::warn!("[Notifications] Unknown action: {action_id}");
                 return;
             };
 
-            let _ = app.emit(
-                "notification-action",
-                NotificationActionEvent {
-                    action: action_name.to_string(),
-                    task_id,
-                    notification_type,
-                },
-            );
+            emit_action(app, action_name, task_id, notification_type);
 
-            if action_id == ACTION_VIEW {
-                if let Some(window) = app.get_webview_window("main") {
-                    let _ = window.show();
-                    let _ = window.set_focus();
-                    crate::window_events::show_dock_icon(app);
-                }
+            if action_name == VIEW {
+                show_main_window(app);
             }
         }
     }
