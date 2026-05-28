@@ -27,7 +27,6 @@ import { useTasks } from '$hooks/queries/useTasks';
 import { useUIState } from '$hooks/queries/useUIState';
 import { useConfirmQuit } from '$hooks/system/useConfirmQuit';
 import { useDeepLink } from '$hooks/system/useDeepLink';
-import { useFileDrop } from '$hooks/system/useFileDrop';
 import { useNotifications } from '$hooks/system/useNotifications';
 import { useTray } from '$hooks/system/useTray';
 import { useUpdateChecker } from '$hooks/system/useUpdateChecker';
@@ -35,6 +34,7 @@ import { useKeyboardShortcuts } from '$hooks/ui/useKeyboardShortcuts';
 import { useTaskEditorResize } from '$hooks/ui/useTaskEditorResize';
 import { useTheme } from '$hooks/ui/useTheme';
 import { toastManager } from '$hooks/ui/useToast';
+import { useAppFileDrop } from '$hooks/useAppFileDrop';
 import { useAppMenu } from '$hooks/useAppMenu';
 import { useChangelog } from '$hooks/useChangelog';
 import { useMenuHandlers } from '$hooks/useMenuHandlers';
@@ -42,18 +42,11 @@ import { useWebDAVPush } from '$hooks/useWebDAVPush';
 
 import { getTasksByCalendar } from '$lib/store/tasks';
 
-import type { CalDAVConfig } from '$utils/mobileconfig';
 import { shouldShowOnboarding } from '$utils/onboarding';
 
 const App = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const { openChangelog, closeChangelog, changelogData } = useChangelog();
-
-  const [preloadedFile, setPreloadedFile] = useState<{
-    name: string;
-    content: string;
-  } | null>(null);
-  const [preloadedConfig, setPreloadedConfig] = useState<CalDAVConfig | null>(null);
 
   const {
     isSyncing,
@@ -181,32 +174,24 @@ const App = () => {
     handleMenuSyncCalendar,
   );
   const { isAnyModalOpen } = useModalState();
-  const canHandleGlobalFileDrop = !isAnyModalOpen && !menuHandlers.showImport;
 
-  // file drop handling via hook
   const {
+    preloadedFile,
+    preloadedConfig,
+    canHandleGlobalFileDrop,
     isDragOver,
     isUnsupportedFile,
-    handleFileDrop,
-    handleDragOver,
-    handleDragEnter,
-    handleDragLeave,
     clearDragState,
-  } = useFileDrop({
-    // Only the app shell opens import/account flows from drops.
-    // Active modals either handle drops themselves or block global file-drop workflows.
-    onFileDrop: (file) => {
-      if (!canHandleGlobalFileDrop) return;
-      setPreloadedFile(file);
-      menuHandlers.setShowImport(true);
-    },
-    onConfigProfileDrop: (config) => {
-      if (!canHandleGlobalFileDrop) return;
-      setPreloadedConfig(config);
-      menuHandlers.setEditingAccountId(null);
-      menuHandlers.setAccountModalZIndex('z-60');
-      menuHandlers.setShowAccountModal(true);
-    },
+    clearPreloadedConfig,
+    handleImportClose,
+    rootFileDropProps,
+  } = useAppFileDrop({
+    isAnyModalOpen,
+    isImportOpen: menuHandlers.showImport,
+    setShowImport: menuHandlers.setShowImport,
+    setShowAccountModal: menuHandlers.setShowAccountModal,
+    setEditingAccountId: menuHandlers.setEditingAccountId,
+    setAccountModalZIndex: menuHandlers.setAccountModalZIndex,
   });
 
   useTheme();
@@ -238,12 +223,6 @@ const App = () => {
   const visibleTask = isEditorOpen ? selectedTask : null;
   const isTaskEditorVisible = visibleTask !== null;
 
-  // reset preloaded file when import modal closes
-  const handleImportClose = useCallback(() => {
-    menuHandlers.setShowImport(false);
-    setPreloadedFile(null);
-  }, [menuHandlers]);
-
   // disable default browser context menu globally
   const handleContextMenu = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
@@ -262,10 +241,7 @@ const App = () => {
       role="application"
       className="flex h-screen bg-surface-50 dark:bg-surface-900 overflow-hidden"
       onContextMenu={handleContextMenu}
-      onDrop={handleFileDrop}
-      onDragOver={handleDragOver}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
+      {...rootFileDropProps}
     >
       {isDragOver && canHandleGlobalFileDrop && (
         <DragOverlay isUnsupportedFile={isUnsupportedFile} />
@@ -366,7 +342,7 @@ const App = () => {
             menuHandlers.setShowAccountModal(false);
             menuHandlers.setEditingAccountId(null);
             menuHandlers.setAccountModalZIndex('z-60');
-            setPreloadedConfig(null);
+            clearPreloadedConfig();
           }}
         />
       )}
