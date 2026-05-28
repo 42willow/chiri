@@ -37,7 +37,8 @@ pub async fn http_request(
         header_map.insert(name, value);
     }
 
-    let method_parsed = reqwest::Method::from_bytes(method.as_bytes()).map_err(|e| e.to_string())?;
+    let method_parsed =
+        reqwest::Method::from_bytes(method.as_bytes()).map_err(|e| e.to_string())?;
 
     let mut request = client.request(method_parsed, &url).headers(header_map);
     if let Some(b) = body {

@@ -110,14 +110,12 @@ pub fn migrate_from_legacy_identifier<R: tauri::Runtime>(app: &tauri::App<R>) {
 
     for (label, resolved) in scopes {
         match resolved {
-            Ok(new_path) => {
-                match legacy_path_for(new_path, OLD_IDENTIFIER, &new_identifier) {
-                    Some(old_path) if old_path != *new_path => {
-                        migrate_path_pair(label, &old_path, new_path);
-                    }
-                    _ => {}
+            Ok(new_path) => match legacy_path_for(new_path, OLD_IDENTIFIER, &new_identifier) {
+                Some(old_path) if old_path != *new_path => {
+                    migrate_path_pair(label, &old_path, new_path);
                 }
-            }
+                _ => {}
+            },
             Err(e) => {
                 log::warn!("[LegacyMigration] Could not resolve {label} path: {e}");
             }
@@ -143,11 +141,7 @@ pub fn migrate_from_legacy_identifier<R: tauri::Runtime>(app: &tauri::App<R>) {
                 let old_sub = old_webkit.join(subdir);
                 let new_sub = new_webkit.join(subdir);
                 if old_sub.exists() {
-                    migrate_path_pair(
-                        &format!("WebKit/{subdir}"),
-                        &old_sub,
-                        &new_sub,
-                    );
+                    migrate_path_pair(&format!("WebKit/{subdir}"), &old_sub, &new_sub);
                 }
             }
         }
