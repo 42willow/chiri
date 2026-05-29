@@ -18,7 +18,7 @@ fn has_precompiled_assets(gen_dir: &str) -> bool {
         && std::path::Path::new(&chiri_icns).exists()
 }
 
-pub fn compile_icon() {
+pub fn compile() {
     let project_root = env!("CARGO_MANIFEST_DIR");
     let icon_source = format!("{}/icons/Chiri.icon", project_root);
     let gen_dir = format!("{}/gen", project_root);
