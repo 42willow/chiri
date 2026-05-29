@@ -1,0 +1,57 @@
+html.chiri-pointer-cursors
+  :where(
+    a[href]:not([aria-disabled="true"]),
+    button:not(:disabled):not([aria-disabled="true"]),
+    input[type="button"]:not(:disabled),
+    input[type="checkbox"]:not(:disabled),
+    input[type="color"]:not(:disabled),
+    input[type="file"]:not(:disabled),
+    input[type="radio"]:not(:disabled),
+    input[type="range"]:not(:disabled),
+    input[type="reset"]:not(:disabled),
+    input[type="submit"]:not(:disabled),
+    select:not(:disabled),
+    summary,
+    [role="button"]:not([aria-disabled="true"]),
+    [role="menuitem"]:not([aria-disabled="true"]),
+    [role="option"]:not([aria-disabled="true"]),
+    label:has(input[type="checkbox"]:not(:disabled)),
+    label:has(input[type="radio"]:not(:disabled))
+  ):not(.cursor-col-resize):not(.cursor-default):not(.cursor-grab):not(.cursor-grabbing):not(
+    .cursor-help
+  ):not(.cursor-move):not(.cursor-not-allowed):not(.cursor-row-resize):not(.cursor-text):not(
+    .cursor-wait
+  ) {
+  cursor: pointer;
+}
+
+html.chiri-pointer-cursors input[type="range"]:not(:disabled)::-webkit-slider-thumb {
+  cursor: pointer;
+}
+
+html.chiri-standard-cursors
+  :where(
+    a[href]:not([aria-disabled="true"]),
+    input[type="button"]:not(:disabled),
+    input[type="checkbox"]:not(:disabled),
+    input[type="color"]:not(:disabled),
+    input[type="file"]:not(:disabled),
+    input[type="radio"]:not(:disabled),
+    input[type="range"]:not(:disabled),
+    input[type="reset"]:not(:disabled),
+    input[type="submit"]:not(:disabled),
+    select:not(:disabled),
+    summary,
+    [role="button"]:not([aria-disabled="true"]),
+    [role="menuitem"]:not([aria-disabled="true"]),
+    [role="option"]:not([aria-disabled="true"]),
+    label:has(input[type="checkbox"]:not(:disabled)),
+    label:has(input[type="radio"]:not(:disabled)),
+    .cursor-pointer:not(:disabled):not([aria-disabled="true"])
+  ) {
+  cursor: auto;
+}
+
+html.chiri-standard-cursors input[type="range"]:not(:disabled)::-webkit-slider-thumb {
+  cursor: auto;
+}

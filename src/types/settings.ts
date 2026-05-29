@@ -133,6 +133,7 @@ export interface SettingsState {
   /** remembers the chosen accent per scheme so switching back restores it */
   accentColorByScheme: Record<string, string>;
   useAccentColorForCheckboxes: boolean;
+  showCursorPointers: boolean;
   taskListDensity: TaskListDensity;
   defaultTagColor: string;
   defaultCalendarColor: string;
@@ -214,6 +215,7 @@ interface SettingsActions {
   setColorScheme: (schemeId: string, flavorId: string | null, fallbackAccent?: string) => void;
   setColorSchemeFlavor: (flavorId: string | null) => void;
   setUseAccentColorForCheckboxes: (enabled: boolean) => void;
+  setShowCursorPointers: (enabled: boolean) => void;
   setTaskListDensity: (density: TaskListDensity) => void;
   setDefaultTagColor: (color: string) => void;
   setDefaultCalendarColor: (color: string) => void;

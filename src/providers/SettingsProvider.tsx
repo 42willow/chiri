@@ -237,6 +237,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (enabled: boolean) => settingsStore.setUseAccentColorForCheckboxes(enabled),
     [],
   );
+  const setShowCursorPointers = useCallback(
+    (enabled: boolean) => settingsStore.setShowCursorPointers(enabled),
+    [],
+  );
   const setTaskListDensity = useCallback(
     (density: TaskListDensity) => settingsStore.setTaskListDensity(density),
     [],
@@ -371,6 +375,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setColorScheme,
     setColorSchemeFlavor,
     setUseAccentColorForCheckboxes,
+    setShowCursorPointers,
     setTaskListDensity,
     setDefaultTagColor,
     setDefaultCalendarColor,

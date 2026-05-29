@@ -48,6 +48,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'colorSchemeFlavor',
       'accentColorByScheme',
       'useAccentColorForCheckboxes',
+      'showCursorPointers',
       'autoSync',
       'syncInterval',
       'syncOnStartup',

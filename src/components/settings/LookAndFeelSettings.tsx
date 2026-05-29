@@ -57,6 +57,8 @@ export const LookAndFeelSettings = () => {
     setColorSchemeFlavor,
     useAccentColorForCheckboxes,
     setUseAccentColorForCheckboxes,
+    showCursorPointers,
+    setShowCursorPointers,
     taskListDensity,
     setTaskListDensity,
   } = useSettingsStore();
@@ -310,6 +312,25 @@ export const LookAndFeelSettings = () => {
             type="checkbox"
             checked={useAccentColorForCheckboxes}
             onChange={(e) => setUseAccentColorForCheckboxes(e.target.checked)}
+            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+          />
+        </label>
+
+        <div className="border-t border-surface-200 dark:border-surface-700" />
+
+        <label className="flex items-center justify-between gap-4 p-4 cursor-pointer">
+          <div>
+            <p className="text-sm text-surface-700 dark:text-surface-300">
+              Show pointer cursor on interactive controls
+            </p>
+            <p className="text-xs text-surface-500 dark:text-surface-400">
+              Buttons, links, menus, and toggles use the hand cursor
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            checked={showCursorPointers}
+            onChange={(e) => setShowCursorPointers(e.target.checked)}
             className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
           />
         </label>

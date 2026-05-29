@@ -298,6 +298,7 @@ export const settingsStore = {
   setColorSchemeFlavor: (colorSchemeFlavor: string | null) => setState({ colorSchemeFlavor }),
   setUseAccentColorForCheckboxes: (useAccentColorForCheckboxes: boolean) =>
     setState({ useAccentColorForCheckboxes }),
+  setShowCursorPointers: (showCursorPointers: boolean) => setState({ showCursorPointers }),
   setTaskListDensity: (taskListDensity: TaskListDensity) => setState({ taskListDensity }),
   setDefaultTagColor: (defaultTagColor: string) => setState({ defaultTagColor }),
   setDefaultCalendarColor: (defaultCalendarColor: string) => setState({ defaultCalendarColor }),

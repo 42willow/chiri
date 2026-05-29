@@ -65,6 +65,7 @@ export const defaultState: SettingsState = {
   colorSchemeFlavor: null,
   accentColorByScheme: { [DEFAULT_COLOR_SCHEME_ID]: defaultAccentColor },
   useAccentColorForCheckboxes: false,
+  showCursorPointers: true,
   taskListDensity: 'comfortable',
   defaultTagColor: 'accent',
   defaultCalendarColor: 'accent',

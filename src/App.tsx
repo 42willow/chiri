@@ -30,6 +30,7 @@ import { useDeepLink } from '$hooks/system/useDeepLink';
 import { useNotifications } from '$hooks/system/useNotifications';
 import { useTray } from '$hooks/system/useTray';
 import { useUpdateChecker } from '$hooks/system/useUpdateChecker';
+import { useCursorPointers } from '$hooks/ui/useCursorPointers';
 import { useKeyboardShortcuts } from '$hooks/ui/useKeyboardShortcuts';
 import { useTaskEditorResize } from '$hooks/ui/useTaskEditorResize';
 import { useTheme } from '$hooks/ui/useTheme';
@@ -195,6 +196,7 @@ const App = () => {
   });
 
   useTheme();
+  useCursorPointers();
   useConfirmQuit();
   useDeepLink();
   useNotifications({
