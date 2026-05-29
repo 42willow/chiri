@@ -1,20 +1,23 @@
 import FolderSync from 'lucide-react/icons/folder-sync';
-import { AppSelect } from '$components/AppSelect';
+import { getIconByName } from '$constants/icons';
+import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { Account, Task } from '$types';
 
 interface TaskEditorCalendarProps {
   task: Task;
   accounts: Account[];
-  onCalendarChange: (calendarId: string) => void;
+  onOpenMoveCalendar: () => void;
   readOnly?: boolean;
 }
 
 export const TaskEditorCalendar = ({
   task,
   accounts,
-  onCalendarChange,
+  onOpenMoveCalendar,
   readOnly = false,
 }: TaskEditorCalendarProps) => {
+  const resolveAccent = useAccentColorResolver();
+  const resolvedAccentColor = useResolvedAccentColor();
   const allCalendars = accounts.flatMap((account) =>
     account.calendars.map((cal) => ({
       ...cal,
@@ -28,6 +31,10 @@ export const TaskEditorCalendar = ({
   const accountLabel = currentAccount?.name ?? (task.accountId ? `Account ${task.accountId}` : '');
   const calendarLabel =
     currentCalendar?.displayName ?? (task.calendarId ? `Calendar ${task.calendarId}` : '');
+  const CurrentCalendarIcon = getIconByName(currentCalendar?.icon || 'calendar');
+  const currentCalendarColor = currentCalendar?.color
+    ? resolveAccent(currentCalendar.color)
+    : resolvedAccentColor;
 
   if (readOnly) {
     return (
@@ -59,27 +66,36 @@ export const TaskEditorCalendar = ({
       </label>
       {allCalendars.length > 0 ? (
         <>
-          <AppSelect
+          <button
             id="task-calendar"
-            value={task.calendarId}
-            onChange={(e) => onCalendarChange(e.target.value)}
-            className="w-full text-sm border border-transparent bg-surface-100 dark:bg-surface-800 text-surface-800 dark:text-surface-200 rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+            type="button"
+            onClick={onOpenMoveCalendar}
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 hover:border-surface-300 dark:hover:border-surface-500 transition-colors"
           >
-            {accounts.map((account) => (
-              <optgroup key={account.id} label={account.name}>
-                {account.calendars.map((cal) => (
-                  <option key={cal.id} value={cal.id}>
-                    {cal.displayName}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </AppSelect>
-          {currentCalendar && currentAccount && (
-            <p className="mt-1 text-xs text-surface-500 dark:text-surface-400">
-              Currently in: {currentAccount.name} / {currentCalendar.displayName}
-            </p>
-          )}
+            {currentCalendar?.emoji ? (
+              <span
+                className="text-lg leading-none shrink-0"
+                style={{ color: currentCalendarColor }}
+              >
+                {currentCalendar.emoji}
+              </span>
+            ) : (
+              <CurrentCalendarIcon
+                className="w-5 h-5 shrink-0"
+                style={{ color: currentCalendarColor }}
+              />
+            )}
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-surface-700 dark:text-surface-300">
+                {calendarLabel || 'Select a calendar...'}
+              </span>
+              {accountLabel && (
+                <span className="block truncate text-xs text-surface-500 dark:text-surface-400">
+                  {accountLabel}
+                </span>
+              )}
+            </span>
+          </button>
           {task.parentUid && (
             <p className="mt-3 text-xs text-surface-700 dark:text-surface-200 border border-semantic-warning/30 bg-semantic-warning/10 rounded-md p-2">
               Changing the calendar will convert this subtask to a regular task.

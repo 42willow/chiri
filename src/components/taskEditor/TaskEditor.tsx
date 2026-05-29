@@ -1,5 +1,6 @@
 import { Fragment, useRef, useState } from 'react';
 import { DatePickerModal } from '$components/modals/DatePickerModal';
+import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { ReminderPickerModal } from '$components/modals/ReminderPickerModal';
 import { RepeatModal } from '$components/modals/RepeatModal';
 import { TagModal } from '$components/modals/TagModal';
@@ -94,6 +95,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   // Date picker state
   const [showStartDatePicker, setShowStartDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
+  const [showMoveCalendarModal, setShowMoveCalendarModal] = useState(false);
 
   // Repeat modal state
   const [showRepeatModal, setShowRepeatModal] = useState(false);
@@ -267,7 +269,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         <TaskEditorCalendar
           task={task}
           accounts={accounts}
-          onCalendarChange={handleCalendarChange}
+          onOpenMoveCalendar={() => setShowMoveCalendarModal(true)}
           readOnly={isReadOnly}
         />
       ) : null,
@@ -400,6 +402,15 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
           title="Due Date"
           allDay={task.dueDateAllDay}
           onAllDayChange={handleDueDateAllDayChange}
+        />
+      )}
+
+      {!isReadOnly && showMoveCalendarModal && (
+        <MoveToCalendarModal
+          task={task}
+          accounts={accounts}
+          onMove={handleCalendarChange}
+          onClose={() => setShowMoveCalendarModal(false)}
         />
       )}
 
