@@ -7,7 +7,8 @@ import { SidebarCollapsedItemTooltip } from '$components/sidebar/SidebarCollapse
 import { Tooltip } from '$components/Tooltip';
 import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account, Filter, Tag } from '$types';
+import type { Account, Tag } from '$types';
+import type { Filter } from '$types/filter';
 
 interface SidebarCollapsedViewProps {
   accounts: Account[];

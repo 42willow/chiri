@@ -1,7 +1,6 @@
-import type { DateFormat, ServerType, StartOfWeek } from '$types';
+import type { ServerType } from '$types';
+import type { DateFormat, StartOfWeek } from '$types/preference';
 import type { ServerTypeGroup, ServerTypeOption } from '$types/settings';
-
-export type { ServerTypeGroup, ServerTypeOption };
 
 /**
  * Date format options

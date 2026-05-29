@@ -26,7 +26,7 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useVisibleTasks } from '$hooks/queries/useVisibleTasks';
-import type { SortDirection, SortMode } from '$types';
+import type { SortDirection, SortMode } from '$types/sort';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 import { pluralize } from '$utils/misc';
 

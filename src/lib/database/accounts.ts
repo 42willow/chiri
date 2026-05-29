@@ -2,14 +2,14 @@ import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { rowToAccount, rowToCalendar } from '$lib/database/converters';
 import { getUIState } from '$lib/database/ui';
 import type { Account } from '$types';
-import type { AccountRow, CaldavConfigRow, CalendarRow } from '$types/database';
+import type { AccountRow, CalDAVConfigRow, CalendarRow } from '$types/database';
 import { generateUUID } from '$utils/misc';
 
 export const getAllAccounts = async (conn: DatabasePlugin) => {
   const accountRows = await conn.select<AccountRow[]>(
     'SELECT * FROM accounts ORDER BY sort_order ASC',
   );
-  const caldavRows = await conn.select<CaldavConfigRow[]>('SELECT * FROM caldav_configs');
+  const caldavRows = await conn.select<CalDAVConfigRow[]>('SELECT * FROM caldav_configs');
   const calendarRows = await conn.select<CalendarRow[]>(
     'SELECT * FROM calendars ORDER BY sort_order ASC',
   );

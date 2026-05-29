@@ -5,7 +5,7 @@ import { MENU_EVENTS } from '$constants/menu';
 import { useModalState } from '$context/modalStateContext';
 import { useUIState } from '$hooks/queries/useUIState';
 import { loggers } from '$lib/logger';
-import type { SortDirection, SortMode } from '$types';
+import type { SortDirection, SortMode } from '$types/sort';
 
 const log = loggers.menu;
 

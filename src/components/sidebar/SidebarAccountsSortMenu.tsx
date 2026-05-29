@@ -3,7 +3,7 @@ import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { SidebarSortDirectionButton } from '$components/sidebar/SidebarSortDirectionButton';
 import { ACCOUNT_SORT_OPTIONS, CALENDAR_SORT_OPTIONS } from '$constants';
 import { useSetAccountSortConfig, useSetCalendarSortConfig } from '$hooks/queries/useUIState';
-import type { AccountSortConfig, CalendarSortConfig } from '$types';
+import type { AccountSortConfig, CalendarSortConfig } from '$types/sort';
 
 interface SidebarAccountsSortMenuProps {
   anchorRef: RefObject<HTMLElement | null>;

@@ -3,7 +3,8 @@ import BellRing from 'lucide-react/icons/bell-ring';
 import Plus from 'lucide-react/icons/plus';
 import Settings from 'lucide-react/icons/settings';
 import X from 'lucide-react/icons/x';
-import type { Task, TimeFormat } from '$types';
+import type { Task } from '$types';
+import type { TimeFormat } from '$types/preference';
 import { formatDate, formatTime } from '$utils/date';
 import { isMacPlatform } from '$utils/platform';
 

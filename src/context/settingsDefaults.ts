@@ -5,7 +5,7 @@ import {
   DEFAULT_SIDEBAR_WIDTH,
 } from '$constants';
 import { getDefaultAccentColor } from '$constants/colorSchemes';
-import { DEFAULT_COLOR_SCHEME_ID } from '$types/color';
+import { DEFAULT_COLOR_SCHEME_ID } from '$constants/colorSchemes/default';
 import { NTFY_DIRECT_PROVIDER_ID } from '$types/push';
 import type { SettingsState } from '$types/settings';
 

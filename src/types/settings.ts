@@ -1,17 +1,41 @@
 import type {
-  DateFormat,
   DefaultDateOffset,
   DefaultReminderOffset,
   KeyboardShortcut,
   Priority,
   ServerType,
-  StartOfWeek,
-  SubtaskDeletionBehavior,
   TaskStatus,
-  TimeFormat,
 } from '$types';
 import type { AccentColor, Theme } from '$types/color';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/preference';
 import type { PushProviderId } from '$types/push';
+import type { SortDirection, SortMode } from '$types/sort';
+
+export interface AppSettings {
+  theme: 'light' | 'dark' | 'system';
+  defaultSortMode: SortMode;
+  defaultSortDirection: SortDirection;
+  showCompletedTasks: boolean;
+  showUnstartedTasks: boolean;
+}
+export type SubtaskDeletionBehavior = 'delete' | 'keep';
+
+export type SettingsCategory = 'tasks' | 'app' | 'accounts' | 'misc';
+export type SettingsSubtab =
+  | 'behavior'
+  | 'defaults'
+  | 'editor'
+  | 'badges'
+  | 'look-and-feel'
+  | 'notifications'
+  | 'region-and-time'
+  | 'keyboard-shortcuts'
+  | 'system'
+  | 'connections'
+  | 'data'
+  | 'sync'
+  | 'updates'
+  | 'about';
 
 export type TaskListDensity = 'comfortable' | 'compact';
 
@@ -50,13 +74,6 @@ export interface QuickTimePresets {
   afternoon: number;
   evening: number;
   night: number;
-}
-
-export interface OnboardingStep {
-  title: string;
-  description: React.ReactNode;
-  icon: React.ReactNode;
-  illustration?: React.ReactNode;
 }
 
 export interface ServerTypeOption {

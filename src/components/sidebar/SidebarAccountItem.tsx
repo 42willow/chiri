@@ -5,7 +5,8 @@ import Plus from 'lucide-react/icons/plus';
 import { SidebarCalendarList } from '$components/sidebar/SidebarCalendarList';
 import { Tooltip } from '$components/Tooltip';
 import { getIconByName } from '$constants/icons';
-import type { Account, CalendarSortConfig, Task } from '$types';
+import type { Account, Task } from '$types';
+import type { CalendarSortConfig } from '$types/sort';
 
 export interface SidebarAccountItemProps {
   account: Account;

@@ -13,7 +13,7 @@ import {
   getFilterById,
   updateFilter,
 } from '$lib/store/savedFilters';
-import type { Filter } from '$types';
+import type { Filter } from '$types/filter';
 
 export const useFilters = () => {
   const queryClient = useQueryClient();

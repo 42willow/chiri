@@ -1,13 +1,6 @@
-import type {
-  Account,
-  AccountSortConfig,
-  CalendarSortConfig,
-  Filter,
-  SortConfig,
-  Tag,
-  TagSortConfig,
-  Task,
-} from '$types';
+import type { Account, Tag, Task } from '$types';
+import type { Filter } from '$types/filter';
+import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
 
 export interface PendingDeletion {
   uid: string;

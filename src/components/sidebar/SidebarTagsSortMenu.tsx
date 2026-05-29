@@ -3,7 +3,7 @@ import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { SidebarSortDirectionButton } from '$components/sidebar/SidebarSortDirectionButton';
 import { TAG_SORT_OPTIONS } from '$constants';
 import { useSetTagSortConfig } from '$hooks/queries/useUIState';
-import type { TagSortConfig } from '$types';
+import type { TagSortConfig } from '$types/sort';
 
 interface SidebarTagsSortMenuProps {
   anchorRef: RefObject<HTMLElement | null>;

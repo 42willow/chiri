@@ -4,7 +4,7 @@
 
 import type { ServerType } from '$types';
 
-export interface CalDAVConfig {
+export interface MobileConfigCalDAVSettings {
   accountName?: string;
   serverUrl?: string;
   username?: string;
@@ -69,7 +69,7 @@ const detectServerType = (hostname: string | null, principalUrl: string | null):
 /**
  * Parse an Apple Configuration Profile XML and extract CalDAV settings
  */
-export const parseAppleConfigProfile = (xmlContent: string): CalDAVConfig | null => {
+export const parseAppleConfigProfile = (xmlContent: string): MobileConfigCalDAVSettings | null => {
   try {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');

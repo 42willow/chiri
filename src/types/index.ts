@@ -1,63 +1,25 @@
-export type InstallType = 'nix' | 'aur' | 'flatpak' | 'homebrew' | 'standard';
+export interface Calendar {
+  id: string;
+  displayName: string;
+  url: string;
+  ctag?: string;
+  syncToken?: string;
+  color?: string;
+  icon?: string; // Icon name from lucide-react
+  emoji?: string; // Emoji character(s)
+  accountId: string;
+  supportedComponents?: string[]; // e.g., ['VTODO', 'VEVENT']
+  sortOrder: number; // apple-calendar-order
+
+  // WebDAV Push support (draft spec)
+  pushTopic?: string; // Unique topic identifier for WebDAV Push messages
+  pushSupported?: boolean; // Whether server supports WebDAV Push
+  pushVapidKey?: string; // VAPID public key for Web Push (base64url)
+}
 
 export type Priority = 'high' | 'medium' | 'low' | 'none';
 
 export type TaskStatus = 'needs-action' | 'in-process' | 'completed' | 'cancelled';
-
-export type DefaultReminderOffset =
-  | 'at-due'
-  | '5min-before-due'
-  | '15min-before-due'
-  | '30min-before-due'
-  | '1hr-before-due'
-  | '2hr-before-due'
-  | '1day-before-due'
-  | '2days-before-due'
-  | '1week-before-due';
-
-export type DefaultDateOffset =
-  | 'none'
-  | 'today'
-  | 'tomorrow'
-  | '1week'
-  | '2weeks'
-  | 'due-date'
-  | 'due-time'
-  | '1day-before-due'
-  | '1week-before-due';
-
-export type AccountSortMode = 'manual' | 'title';
-
-export interface AccountSortConfig {
-  mode: AccountSortMode;
-  direction: SortDirection;
-}
-
-export type CalendarSortMode = 'manual' | 'server' | 'title';
-
-export interface CalendarSortConfig {
-  mode: CalendarSortMode;
-  direction: SortDirection;
-}
-
-export type TagSortMode = 'manual' | 'title';
-
-export interface TagSortConfig {
-  mode: TagSortMode;
-  direction: SortDirection;
-}
-
-export type SortMode =
-  | 'manual' // uses x-apple-sort-order
-  | 'smart' // smart sort using x-apple-sort-order
-  | 'due-date'
-  | 'start-date'
-  | 'priority'
-  | 'title'
-  | 'modified'
-  | 'created';
-
-export type SortDirection = 'asc' | 'desc';
 
 export interface Reminder {
   id: string;
@@ -130,76 +92,6 @@ export interface Tag {
   sortOrder: number;
 }
 
-export type FilterCombinator = 'all' | 'any';
-
-export type DateFilterField = 'dueDate' | 'startDate' | 'createdAt' | 'modifiedAt' | 'completedAt';
-export type DateFilterOp = 'exists' | 'empty' | 'today' | 'tomorrow' | 'beforeToday' | 'withinDays';
-
-export type FilterCriterion =
-  | {
-      field: DateFilterField;
-      op: DateFilterOp;
-      value?: number;
-    }
-  | {
-      field: 'status';
-      op: 'is' | 'isNot' | 'in' | 'notIn';
-      value: TaskStatus | TaskStatus[];
-    }
-  | {
-      field: 'priority';
-      op: 'is' | 'isNot' | 'in' | 'notIn';
-      value: Priority | Priority[];
-    }
-  | {
-      field: 'tags';
-      op: 'has' | 'hasAny' | 'hasAll' | 'empty';
-      value?: string[];
-    }
-  | {
-      field: 'calendar';
-      op: 'is' | 'isAnyOf';
-      value: string[];
-    }
-  | {
-      field: 'text';
-      op: 'contains';
-      value: string;
-    };
-
-export interface Filter {
-  id: string;
-  presetId?: string;
-  name: string;
-  icon?: string;
-  emoji?: string;
-  color?: string;
-  combinator: FilterCombinator;
-  criteria: FilterCriterion[];
-  sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface Calendar {
-  id: string;
-  displayName: string;
-  url: string;
-  ctag?: string;
-  syncToken?: string;
-  color?: string;
-  icon?: string; // Icon name from lucide-react
-  emoji?: string; // Emoji character(s)
-  accountId: string;
-  supportedComponents?: string[]; // e.g., ['VTODO', 'VEVENT']
-  sortOrder: number; // apple-calendar-order
-
-  // WebDAV Push support (draft spec)
-  pushTopic?: string; // Unique topic identifier for WebDAV Push messages
-  pushSupported?: boolean; // Whether server supports WebDAV Push
-  pushVapidKey?: string; // VAPID public key for Web Push (base64url)
-}
-
 export type ServerType =
   | 'generic'
   | 'fastmail'
@@ -214,7 +106,7 @@ export type ServerType =
   | 'rustical'
   | 'vikunja';
 
-export interface CaldavConfig {
+export interface CalDAVConfig {
   serverUrl: string;
   username: string;
   password: string;
@@ -236,53 +128,11 @@ export interface Account {
   lastSync?: Date;
   isActive: boolean;
   sortOrder: number;
-  caldav: CaldavConfig | null;
+  caldav: CalDAVConfig | null;
 }
-
-export interface SortConfig {
-  mode: SortMode;
-  direction: SortDirection;
-}
-
-export interface AppSettings {
-  theme: 'light' | 'dark' | 'system';
-  defaultSortMode: SortMode;
-  defaultSortDirection: SortDirection;
-  showCompletedTasks: boolean;
-  showUnstartedTasks: boolean;
-}
-
-export type SettingsCategory = 'tasks' | 'app' | 'accounts' | 'misc';
-export type SettingsSubtab =
-  | 'behavior'
-  | 'defaults'
-  | 'editor'
-  | 'badges'
-  | 'look-and-feel'
-  | 'notifications'
-  | 'region-and-time'
-  | 'keyboard-shortcuts'
-  | 'system'
-  | 'connections'
-  | 'data'
-  | 'sync'
-  | 'updates'
-  | 'about';
 
 export type ExportFormat = 'ics' | 'json' | 'markdown' | 'csv';
 export type ExportType = 'tasks' | 'all-calendars' | 'single-calendar';
-
-export type SubtaskDeletionBehavior = 'delete' | 'keep';
-export type StartOfWeek =
-  | 'sunday'
-  | 'monday'
-  | 'tuesday'
-  | 'wednesday'
-  | 'thursday'
-  | 'friday'
-  | 'saturday';
-export type TimeFormat = '12' | '24';
-export type DateFormat = 'MMM d, yyyy' | 'd MMM yyyy' | 'MM/dd/yyyy' | 'dd/MM/yyyy' | 'yyyy-MM-dd';
 
 export interface KeyboardShortcut {
   id: string;
@@ -293,3 +143,27 @@ export interface KeyboardShortcut {
   alt?: boolean;
   description: string;
 }
+
+export type DefaultReminderOffset =
+  | 'at-due'
+  | '5min-before-due'
+  | '15min-before-due'
+  | '30min-before-due'
+  | '1hr-before-due'
+  | '2hr-before-due'
+  | '1day-before-due'
+  | '2days-before-due'
+  | '1week-before-due';
+
+export type DefaultDateOffset =
+  | 'none'
+  | 'today'
+  | 'tomorrow'
+  | '1week'
+  | '2weeks'
+  | 'due-date'
+  | 'due-time'
+  | '1day-before-due'
+  | '1week-before-due';
+
+export type InstallType = 'nix' | 'aur' | 'flatpak' | 'homebrew' | 'standard';

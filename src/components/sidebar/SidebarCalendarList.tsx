@@ -12,7 +12,8 @@ import { useCallback, useRef, useState } from 'react';
 import { SidebarCalendarItem } from '$components/sidebar/SidebarCalendarItem';
 import { useReorderCalendars } from '$hooks/queries/useAccounts';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { Account, Calendar, CalendarSortConfig, Task } from '$types';
+import type { Account, Calendar, Task } from '$types';
+import type { CalendarSortConfig } from '$types/sort';
 
 interface SidebarCalendarListProps {
   account: Account;

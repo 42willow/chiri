@@ -1,6 +1,6 @@
 import { db } from '$lib/database';
 import { dataStore } from '$lib/store';
-import type { Filter } from '$types';
+import type { Filter } from '$types/filter';
 import { generateUUID } from '$utils/misc';
 
 export const getAllFilters = () => {

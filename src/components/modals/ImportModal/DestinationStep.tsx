@@ -5,7 +5,7 @@ import Cloud from 'lucide-react/icons/cloud';
 import { useEffect, useRef, useState } from 'react';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
-import type { DestinationStepProps } from '$types/import';
+import type { Account } from '$types';
 
 interface CalendarOption {
   accountId: string;
@@ -13,6 +13,13 @@ interface CalendarOption {
   calendarId: string;
   calendarName: string;
   calendarColor?: string;
+}
+
+interface DestinationStepProps {
+  accounts: Account[];
+  selectedAccountId: string;
+  selectedCalendarId: string;
+  onSelect: (accountId: string, calendarId: string) => void;
 }
 
 export const DestinationStep = ({

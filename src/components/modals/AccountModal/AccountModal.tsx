@@ -31,7 +31,7 @@ import { createTask } from '$lib/store/tasks';
 import { isCertError, tauriRequest } from '$lib/tauriHttp';
 import type { Account, Calendar, ServerType } from '$types';
 import { generateUUID, isVikunjaServer } from '$utils/misc';
-import type { CalDAVConfig } from '$utils/mobileconfig';
+import type { MobileConfigCalDAVSettings } from '$utils/mobileconfig';
 
 const log = loggers.account;
 
@@ -51,7 +51,7 @@ const getServerTypeLabel = (type: ServerType) =>
 interface AccountModalProps {
   account: Account | null;
   onClose: () => void;
-  preloadedConfig?: CalDAVConfig;
+  preloadedConfig?: MobileConfigCalDAVSettings;
   zIndex?: 'z-60' | 'z-70';
 }
 

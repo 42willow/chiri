@@ -42,7 +42,7 @@ export interface AccountRow {
   sort_order: number | null;
 }
 
-export interface CaldavConfigRow {
+export interface CalDAVConfigRow {
   account_id: string;
   server_url: string;
   username: string;

@@ -22,7 +22,8 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useMenuEvents } from '$hooks/system/useMenuEvents';
-import type { SettingsCategory, SettingsSubtab, SortDirection, SortMode } from '$types';
+import type { SettingsCategory, SettingsSubtab } from '$types/settings';
+import type { SortDirection, SortMode } from '$types/sort';
 
 export const useMenuHandlers = (
   onSync?: () => void,

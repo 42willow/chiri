@@ -10,7 +10,8 @@ import {
 } from '@tauri-apps/api/menu';
 import { MENU_EVENTS } from '$constants/menu';
 import { loggers } from '$lib/logger';
-import type { KeyboardShortcut, SortDirection, SortMode } from '$types';
+import type { KeyboardShortcut } from '$types';
+import type { SortDirection, SortMode } from '$types/sort';
 import { isMacPlatform } from '$utils/platform';
 
 const log = loggers.menu;

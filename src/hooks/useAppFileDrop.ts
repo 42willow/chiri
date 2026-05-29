@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { type FileDropResult, useFileDrop } from '$hooks/system/useFileDrop';
-import type { CalDAVConfig } from '$utils/mobileconfig';
+import type { MobileConfigCalDAVSettings } from '$utils/mobileconfig';
 
 type AccountModalZIndex = 'z-60' | 'z-70';
 
@@ -22,7 +22,7 @@ export const useAppFileDrop = ({
   setAccountModalZIndex,
 }: UseAppFileDropOptions) => {
   const [preloadedFile, setPreloadedFile] = useState<FileDropResult | null>(null);
-  const [preloadedConfig, setPreloadedConfig] = useState<CalDAVConfig | null>(null);
+  const [preloadedConfig, setPreloadedConfig] = useState<MobileConfigCalDAVSettings | null>(null);
   const canHandleGlobalFileDrop = !isAnyModalOpen && !isImportOpen;
 
   const handleImportClose = useCallback(() => {
@@ -45,7 +45,7 @@ export const useAppFileDrop = ({
   );
 
   const handleDroppedConfigProfile = useCallback(
-    (config: CalDAVConfig) => {
+    (config: MobileConfigCalDAVSettings) => {
       if (!canHandleGlobalFileDrop) return;
 
       setPreloadedConfig(config);

@@ -1,5 +1,5 @@
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
-import Calendar from 'lucide-react/icons/calendar';
+import CalendarIcon from 'lucide-react/icons/calendar';
 import Check from 'lucide-react/icons/check';
 import CheckCircle from 'lucide-react/icons/check-circle';
 import ChevronDown from 'lucide-react/icons/chevron-down';
@@ -8,7 +8,15 @@ import Circle from 'lucide-react/icons/circle';
 import Flag from 'lucide-react/icons/flag';
 import Loader2 from 'lucide-react/icons/loader-2';
 import { useState } from 'react';
-import type { ReviewStepProps } from '$types/import';
+import type { Calendar } from '$types';
+import type { ParsedTaskWithStatus } from '$types/import';
+
+interface ReviewStepProps {
+  tasks: ParsedTaskWithStatus[];
+  selectedCalendar: Calendar | undefined;
+  isImporting: boolean;
+  importProgress: number;
+}
 
 const PRIORITY_CONFIG = {
   high: { label: 'High', color: 'text-priority-high' },
@@ -164,7 +172,7 @@ export const ReviewStep = ({
                   )}
                   {task.dueDate && (
                     <span className="flex items-center gap-0.5 text-xs text-surface-500 dark:text-surface-400">
-                      <Calendar className="w-3 h-3" />
+                      <CalendarIcon className="w-3 h-3" />
                       {formatDate(task.dueDate)}
                     </span>
                   )}

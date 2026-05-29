@@ -6,13 +6,10 @@ import { useState } from 'react';
 import { ColorSchemeSelect, type ColorSchemeSelectOption } from '$components/ColorSchemeSelect';
 import { ComposedInput } from '$components/ComposedInput';
 import { COLOR_SCHEMES, getColorSchemeFlavor } from '$constants/colorSchemes';
+import { DEFAULT_COLOR_SCHEME_ID } from '$constants/colorSchemes/default';
 import { THEME_OPTIONS } from '$constants/theme';
 import { useSettingsStore } from '$context/settingsContext';
-import {
-  type ColorSchemeDefinition,
-  type ColorSchemeFlavor,
-  DEFAULT_COLOR_SCHEME_ID,
-} from '$types/color';
+import type { ColorSchemeDefinition, ColorSchemeFlavor } from '$types/color';
 import type { TaskListDensity } from '$types/settings';
 import { resolveAccentColor, resolveEffectiveTheme } from '$utils/color';
 

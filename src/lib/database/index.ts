@@ -10,19 +10,11 @@ import * as tagOps from '$lib/database/tags';
 import * as taskOps from '$lib/database/tasks';
 import * as uiOps from '$lib/database/ui';
 import { loggers } from '$lib/logger';
-import type {
-  Account,
-  AccountSortConfig,
-  Calendar,
-  CalendarSortConfig,
-  Filter,
-  SortConfig,
-  Tag,
-  TagSortConfig,
-  Task,
-} from '$types';
+import type { Account, Calendar, Tag, Task } from '$types';
 import type { TaskHistoryEntry } from '$types/database';
+import type { Filter } from '$types/filter';
 import type { PushSubscription } from '$types/push';
+import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
 import type { DataChangeListener, DataStore, PendingDeletion, UIState } from '$types/store';
 
 const DB_NAME = 'sqlite:chiri.db';

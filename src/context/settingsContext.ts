@@ -1,20 +1,17 @@
 import { createContext, useContext } from 'react';
 import { DEFAULT_SHORTCUTS } from '$constants';
 import { getColorSchemeFlavor } from '$constants/colorSchemes';
+import { DEFAULT_COLOR_SCHEME_ID } from '$constants/colorSchemes/default';
 import { loggers } from '$lib/logger';
 import type {
-  DateFormat,
   DefaultDateOffset,
   DefaultReminderOffset,
   KeyboardShortcut,
   Priority,
-  StartOfWeek,
-  SubtaskDeletionBehavior,
   TaskStatus,
-  TimeFormat,
 } from '$types';
 import type { AccentColor, Theme } from '$types/color';
-import { DEFAULT_COLOR_SCHEME_ID } from '$types/color';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/preference';
 import type { PushProviderId } from '$types/push';
 import type {
   EditorFieldKey,
@@ -22,6 +19,7 @@ import type {
   QuickTimePresets,
   SettingsState,
   SettingsStore,
+  SubtaskDeletionBehavior,
   TaskBadgeKey,
   TaskBadgeVisibility,
   TaskListDensity,

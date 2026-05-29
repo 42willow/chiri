@@ -2,7 +2,8 @@ import Calendar from 'lucide-react/icons/calendar';
 import CalendarClock from 'lucide-react/icons/calendar-clock';
 import CalendarFold from 'lucide-react/icons/calendar-fold';
 import CalendarPlus from 'lucide-react/icons/calendar-plus';
-import type { Task, TimeFormat } from '$types';
+import type { Task } from '$types';
+import type { TimeFormat } from '$types/preference';
 import { formatDate, formatTime } from '$utils/date';
 
 interface TaskEditorDatesProps {

@@ -1,7 +1,7 @@
 import SortDesc from 'lucide-react/icons/arrow-down-wide-narrow';
 import SortAsc from 'lucide-react/icons/arrow-up-narrow-wide';
 import { Tooltip } from '$components/Tooltip';
-import type { SortConfig } from '$types';
+import type { SortConfig } from '$types/sort';
 
 export const SortDirectionButton = ({
   sortConfig,

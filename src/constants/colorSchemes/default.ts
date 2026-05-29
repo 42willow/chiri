@@ -1,5 +1,7 @@
 import type { ColorSchemeAccent, ColorSchemeDefinition } from '$types/color';
 
+export const DEFAULT_COLOR_SCHEME_ID = 'default';
+
 const defaultAccentColors = [
   { name: 'Rose', value: '#f47b96' },
   { name: 'Peach', value: '#f5a06a' },

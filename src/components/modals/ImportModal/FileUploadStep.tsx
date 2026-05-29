@@ -2,8 +2,20 @@ import AlertCircle from 'lucide-react/icons/alert-circle';
 import FileText from 'lucide-react/icons/file-text';
 import Upload from 'lucide-react/icons/upload';
 import X from 'lucide-react/icons/x';
+import type { DragEvent } from 'react';
 import { useRef, useState } from 'react';
-import type { FileUploadStepProps } from '$types/import';
+
+interface FileUploadStepProps {
+  fileName: string;
+  isDraggingOver: boolean;
+  onFileSelect: (file: File) => Promise<void>;
+  onReset: () => void;
+  onDrop: (e: DragEvent) => void;
+  onDragEnter: () => void;
+  onDragLeave: () => void;
+  error: string;
+  parseErrors: string[];
+}
 
 export const FileUploadStep = ({
   fileName,

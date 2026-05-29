@@ -1,5 +1,6 @@
 import { getColorSchemeColorPresets, getColorSchemeFlavor } from '$constants/colorSchemes';
-import { DEFAULT_COLOR_SCHEME_ID, type Theme } from '$types/color';
+import { DEFAULT_COLOR_SCHEME_ID } from '$constants/colorSchemes/default';
+import type { Theme } from '$types/color';
 
 /**
  * parse any valid CSS color string to [r, g, b] using a canvas element.

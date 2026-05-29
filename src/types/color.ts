@@ -2,8 +2,6 @@ export type Theme = 'light' | 'dark' | 'system';
 
 export type AccentColor = string;
 
-export const DEFAULT_COLOR_SCHEME_ID = 'default';
-
 export type ColorSchemeMode = 'light' | 'dark';
 
 export interface ColorSchemeSurfaces {

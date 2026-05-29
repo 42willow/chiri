@@ -1,4 +1,4 @@
-import type { SortMode } from '$types';
+import type { SortMode } from '$types/sort';
 
 export const SortOptionButton = ({
   option,

@@ -5,6 +5,7 @@ import {
   DEFAULT_SORT_CONFIG,
   DEFAULT_TAG_SORT_CONFIG,
 } from '$constants';
+import type { UIStateRow } from '$types/database';
 import type {
   AccountSortConfig,
   AccountSortMode,
@@ -15,8 +16,7 @@ import type {
   SortMode,
   TagSortConfig,
   TagSortMode,
-} from '$types';
-import type { UIStateRow } from '$types/database';
+} from '$types/sort';
 import type { UIState } from '$types/store';
 
 export const DEFAULT_UI_STATE: UIState = {

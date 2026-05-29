@@ -2,8 +2,8 @@ import type DatabasePlugin from '@tauri-apps/plugin-sql';
 import { DEFAULT_FILTER_DEFINITIONS } from '$constants/filters';
 import { rowToFilter } from '$lib/database/converters';
 import { setAllTasksView } from '$lib/database/ui';
-import type { Filter } from '$types';
 import type { AppMetadataRow, FilterRow } from '$types/database';
+import type { Filter } from '$types/filter';
 import { generateUUID } from '$utils/misc';
 
 const DEFAULT_FILTERS_CREATED_KEY = 'default_filters_created';

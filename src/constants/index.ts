@@ -1,11 +1,11 @@
+import type { KeyboardShortcut } from '$types';
 import type {
   AccountSortMode,
   CalendarSortMode,
-  KeyboardShortcut,
   SortDirection,
   SortMode,
   TagSortMode,
-} from '$types';
+} from '$types/sort';
 
 export const DEFAULT_DAY_OF_WEEK = 'monday';
 

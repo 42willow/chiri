@@ -1,4 +1,4 @@
-import type { Filter } from '$types';
+import type { Filter } from '$types/filter';
 
 export type FilterPresetDefinition = Pick<
   Filter,

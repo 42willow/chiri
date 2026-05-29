@@ -1,23 +1,21 @@
 import { type ReactNode, useCallback, useSyncExternalStore } from 'react';
 import { SettingsContext, settingsStore } from '$context/settingsContext';
 import type {
-  DateFormat,
   DefaultDateOffset,
   DefaultReminderOffset,
   KeyboardShortcut,
   Priority,
-  StartOfWeek,
-  SubtaskDeletionBehavior,
   TaskStatus,
-  TimeFormat,
 } from '$types';
 import type { AccentColor, Theme } from '$types/color';
+import type { DateFormat, StartOfWeek, TimeFormat } from '$types/preference';
 import type { PushProviderId } from '$types/push';
 import type {
   EditorFieldKey,
   EditorFieldVisibility,
   QuickTimePresets,
   SettingsStore,
+  SubtaskDeletionBehavior,
   TaskBadgeKey,
   TaskBadgeVisibility,
   TaskListDensity,

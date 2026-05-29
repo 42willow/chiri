@@ -33,7 +33,7 @@ import { SystemSettings } from '$components/settings/SystemSettings';
 import { TaskDefaultsSettings } from '$components/settings/TaskDefaultsSettings/TaskDefaultsSettings';
 import { UpdateSettings } from '$components/settings/UpdateSettings';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import type { SettingsCategory, SettingsSubtab } from '$types';
+import type { SettingsCategory, SettingsSubtab } from '$types/settings';
 
 interface SettingsModalProps {
   onClose: () => void;

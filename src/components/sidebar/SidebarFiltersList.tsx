@@ -3,7 +3,8 @@ import Plus from 'lucide-react/icons/plus';
 import { SidebarFilterItem } from '$components/sidebar/SidebarFilterItem';
 import { Tooltip } from '$components/Tooltip';
 import { matchesFilter } from '$lib/store/filters';
-import type { Filter, Task } from '$types';
+import type { Task } from '$types';
+import type { Filter } from '$types/filter';
 
 interface SidebarFiltersListProps {
   filters: Filter[];

@@ -1,9 +1,7 @@
 import type {
   Account,
-  CaldavConfig,
+  CalDAVConfig,
   Calendar,
-  Filter,
-  FilterCriterion,
   Priority,
   ServerType,
   Tag,
@@ -12,13 +10,14 @@ import type {
 } from '$types';
 import type {
   AccountRow,
-  CaldavConfigRow,
+  CalDAVConfigRow,
   CalendarRow,
   FilterRow,
   ReminderRow,
   TagRow,
   TaskRow,
 } from '$types/database';
+import type { Filter, FilterCriterion } from '$types/filter';
 
 export const rowToTask = (row: TaskRow): Task => {
   const status =
@@ -82,7 +81,7 @@ export const rowToCalendar = (row: CalendarRow): Calendar => ({
   pushVapidKey: row.push_vapid_key || undefined,
 });
 
-export const rowToCaldavConfig = (row: CaldavConfigRow): CaldavConfig => ({
+export const rowToCalDAVConfig = (row: CalDAVConfigRow): CalDAVConfig => ({
   serverUrl: row.server_url,
   username: row.username,
   password: row.password,
@@ -99,7 +98,7 @@ export const rowToCaldavConfig = (row: CaldavConfigRow): CaldavConfig => ({
 export const rowToAccount = (
   row: AccountRow,
   calendars: Calendar[],
-  caldavRow?: CaldavConfigRow,
+  caldavRow?: CalDAVConfigRow,
 ): Account => ({
   id: row.id,
   name: row.name,
@@ -109,7 +108,7 @@ export const rowToAccount = (
   lastSync: row.last_sync ? new Date(row.last_sync) : undefined,
   isActive: row.is_active === 1,
   sortOrder: row.sort_order ?? 0,
-  caldav: caldavRow ? rowToCaldavConfig(caldavRow) : null,
+  caldav: caldavRow ? rowToCalDAVConfig(caldavRow) : null,
 });
 
 export const rowToTag = (row: TagRow): Tag => ({

@@ -3,7 +3,7 @@ import { listen } from '@tauri-apps/api/event';
 import { platform } from '@tauri-apps/plugin-os';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { loggers } from '$lib/logger';
-import { type CalDAVConfig, parseAppleConfigProfile } from '$utils/mobileconfig';
+import { type MobileConfigCalDAVSettings, parseAppleConfigProfile } from '$utils/mobileconfig';
 
 const log = loggers.fileDrop;
 
@@ -22,7 +22,7 @@ export interface FileDropResult {
 
 export interface UseFileDropOptions {
   onFileDrop?: (file: FileDropResult) => void;
-  onConfigProfileDrop?: (config: CalDAVConfig) => void;
+  onConfigProfileDrop?: (config: MobileConfigCalDAVSettings) => void;
 }
 
 export interface UseFileDropReturn {

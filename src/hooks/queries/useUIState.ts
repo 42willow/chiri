@@ -29,7 +29,7 @@ import {
   setSortConfig,
   setTagSortConfig,
 } from '$lib/store/ui';
-import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types';
+import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
 
 /**
  * Hook to get the full UI state
