@@ -6,14 +6,9 @@ import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { DatePickerModal } from '$components/modals/DatePickerModal';
 import { useSettingsStore } from '$context/settingsContext';
+import type { RecurrenceFrequency } from '$types/recurrence';
 import { formatDate } from '$utils/date';
-import {
-  buildRRule,
-  frequencyToRRule,
-  parseRRule,
-  type RecurrenceFrequency,
-  rruleToFrequency,
-} from '$utils/recurrence';
+import { buildRRule, frequencyToRRule, parseRRule, rruleToFrequency } from '$utils/recurrence';
 
 interface RepeatModalProps {
   isOpen: boolean;

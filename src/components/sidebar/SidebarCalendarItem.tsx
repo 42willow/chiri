@@ -2,7 +2,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { getIconByName } from '$constants/icons';
 import type { Calendar } from '$types';
 
-export interface SidebarCalendarItemProps {
+interface SidebarCalendarItemProps {
   calendar: Calendar;
   isActive: boolean;
   isContextMenuOpen: boolean;

@@ -1,14 +1,4 @@
-/**
- * Web Push key pair for message encryption.
- */
-export interface WebPushKeyPair {
-  /** Public key (base64url, uncompressed P-256) */
-  publicKey: string;
-  /** Private key (base64url) - kept locally for decryption */
-  privateKey: string;
-  /** Authentication secret (base64url) */
-  authSecret: string;
-}
+import type { WebPushKeyPair } from '$types/push';
 
 /**
  * Generate a Web Push key pair using the Web Crypto API.

@@ -9,15 +9,7 @@ import type {
 import type { AccentColor, Theme } from '$types/color';
 import type { DateFormat, StartOfWeek, TimeFormat } from '$types/preference';
 import type { PushProviderId } from '$types/push';
-import type { SortDirection, SortMode } from '$types/sort';
 
-export interface AppSettings {
-  theme: 'light' | 'dark' | 'system';
-  defaultSortMode: SortMode;
-  defaultSortDirection: SortDirection;
-  showCompletedTasks: boolean;
-  showUnstartedTasks: boolean;
-}
 export type SubtaskDeletionBehavior = 'delete' | 'keep';
 
 export type SettingsCategory = 'tasks' | 'app' | 'accounts' | 'misc';
@@ -163,7 +155,7 @@ export interface SettingsState {
   hasSeenRecentlyDeletedToast: boolean;
 }
 
-export interface SettingsActions {
+interface SettingsActions {
   setTheme: (theme: Theme) => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setSidebarWidth: (width: number) => void;

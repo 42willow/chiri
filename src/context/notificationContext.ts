@@ -2,9 +2,9 @@ import { createContext, useContext } from 'react';
 import type {
   NotificationPermissionResult,
   NotificationPermissionStatus,
-} from '$lib/notifications';
+} from '$types/notification';
 
-export interface NotificationContextValue {
+interface NotificationContextValue {
   /** macOS system permission status. Always null on Windows/Linux. */
   permissionStatus: NotificationPermissionStatus | null;
   isCheckingPermission: boolean;

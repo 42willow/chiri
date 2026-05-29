@@ -14,13 +14,12 @@ import {
   findCalendarByTopic,
   initializePushManager,
   isPushProviderAvailable,
-  type PushProviderConfig,
   restorePushListeners,
   stopAllPushSubscriptions,
 } from '$lib/push';
 import { createNtfyProviderConfig } from '$lib/push/ntfyProvider';
 import type { Calendar } from '$types';
-import { NTFY_DIRECT_PROVIDER_ID } from '$types/push';
+import { NTFY_DIRECT_PROVIDER_ID, type PushProviderConfig } from '$types/push';
 
 const log = loggers.sync;
 

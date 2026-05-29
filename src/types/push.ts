@@ -6,6 +6,24 @@ export const LINUX_UNIFIED_PUSH_PROVIDER_ID = 'linux-unifiedpush';
 export type PushProviderId = typeof NTFY_DIRECT_PROVIDER_ID | typeof LINUX_UNIFIED_PUSH_PROVIDER_ID;
 
 /**
+ * ntfy server configuration.
+ */
+export interface NtfyProviderConfig {
+  /** ntfy server URL (default: https://ntfy.sh) */
+  serverUrl: string;
+  /**
+   * Topic prefix for generating UnifiedPush topics.
+   * Must be "up" for ntfy subscriber-based rate limiting.
+   */
+  topicPrefix: string;
+}
+
+export interface PushProviderConfig {
+  providerId: PushProviderId;
+  ntfyConfig?: NtfyProviderConfig;
+}
+
+/**
  * Callback fired when a local push provider receives a message for a calendar.
  */
 export type PushMessageHandler = (calendarId: string, message: string) => void;
@@ -13,7 +31,7 @@ export type PushMessageHandler = (calendarId: string, message: string) => void;
 /**
  * Supported push transports
  */
-export type PushTransport = 'web-push';
+type PushTransport = 'web-push';
 
 /**
  * Supported trigger types for WebDAV Push
@@ -71,6 +89,18 @@ export interface WebPushSubscription {
 export interface PushEndpointSubscription extends WebPushSubscription {
   providerId: PushProviderId;
   providerToken?: string;
+}
+
+/**
+ * Web Push key pair for message encryption.
+ */
+export interface WebPushKeyPair {
+  /** Public key (base64url, uncompressed P-256) */
+  publicKey: string;
+  /** Private key (base64url) - kept locally for decryption */
+  privateKey: string;
+  /** Authentication secret (base64url) */
+  authSecret: string;
 }
 
 /**

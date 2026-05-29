@@ -37,7 +37,7 @@ export interface DismissableLayerRegistration {
   onEscape?: (event: KeyboardEvent) => void;
 }
 
-export interface DismissableLayerState {
+interface DismissableLayerState {
   isAnyModalOpen: boolean;
   isContextMenuOpen: boolean;
 }

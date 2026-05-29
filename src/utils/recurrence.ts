@@ -7,6 +7,7 @@
 
 import { RRuleTemporal } from 'rrule-temporal';
 import type { DateFormat } from '$types/preference';
+import type { RecurrenceFrequency } from '$types/recurrence';
 import { formatDate } from '$utils/date';
 
 /** Format a JS Date as a UTC iCal datetime string (YYYYMMDDTHHMMSSZ). */
@@ -204,15 +205,6 @@ export const rruleToText = (rruleValue: string, repeatFrom?: number, dateFormat?
     return rruleValue;
   }
 };
-
-export type RecurrenceFrequency =
-  | 'none'
-  | 'daily'
-  | 'weekdays'
-  | 'weekly'
-  | 'monthly'
-  | 'yearly'
-  | 'custom';
 
 /** Build a simple RRULE value from a preset frequency + optional due date day-of-week. */
 export const frequencyToRRule = (

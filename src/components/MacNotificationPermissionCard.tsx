@@ -2,7 +2,7 @@ import { openUrl } from '@tauri-apps/plugin-opener';
 import type {
   NotificationPermissionResult,
   NotificationPermissionStatus,
-} from '$lib/notifications';
+} from '$types/notification';
 
 interface MacNotificationPermissionCardProps {
   permissionStatus: NotificationPermissionStatus;

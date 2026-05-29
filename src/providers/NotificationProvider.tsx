@@ -6,9 +6,9 @@ import { loggers } from '$lib/logger';
 import {
   checkNotificationPermission,
   getCachedNotificationPermission,
-  type NotificationPermissionStatus,
   requestNotificationPermission,
 } from '$lib/notifications';
+import type { NotificationPermissionStatus } from '$types/notification';
 import { isMacPlatform } from '$utils/platform';
 
 const log = loggers.notifications;

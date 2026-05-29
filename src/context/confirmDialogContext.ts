@@ -26,7 +26,7 @@ export interface ConfirmOptions {
 
 export type ConfirmResult = 'confirm' | 'alternate' | 'cancel';
 
-export interface ConfirmDialogContextValue {
+interface ConfirmDialogContextValue {
   confirm: (options?: ConfirmOptions) => Promise<boolean>;
   confirmWithAlternate: (options?: ConfirmOptions) => Promise<ConfirmResult>;
   isOpen: boolean;

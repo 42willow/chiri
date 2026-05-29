@@ -3,7 +3,7 @@ import { loggers } from '$lib/logger';
 
 const log = loggers.toastManager;
 
-export interface ToastAction {
+interface ToastAction {
   label: string;
   onClick: () => void;
 }

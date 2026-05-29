@@ -150,7 +150,7 @@ export const unfoldLines = (content: string) => {
     .replace(/\n[ \t]/g, '');
 };
 
-export interface ICalProperty {
+interface ICalProperty {
   name: string;
   params: Record<string, string>;
   value: string;

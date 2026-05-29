@@ -79,12 +79,12 @@ const isEnabledOutsideModal = (isModalOpen: boolean, enabled = true) => !isModal
  * creates and sets the macOS application menu
  * only called on macOS
  */
-export interface MenuCalendar {
+interface MenuCalendar {
   id: string;
   displayName: string;
 }
 
-export interface MenuAccount {
+interface MenuAccount {
   id: string;
   name: string;
   calendars?: MenuCalendar[];

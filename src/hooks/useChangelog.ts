@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { fetchReleaseNotes } from '$utils/version';
 
-export interface ChangelogData {
+interface ChangelogData {
   version: string;
   body: string;
 }

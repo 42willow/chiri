@@ -5,7 +5,7 @@ const MAX_TIMEOUT_MS = 2_147_483_647;
 
 type Listener = () => void;
 
-export interface TaskSnoozeStatus {
+interface TaskSnoozeStatus {
   isSnoozed: boolean;
   justUnsnoozed: boolean;
   until?: number;

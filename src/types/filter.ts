@@ -1,9 +1,9 @@
 import type { Priority, TaskStatus } from '$types';
 
-export type FilterCombinator = 'all' | 'any';
+type FilterCombinator = 'all' | 'any';
 
 export type DateFilterField = 'dueDate' | 'startDate' | 'createdAt' | 'modifiedAt' | 'completedAt';
-export type DateFilterOp = 'exists' | 'empty' | 'today' | 'tomorrow' | 'beforeToday' | 'withinDays';
+type DateFilterOp = 'exists' | 'empty' | 'today' | 'tomorrow' | 'beforeToday' | 'withinDays';
 
 export type FilterCriterion =
   | {
@@ -50,3 +50,10 @@ export interface Filter {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export type FilterPresetDefinition = Pick<
+  Filter,
+  'name' | 'icon' | 'combinator' | 'criteria' | 'sortOrder'
+> & {
+  presetId: string;
+};

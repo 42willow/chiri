@@ -1,7 +1,7 @@
 const NEW_ISSUE_URL = 'https://github.com/chiriapp/chiri/issues/new';
 const ERROR_REPORT_TEMPLATE = 'error_report.yml';
 
-export interface ErrorReportIssueParams {
+interface ErrorReportIssueParams {
   title: string;
   steps: string;
   errorMessage: string;

@@ -18,13 +18,13 @@ export interface UpdateInfo {
   currentVersion: string;
 }
 
-export interface UpdateError {
+interface UpdateError {
   kind: 'check' | 'download';
   title: string;
   description: string;
 }
 
-export interface UseUpdateCheckerResult {
+interface UseUpdateCheckerResult {
   updateAvailable: UpdateInfo | null;
   isChecking: boolean;
   error: UpdateError | null;

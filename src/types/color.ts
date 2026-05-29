@@ -4,7 +4,7 @@ export type AccentColor = string;
 
 export type ColorSchemeMode = 'light' | 'dark';
 
-export interface ColorSchemeSurfaces {
+interface ColorSchemeSurfaces {
   50: string;
   100: string;
   200: string;
@@ -22,21 +22,21 @@ export interface ColorSchemeAccent {
   value: string;
 }
 
-export interface ColorSchemeSemanticColors {
+interface ColorSchemeSemanticColors {
   info: string;
   warning: string;
   success: string;
   error: string;
 }
 
-export interface ColorSchemeStatusColors {
+interface ColorSchemeStatusColors {
   needsAction: string;
   inProcess: string;
   completed: string;
   cancelled: string;
 }
 
-export interface ColorSchemePriorityColors {
+interface ColorSchemePriorityColors {
   high: string;
   medium: string;
   low: string;

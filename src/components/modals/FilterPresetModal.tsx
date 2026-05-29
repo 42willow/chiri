@@ -1,8 +1,9 @@
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
-import { FILTER_PRESET_DEFINITIONS, type FilterPresetDefinition } from '$constants/filters';
+import { FILTER_PRESET_DEFINITIONS } from '$constants/filters';
 import { getIconByName } from '$constants/icons';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
+import type { FilterPresetDefinition } from '$types/filter';
 
 interface FilterPresetModalProps {
   existingPresetIds: Set<string>;

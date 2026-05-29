@@ -8,7 +8,7 @@ import { getIconByName } from '$constants/icons';
 import type { Account, Task } from '$types';
 import type { CalendarSortConfig } from '$types/sort';
 
-export interface SidebarAccountItemProps {
+interface SidebarAccountItemProps {
   account: Account;
   tasks: Task[];
   expandedAccounts: Set<string>;

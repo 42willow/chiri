@@ -1,6 +1,6 @@
 import type { ColorSchemeFlavor } from '$types/color';
 
-export interface ColorSchemePreviewPalette {
+interface ColorSchemePreviewPalette {
   background: string;
   sidebar: string;
   panel: string;

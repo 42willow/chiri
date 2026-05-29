@@ -13,11 +13,6 @@ import { isLinuxPlatform, isMacPlatform, isWindowsPlatform } from '$utils/platfo
 
 const log = loggers.bootstrap;
 
-export interface BootstrapResult {
-  success: boolean;
-  error?: Error;
-}
-
 const applyMacDockIconPreference = async () => {
   if (!isMacPlatform()) return;
 
@@ -168,7 +163,6 @@ export const shouldShowWindowOnStartup = async (): Promise<boolean> => {
 export const deleteDatabase = async () => {
   try {
     log.warn('Deleting database file...');
-
     const baseDir = isMacPlatform() ? BaseDirectory.AppLocalData : BaseDirectory.AppConfig;
     await remove('chiri.db', { baseDir });
     log.info('Database file deleted successfully');

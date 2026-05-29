@@ -306,7 +306,7 @@ export const checkPushSupportForConnection = async (
 /**
  * Parse an incoming push message XML
  */
-export interface PushMessage {
+interface PushMessage {
   topic: string;
   contentUpdate?: {
     syncToken?: string;

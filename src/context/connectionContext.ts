@@ -2,7 +2,7 @@ import { createContext, useContext } from 'react';
 import type { CalDAVCredentials } from '$lib/tauriHttp';
 import type { ServerType } from '$types';
 
-export interface AccountConnection {
+interface AccountConnection {
   serverUrl: string;
   credentials: CalDAVCredentials;
   principalUrl: string;

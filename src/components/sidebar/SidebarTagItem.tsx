@@ -3,7 +3,7 @@ import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { Tag } from '$types';
 
-export interface SidebarTagItemProps {
+interface SidebarTagItemProps {
   tag: Tag;
   isActive: boolean;
   isContextMenuOpen: boolean;

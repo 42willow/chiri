@@ -1,16 +1,11 @@
 import { invoke } from '@tauri-apps/api/core';
-
-// Note: 'ephemeral' is iOS-only and not available on macOS
-export type NotificationPermissionStatus = 'granted' | 'denied' | 'default' | 'provisional';
-
-export interface NotificationPermissionStatusResult {
-  status: NotificationPermissionStatus;
-}
-
-export interface NotificationPermissionResult {
-  granted: boolean;
-  status: NotificationPermissionStatus;
-}
+import type {
+  NotificationPermissionResult,
+  NotificationPermissionStatus,
+  NotificationPermissionStatusResult,
+  SendNotificationOptions,
+  SimpleNotificationOptions,
+} from '$types/notification';
 
 // Cache for permission status to avoid re-checking on every component mount
 let cachedPermissionStatus: NotificationPermissionStatus | null = null;
@@ -45,15 +40,6 @@ export const requestNotificationPermission = async () => {
   return result;
 };
 
-export type NotificationType = 'overdue' | 'reminder';
-
-export interface SendNotificationOptions {
-  title: string;
-  body: string;
-  taskId: string;
-  notificationType: NotificationType;
-}
-
 /**
  * Send a notification with actions using the native macOS API.
  * This uses user-notify to send notifications with action buttons.
@@ -62,11 +48,6 @@ export const sendNotification = async (options: SendNotificationOptions) => {
   await invoke('send_notification_with_actions', { request: options });
 };
 
-export interface SimpleNotificationOptions {
-  title: string;
-  body: string;
-}
-
 /**
  * Send a simple notification without actions or task metadata.
  * Used for system notifications like quit confirmation.
@@ -74,9 +55,3 @@ export interface SimpleNotificationOptions {
 export const sendSimpleNotification = async (options: SimpleNotificationOptions) => {
   await invoke('send_simple_notification', { request: options });
 };
-
-export interface NotificationActionEvent {
-  action: 'complete' | 'snooze-15min' | 'snooze-1hr' | 'view';
-  taskId: string;
-  notificationType: string;
-}

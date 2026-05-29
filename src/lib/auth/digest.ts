@@ -77,7 +77,7 @@ const md5 = (input: string) => {
   return Array.from(r, (byte) => byte.toString(16).padStart(2, '0')).join('');
 };
 
-export interface DigestChallenge {
+interface DigestChallenge {
   realm: string;
   nonce: string;
   opaque?: string;

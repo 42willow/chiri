@@ -4,7 +4,7 @@ import { loggers } from '$lib/logger';
 
 const log = loggers.http;
 
-export type DeepLinkHandler = (url: URL) => void;
+type DeepLinkHandler = (url: URL) => void;
 
 const handlers = new Map<string, DeepLinkHandler>();
 

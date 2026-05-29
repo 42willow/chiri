@@ -12,9 +12,9 @@ import {
   warn as tauriWarn,
 } from '@tauri-apps/plugin-log';
 
-export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
-export interface LoggerOptions {
+interface LoggerOptions {
   /** Minimum log level to display */
   minLevel?: LogLevel;
   /** Whether to include timestamps */

@@ -20,12 +20,12 @@ export interface FileDropResult {
   content: string;
 }
 
-export interface UseFileDropOptions {
+interface UseFileDropOptions {
   onFileDrop?: (file: FileDropResult) => void;
   onConfigProfileDrop?: (config: MobileConfigCalDAVSettings) => void;
 }
 
-export interface UseFileDropReturn {
+interface UseFileDropReturn {
   isDragOver: boolean;
   isUnsupportedFile: boolean;
   handleFileDrop: (e: React.DragEvent) => Promise<void>;

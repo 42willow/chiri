@@ -228,7 +228,7 @@ const parseTagColorValue = (value: string) => {
   return { tagName, color };
 };
 
-export interface ParsedVAlarm {
+interface ParsedVAlarm {
   action?: string;
   trigger?: Date;
   description?: string;
@@ -238,7 +238,7 @@ export interface ParsedVAlarm {
   duration?: number; // RFC 5545 DURATION between repetitions (milliseconds)
 }
 
-export interface ParsedVTodo {
+interface ParsedVTodo {
   uid?: string;
   summary?: string;
   description?: string;

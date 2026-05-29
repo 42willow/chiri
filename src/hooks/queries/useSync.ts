@@ -21,7 +21,7 @@ import type { Task } from '$types';
 
 const log = loggers.sync;
 
-export type SyncTrigger =
+type SyncTrigger =
   | string
   | {
       source: string;

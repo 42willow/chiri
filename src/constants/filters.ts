@@ -1,11 +1,4 @@
-import type { Filter } from '$types/filter';
-
-export type FilterPresetDefinition = Pick<
-  Filter,
-  'name' | 'icon' | 'combinator' | 'criteria' | 'sortOrder'
-> & {
-  presetId: string;
-};
+import type { Filter, FilterPresetDefinition } from '$types/filter';
 
 export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
   {

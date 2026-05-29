@@ -1,6 +1,6 @@
 import packageJson from '../../package.json';
 
-export interface AppInfo {
+interface AppInfo {
   version: string;
   description: string;
   author: string;

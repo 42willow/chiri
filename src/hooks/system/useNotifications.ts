@@ -6,13 +6,12 @@ import { useTasks, useToggleTaskComplete } from '$hooks/queries/useTasks';
 import { loggers } from '$lib/logger';
 import {
   checkNotificationPermission,
-  type NotificationActionEvent,
-  type NotificationType,
   requestNotificationPermission,
   sendNotification,
 } from '$lib/notifications';
 import { getTaskSnoozeStatus, snoozeTaskFor } from '$lib/notifications/snoozes';
 import type { Task } from '$types';
+import type { NotificationActionEvent, NotificationType } from '$types/notification';
 
 const log = loggers.notifications;
 

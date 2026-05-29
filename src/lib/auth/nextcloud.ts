@@ -7,7 +7,7 @@ const log = loggers.http;
 // Track active polling to allow cancellation
 let activePollingController: AbortController | null = null;
 
-export interface LoginFlowInit {
+interface LoginFlowInit {
   poll: {
     token: string;
     endpoint: string;
@@ -15,7 +15,7 @@ export interface LoginFlowInit {
   login: string;
 }
 
-export interface LoginCredentials {
+interface LoginCredentials {
   server: string;
   loginName: string;
   appPassword: string;

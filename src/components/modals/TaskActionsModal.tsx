@@ -5,7 +5,7 @@ import Edit from 'lucide-react/icons/edit';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { useTasks, useUpdateTask } from '$hooks/queries/useTasks';
 import { useSetSelectedTask } from '$hooks/queries/useUIState';
-import type { NotificationActionEvent } from '$lib/notifications';
+import type { NotificationActionEvent } from '$types/notification';
 
 interface TaskActionsModalProps {
   isOpen: boolean;

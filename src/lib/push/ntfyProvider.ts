@@ -5,31 +5,16 @@
  */
 
 import { log } from '$lib/caldav/utils';
-import {
-  base64UrlEncode,
-  generateWebPushKeyPair,
-  type WebPushKeyPair,
-} from '$lib/push/webPushKeys';
+import { base64UrlEncode, generateWebPushKeyPair } from '$lib/push/webPushKeys';
 import type { Calendar } from '$types';
 import {
   NTFY_DIRECT_PROVIDER_ID,
+  type NtfyProviderConfig,
   type PushEndpointSubscription,
   type PushMessageHandler,
   type PushSubscription,
+  type WebPushKeyPair,
 } from '$types/push';
-
-/**
- * ntfy server configuration.
- */
-export interface NtfyProviderConfig {
-  /** ntfy server URL (default: https://ntfy.sh) */
-  serverUrl: string;
-  /**
-   * Topic prefix for generating UnifiedPush topics.
-   * Must be "up" for ntfy subscriber-based rate limiting.
-   */
-  topicPrefix: string;
-}
 
 export const DEFAULT_NTFY_SERVER_URL = 'https://ntfy.sh';
 const DEFAULT_NTFY_PROVIDER_CONFIG: NtfyProviderConfig = {
@@ -298,7 +283,7 @@ export const getNtfyProviderActiveSubscriptionCount = (): number => {
   return activeNtfyProviderSubscriptions.size;
 };
 
-export interface NtfyProviderDiagnostics {
+interface NtfyProviderDiagnostics {
   activeSubscriptions: number;
   receivedMessages: number;
   lastMessageAt: Date | null;

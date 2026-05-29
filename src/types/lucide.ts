@@ -1,6 +1,6 @@
 import type { ForwardRefExoticComponent, RefAttributes, SVGProps } from 'react';
 
-export type LucideProps = RefAttributes<SVGSVGElement> &
+type LucideProps = RefAttributes<SVGSVGElement> &
   Partial<SVGProps<SVGSVGElement>> & {
     size?: string | number;
     absoluteStrokeWidth?: boolean;
