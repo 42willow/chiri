@@ -3,7 +3,7 @@ import SortAsc from 'lucide-react/icons/arrow-up-narrow-wide';
 import { Tooltip } from '$components/Tooltip';
 import type { SortConfig } from '$types';
 
-export const HeaderSortDirectionButton = ({
+export const SortDirectionButton = ({
   sortConfig,
   onToggle,
 }: {

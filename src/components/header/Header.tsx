@@ -7,9 +7,9 @@ import SlidersHorizontal from 'lucide-react/icons/sliders-horizontal';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ComposedInput } from '$components/ComposedInput';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
-import { HeaderSortDirectionButton } from '$components/header/HeaderSortDirectionButton';
-import { HeaderSortOptionButton } from '$components/header/HeaderSortOptionsButton';
-import { HeaderViewMenuCheckbox } from '$components/header/HeaderViewMenuCheckbox';
+import { SortDirectionButton } from '$components/header/SortDirectionButton';
+import { SortOptionButton } from '$components/header/SortOptionsButton';
+import { ViewMenuCheckbox } from '$components/header/ViewMenuCheckbox';
 import { TaskBatchActionsBar } from '$components/TaskBatchActionsBar';
 import { Tooltip } from '$components/Tooltip';
 import { DEFAULT_SORT_CONFIG, JUST_NOW_SYNC_TEXT_MS_THRESHOLD, SORT_OPTIONS } from '$constants';
@@ -298,12 +298,12 @@ export const Header = ({
                 dataAttribute="data-context-menu-content"
               >
                 <div className="px-3 py-2 border-b border-surface-200 dark:border-surface-700">
-                  <HeaderViewMenuCheckbox
+                  <ViewMenuCheckbox
                     label="Show completed"
                     checked={showCompletedTasks}
                     onClick={() => setShowCompletedTasksMutation.mutate(!showCompletedTasks)}
                   />
-                  <HeaderViewMenuCheckbox
+                  <ViewMenuCheckbox
                     label="Show unstarted"
                     checked={showUnstartedTasks}
                     onClick={() => setShowUnstartedTasksMutation.mutate(!showUnstartedTasks)}
@@ -315,7 +315,7 @@ export const Header = ({
                     Sort By
                   </div>
                   {SORT_OPTIONS.map((option) => (
-                    <HeaderSortOptionButton
+                    <SortOptionButton
                       key={option.value}
                       option={option}
                       isActive={sortConfig.mode === option.value}
@@ -328,10 +328,7 @@ export const Header = ({
                   <div className="px-3 pb-2 pt-1 text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">
                     Sort Direction
                   </div>
-                  <HeaderSortDirectionButton
-                    sortConfig={sortConfig}
-                    onToggle={toggleSortDirection}
-                  />
+                  <SortDirectionButton sortConfig={sortConfig} onToggle={toggleSortDirection} />
                 </div>
               </FloatingDropdownFrame>
             )}

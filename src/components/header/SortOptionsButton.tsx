@@ -1,6 +1,6 @@
 import type { SortMode } from '$types';
 
-export const HeaderSortOptionButton = ({
+export const SortOptionButton = ({
   option,
   isActive,
   onClick,

@@ -2,7 +2,7 @@ import Search from 'lucide-react/icons/search';
 import { useMemo, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
-import { MoveToCalendarOption } from '$components/modals/MoveToCalendar/MoveToCalendarOption';
+import { CalendarOption } from '$components/modals/MoveToCalendar/CalendarOption';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import type { Account, Task } from '$types';
 
@@ -88,7 +88,7 @@ export const MoveToCalendarModal = ({
         ) : (
           <div className="space-y-1">
             {filteredCalendars.map((cal) => (
-              <MoveToCalendarOption key={cal.id} cal={cal} onMove={onMove} onClose={onClose} />
+              <CalendarOption key={cal.id} cal={cal} onMove={onMove} onClose={onClose} />
             ))}
           </div>
         )}

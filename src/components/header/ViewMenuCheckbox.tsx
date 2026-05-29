@@ -1,4 +1,4 @@
-export const HeaderViewMenuCheckbox = ({
+export const ViewMenuCheckbox = ({
   label,
   checked,
   onClick,

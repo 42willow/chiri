@@ -17,7 +17,7 @@ import Sparkles from 'lucide-react/icons/sparkles';
 import Tag from 'lucide-react/icons/tag';
 import Type from 'lucide-react/icons/type';
 import type { ReactNode } from 'react';
-import type { TaskHistoryEntry as TaskHistoryEntryRecord } from '$types/database';
+import type { TaskHistoryEntry } from '$types/database';
 import type { LucideIcon } from '$types/lucide';
 import { formatDate, formatTime } from '$utils/date';
 import { rruleToText } from '$utils/recurrence';
@@ -148,13 +148,13 @@ const formatHistoryValue = (field: string, value: string | null): ReactNode => {
   return formatter ? formatter(value) : value;
 };
 
-interface TaskHistoryEntryProps {
-  entry: TaskHistoryEntryRecord;
+interface HistoryEntryProps {
+  entry: TaskHistoryEntry;
   timeFormat: '12' | '24';
   isLast: boolean;
 }
 
-export const TaskHistoryEntry = ({ entry, timeFormat, isLast }: TaskHistoryEntryProps) => {
+export const HistoryEntry = ({ entry, timeFormat, isLast }: HistoryEntryProps) => {
   const label = FIELD_LABELS[entry.field] ?? entry.field;
   const Icon = FIELD_ICONS[entry.field] ?? History;
   const isCreated = entry.field === 'created';

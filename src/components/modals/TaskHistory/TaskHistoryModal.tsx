@@ -1,5 +1,5 @@
 import { ModalWrapper } from '$components/ModalWrapper';
-import { TaskHistoryEntry } from '$components/modals/TaskHistoryEntry';
+import { HistoryEntry } from '$components/modals/TaskHistory/HistoryEntry';
 import { useSettingsStore } from '$context/settingsContext';
 import { useTaskHistory } from '$hooks/queries/useTaskHistory';
 
@@ -37,7 +37,7 @@ export const TaskHistoryModal = ({
       ) : (
         <div>
           {history.map((entry, index) => (
-            <TaskHistoryEntry
+            <HistoryEntry
               key={entry.id}
               entry={entry}
               timeFormat={timeFormat}

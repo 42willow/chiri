@@ -3,11 +3,8 @@ import Grip from 'lucide-react/icons/grip';
 import LayoutList from 'lucide-react/icons/layout-list';
 import Palette from 'lucide-react/icons/palette';
 import { useState } from 'react';
+import { ColorSchemeSelect, type ColorSchemeSelectOption } from '$components/ColorSchemeSelect';
 import { ComposedInput } from '$components/ComposedInput';
-import {
-  ColorSchemeSelect,
-  type ColorSchemeSelectOption,
-} from '$components/settings/ColorSchemeSelect';
 import { COLOR_SCHEMES, getColorSchemeFlavor } from '$constants/colorSchemes';
 import { THEME_OPTIONS } from '$constants/theme';
 import { useSettingsStore } from '$context/settingsContext';

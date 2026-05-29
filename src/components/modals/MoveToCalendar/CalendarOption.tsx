@@ -2,15 +2,13 @@ import { getIconByName } from '$constants/icons';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { Account } from '$types';
 
-export type CalendarEntry = Account['calendars'][number] & { accountName: string };
-
-interface MoveToCalendarOptionProps {
-  cal: CalendarEntry;
+interface CalendarOptionProps {
+  cal: Account['calendars'][number] & { accountName: string };
   onMove: (calendarId: string) => void;
   onClose: () => void;
 }
 
-export const MoveToCalendarOption = ({ cal, onMove, onClose }: MoveToCalendarOptionProps) => {
+export const CalendarOption = ({ cal, onMove, onClose }: CalendarOptionProps) => {
   const resolveAccent = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
   const CalIcon = getIconByName(cal.icon || 'calendar');
