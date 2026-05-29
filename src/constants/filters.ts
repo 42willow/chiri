@@ -45,6 +45,10 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
       { field: 'status', op: 'notIn', value: ['completed', 'cancelled'] },
     ],
   },
+];
+
+export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
+  ...DEFAULT_FILTER_PRESET_DEFINITIONS,
   {
     presetId: 'recently-modified',
     name: 'Recently Modified',
@@ -53,10 +57,6 @@ export const DEFAULT_FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
     sortOrder: 500,
     criteria: [{ field: 'modifiedAt', op: 'withinDays', value: 7 }],
   },
-];
-
-export const FILTER_PRESET_DEFINITIONS: FilterPresetDefinition[] = [
-  ...DEFAULT_FILTER_PRESET_DEFINITIONS,
   {
     presetId: 'tomorrow',
     name: 'Tomorrow',

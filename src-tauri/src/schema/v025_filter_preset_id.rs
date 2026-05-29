@@ -12,7 +12,6 @@ pub fn migration() -> Migration {
             UPDATE filters SET preset_id = 'overdue' WHERE id = 'default-filter-overdue';
             UPDATE filters SET preset_id = 'scheduled' WHERE id = 'default-filter-scheduled';
             UPDATE filters SET preset_id = 'this-week' WHERE id = 'default-filter-this-week';
-            UPDATE filters SET preset_id = 'recently-modified' WHERE id = 'default-filter-recently-modified';
         "#,
         kind: MigrationKind::Up,
     }
