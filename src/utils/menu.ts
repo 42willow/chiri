@@ -186,7 +186,7 @@ export const createMacMenu = async (options?: {
       await MenuItem.new({
         id: 'import',
         text: 'Import Tasks...',
-        accelerator: 'CmdOrCtrl+I',
+        accelerator: getAcceleratorOrDefault(shortcuts, 'import-tasks', 'CmdOrCtrl+I'),
         enabled: isAppActionEnabled(),
         action: () => {
           emit(MENU_EVENTS.IMPORT_TASKS);

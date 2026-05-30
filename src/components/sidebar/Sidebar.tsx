@@ -40,8 +40,8 @@ import { CLOSE_CONTEXT_MENUS_EVENT, useContextMenuDismissal } from '$hooks/ui/us
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { useSidebarResize } from '$hooks/ui/useSidebarResize';
 import { getTasksByCalendar } from '$lib/store/tasks';
-import type { Account, Calendar } from '$types';
-import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
+import type { Account, Calendar, KeyboardShortcut } from '$types';
+import { formatShortcut, getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
 
 interface SidebarProps {
   onOpenSettings?: () => void;
@@ -53,6 +53,13 @@ interface SidebarProps {
   updateAvailable?: boolean;
   onUpdateClick?: () => void;
 }
+
+const getSidebarShortcutHint = (shortcuts: KeyboardShortcut[], id: string) => {
+  const shortcut = shortcuts.find((candidate) => candidate.id === id);
+  if (!shortcut?.key) return undefined;
+
+  return formatShortcut(shortcut).split(' + ').join(getModifierJoiner());
+};
 
 export const Sidebar = ({
   onOpenSettings,
@@ -112,6 +119,7 @@ export const Sidebar = ({
     toggleAccountsSectionCollapsed,
     toggleFiltersSectionCollapsed,
     toggleTagsSectionCollapsed,
+    keyboardShortcuts,
   } = useSettingsStore();
 
   // Track which account IDs we've already initialized (to avoid re-processing)
@@ -162,6 +170,7 @@ export const Sidebar = ({
   const metaKey = getMetaKeyLabel();
   const modifierJoiner = getModifierJoiner();
   const settingsShortcut = `${metaKey}${modifierJoiner},`;
+  const importShortcut = getSidebarShortcutHint(keyboardShortcuts, 'import-tasks');
 
   const { isResizing, resizeHandleRef, handleResizeStart } = useSidebarResize(onWidthChange);
   const prefersReducedMotion = usePrefersReducedMotion();
@@ -400,6 +409,7 @@ export const Sidebar = ({
               onUpdateClick={onUpdateClick}
               onOpenImport={onOpenImport}
               onOpenSettings={onOpenSettings}
+              importShortcut={importShortcut}
               settingsShortcut={settingsShortcut}
               isAnyModalOpen={isAnyModalOpen}
             />

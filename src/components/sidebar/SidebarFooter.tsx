@@ -7,6 +7,7 @@ interface SidebarFooterProps {
   onUpdateClick?: () => void;
   onOpenImport?: () => void;
   onOpenSettings?: () => void;
+  importShortcut?: string;
   settingsShortcut: string;
   isAnyModalOpen: boolean;
 }
@@ -16,6 +17,7 @@ export const SidebarFooter = ({
   onUpdateClick,
   onOpenImport,
   onOpenSettings,
+  importShortcut,
   settingsShortcut,
   isAnyModalOpen,
 }: SidebarFooterProps) => {
@@ -46,6 +48,9 @@ export const SidebarFooter = ({
       >
         <Import className="w-4 h-4" />
         Import tasks...
+        {importShortcut && (
+          <span className="ml-auto text-xs text-surface-400">{importShortcut}</span>
+        )}
       </button>
       <button
         type="button"

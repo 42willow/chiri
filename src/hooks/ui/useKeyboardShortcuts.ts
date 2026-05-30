@@ -38,6 +38,7 @@ const BLOCKED_IN_MODAL = new Set([
   'select-all-tasks',
   'search',
   'sync',
+  'import-tasks',
   'delete',
   'toggle-complete',
   'toggle-show-completed',
@@ -96,11 +97,12 @@ const findMatchingShortcut = (
 interface UseKeyboardShortcutsOptions {
   onOpenSettings?: () => void;
   onOpenKeyboardShortcuts?: () => void;
+  onOpenImport?: () => void;
   onSync?: () => void;
 }
 
 export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) => {
-  const { onOpenSettings, onOpenKeyboardShortcuts, onSync } = options;
+  const { onOpenSettings, onOpenKeyboardShortcuts, onOpenImport, onSync } = options;
   const { data: uiState } = useUIState();
   const flattenedTasks = useVisibleTasks();
   const createTaskMutation = useCreateTask();
@@ -320,6 +322,10 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
     onOpenKeyboardShortcuts?.();
   }, [onOpenKeyboardShortcuts]);
 
+  const handleOpenImport = useCallback(() => {
+    onOpenImport?.();
+  }, [onOpenImport]);
+
   const handleSync = useCallback(() => {
     onSync?.();
   }, [onSync]);
@@ -339,6 +345,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       search: handleSearch,
       settings: handleOpenSettings,
       'keyboard-shortcuts': handleOpenKeyboardShortcuts,
+      'import-tasks': handleOpenImport,
       sync: handleSync,
       delete: handleDelete,
       'toggle-complete': handleToggleComplete,
@@ -356,6 +363,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       handleSearch,
       handleOpenSettings,
       handleOpenKeyboardShortcuts,
+      handleOpenImport,
       handleSync,
       handleDelete,
       handleToggleComplete,

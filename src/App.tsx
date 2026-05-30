@@ -219,6 +219,9 @@ const App = () => {
       });
       menuHandlers.setShowSettings((prev: boolean) => !prev);
     },
+    onOpenImport: () => {
+      menuHandlers.setShowImport(true);
+    },
     onSync: handleKeyboardSync,
   });
 

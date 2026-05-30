@@ -28,7 +28,7 @@ const SHORTCUT_GROUPS: { label: string; ids: string[] }[] = [
   },
   {
     label: 'General',
-    ids: ['sync', 'settings', 'keyboard-shortcuts'],
+    ids: ['sync', 'import-tasks', 'settings', 'keyboard-shortcuts'],
   },
 ];
 

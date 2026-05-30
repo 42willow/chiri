@@ -90,6 +90,7 @@ export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [
     description: 'Open keyboard shortcuts',
   },
   { id: 'sync', key: 'r', meta: true, description: 'Sync with server' },
+  { id: 'import-tasks', key: 'i', meta: true, description: 'Import tasks' },
   {
     id: 'delete',
     key: 'Backspace',
