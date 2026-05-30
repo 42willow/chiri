@@ -71,176 +71,183 @@ export const SidebarCollapsedView = ({
 
   return (
     <div
-      className={`flex-1 flex flex-col items-center py-2 gap-1 overflow-y-auto motion-safe:transition-opacity motion-safe:duration-150 ${showCollapsedContent ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`flex-1 flex min-h-0 flex-col items-center motion-safe:transition-opacity motion-safe:duration-150 ${showCollapsedContent ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
     >
-      <Tooltip content="All Tasks" position="right">
-        <button
-          type="button"
-          onClick={onAllTasks}
-          className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-            activeView === 'tasks' && activeCalendarId === null && activeTagId === null
-              ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-              : 'text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
-          }`}
-        >
-          <Inbox className="w-5 h-5" />
-        </button>
-      </Tooltip>
+      <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-1 overflow-y-auto overscroll-contain py-2">
+        <Tooltip content="All Tasks" position="right">
+          <button
+            type="button"
+            onClick={onAllTasks}
+            className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              activeView === 'tasks' && activeCalendarId === null && activeTagId === null
+                ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
+                : 'text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
+            }`}
+          >
+            <Inbox className="w-5 h-5" />
+          </button>
+        </Tooltip>
 
-      <Tooltip content="Recently Deleted" position="right">
-        <button
-          type="button"
-          onClick={onRecentlyDeleted}
-          className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-            activeView === 'recently-deleted'
-              ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-              : 'text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
-          }`}
-        >
-          <Trash2 className="w-5 h-5" />
-        </button>
-      </Tooltip>
+        <Tooltip content="Recently Deleted" position="right">
+          <button
+            type="button"
+            onClick={onRecentlyDeleted}
+            className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              activeView === 'recently-deleted'
+                ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
+                : 'text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
+            }`}
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
+        </Tooltip>
 
-      {!filtersSectionCollapsed && filters.length > 0 && (
-        <div className="w-6 h-px bg-surface-200 dark:bg-surface-700 my-1" />
-      )}
+        {!filtersSectionCollapsed && filters.length > 0 && (
+          <div className="my-1 h-px w-6 shrink-0 bg-surface-200 dark:bg-surface-700" />
+        )}
 
-      {!filtersSectionCollapsed &&
-        filters.map((filter) => {
-          const isActive = activeFilterId === filter.id;
-          const FilterIcon = getIconByName(filter.icon ?? 'list-todo');
-          const filterColor = filter.color ? resolveAccent(filter.color) : resolvedAccentColor;
-          return (
-            <Tooltip
-              key={filter.id}
-              content={<SidebarCollapsedItemTooltip name={filter.name} type="Filter" />}
-              position="right"
-            >
-              <button
-                type="button"
-                data-context-menu
-                aria-label={`${filter.name} filter`}
-                onClick={() => onSelectFilter(filter.id)}
-                onContextMenu={(e) => onContextMenu(e, 'filter', filter.id)}
-                className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                  isActive
-                    ? 'bg-surface-200 dark:bg-surface-700'
-                    : contextMenu?.type === 'filter' && contextMenu.id === filter.id
-                      ? 'bg-surface-200 dark:bg-surface-700'
-                      : 'hover:bg-surface-200 dark:hover:bg-surface-700'
-                }`}
+        {!filtersSectionCollapsed &&
+          filters.map((filter) => {
+            const isActive = activeFilterId === filter.id;
+            const FilterIcon = getIconByName(filter.icon ?? 'list-todo');
+            const filterColor = filter.color ? resolveAccent(filter.color) : resolvedAccentColor;
+            return (
+              <Tooltip
+                key={filter.id}
+                content={<SidebarCollapsedItemTooltip name={filter.name} type="Filter" />}
+                position="right"
               >
-                {filter.emoji ? (
-                  <span className="text-base leading-none" style={{ color: filterColor }}>
-                    {filter.emoji}
-                  </span>
-                ) : (
-                  <FilterIcon className="w-5 h-5" style={{ color: filterColor }} />
-                )}
-              </button>
-            </Tooltip>
-          );
-        })}
+                <button
+                  type="button"
+                  data-context-menu
+                  aria-label={`${filter.name} filter`}
+                  onClick={() => onSelectFilter(filter.id)}
+                  onContextMenu={(e) => onContextMenu(e, 'filter', filter.id)}
+                  className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                    isActive
+                      ? 'bg-surface-200 dark:bg-surface-700'
+                      : contextMenu?.type === 'filter' && contextMenu.id === filter.id
+                        ? 'bg-surface-200 dark:bg-surface-700'
+                        : 'hover:bg-surface-200 dark:hover:bg-surface-700'
+                  }`}
+                >
+                  {filter.emoji ? (
+                    <span className="text-base leading-none" style={{ color: filterColor }}>
+                      {filter.emoji}
+                    </span>
+                  ) : (
+                    <FilterIcon className="w-5 h-5" style={{ color: filterColor }} />
+                  )}
+                </button>
+              </Tooltip>
+            );
+          })}
 
-      {accounts
-        .filter((a) => !a.caldav && !localSectionCollapsed)
-        .concat(accounts.filter((a) => a.caldav && !accountsSectionCollapsed))
-        .map((account) => {
-          if (account.calendars.length === 0) return null;
-          return (
-            <div key={account.id} className="flex flex-col items-center gap-1">
-              <div className="w-6 h-px bg-surface-200 dark:bg-surface-700 my-1" />
-              {account.calendars.map((calendar) => {
-                const CalendarIcon = getIconByName(calendar.icon ?? 'calendar');
-                const isActive = activeCalendarId === calendar.id;
-                const calendarColor = calendar.color
-                  ? resolveAccent(calendar.color)
-                  : resolvedAccentColor;
-                return (
-                  <Tooltip
-                    key={calendar.id}
-                    content={
-                      <SidebarCollapsedItemTooltip name={calendar.displayName} type="Calendar" />
-                    }
-                    position="right"
-                  >
-                    <button
-                      type="button"
-                      data-context-menu
-                      aria-label={`${calendar.displayName} calendar`}
-                      onClick={() => onSelectCalendar(account.id, calendar.id)}
-                      onContextMenu={(e) => onContextMenu(e, 'calendar', calendar.id, account.id)}
-                      className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                        isActive
-                          ? 'bg-surface-200 dark:bg-surface-700'
-                          : contextMenu?.type === 'calendar' && contextMenu.id === calendar.id
-                            ? 'bg-surface-200 dark:bg-surface-700'
-                            : 'hover:bg-surface-200 dark:hover:bg-surface-700'
-                      }`}
+        {accounts
+          .filter((a) => !a.caldav && !localSectionCollapsed)
+          .concat(accounts.filter((a) => a.caldav && !accountsSectionCollapsed))
+          .map((account) => {
+            if (account.calendars.length === 0) return null;
+            return (
+              <div key={account.id} className="flex flex-col items-center gap-1">
+                <div className="my-1 h-px w-6 shrink-0 bg-surface-200 dark:bg-surface-700" />
+                {account.calendars.map((calendar) => {
+                  const CalendarIcon = getIconByName(calendar.icon ?? 'calendar');
+                  const isActive = activeCalendarId === calendar.id;
+                  const calendarColor = calendar.color
+                    ? resolveAccent(calendar.color)
+                    : resolvedAccentColor;
+                  return (
+                    <Tooltip
+                      key={calendar.id}
+                      content={
+                        <SidebarCollapsedItemTooltip name={calendar.displayName} type="Calendar" />
+                      }
+                      position="right"
                     >
-                      {calendar.emoji ? (
-                        <span className="text-base leading-none" style={{ color: calendarColor }}>
-                          {calendar.emoji}
-                        </span>
-                      ) : (
-                        <CalendarIcon className="w-5 h-5" style={{ color: calendarColor }} />
-                      )}
-                    </button>
-                  </Tooltip>
-                );
-              })}
-            </div>
-          );
-        })}
+                      <button
+                        type="button"
+                        data-context-menu
+                        aria-label={`${calendar.displayName} calendar`}
+                        onClick={() => onSelectCalendar(account.id, calendar.id)}
+                        onContextMenu={(e) => onContextMenu(e, 'calendar', calendar.id, account.id)}
+                        className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                          isActive
+                            ? 'bg-surface-200 dark:bg-surface-700'
+                            : contextMenu?.type === 'calendar' && contextMenu.id === calendar.id
+                              ? 'bg-surface-200 dark:bg-surface-700'
+                              : 'hover:bg-surface-200 dark:hover:bg-surface-700'
+                        }`}
+                      >
+                        {calendar.emoji ? (
+                          <span className="text-base leading-none" style={{ color: calendarColor }}>
+                            {calendar.emoji}
+                          </span>
+                        ) : (
+                          <CalendarIcon className="w-5 h-5" style={{ color: calendarColor }} />
+                        )}
+                      </button>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            );
+          })}
 
-      {!tagsSectionCollapsed && tags.length > 0 && (
-        <div className="w-6 h-px bg-surface-200 dark:bg-surface-700 my-1" />
-      )}
+        {!tagsSectionCollapsed && tags.length > 0 && (
+          <div className="my-1 h-px w-6 shrink-0 bg-surface-200 dark:bg-surface-700" />
+        )}
 
-      {!tagsSectionCollapsed &&
-        tags.map((tag) => {
-          const isActive = activeTagId === tag.id;
-          const TagIcon = getIconByName(tag.icon ?? 'tag');
-          const tagColor = tag.color ? resolveAccent(tag.color) : resolvedAccentColor;
-          return (
-            <Tooltip
-              key={tag.id}
-              content={<SidebarCollapsedItemTooltip name={tag.name} type="Tag" />}
-              position="right"
-            >
-              <button
-                type="button"
-                data-context-menu
-                aria-label={`${tag.name} tag`}
-                onClick={() => onSelectTag(tag.id)}
-                onContextMenu={(e) => onContextMenu(e, 'tag', tag.id)}
-                className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-                  isActive
-                    ? 'bg-surface-200 dark:bg-surface-700'
-                    : contextMenu?.type === 'tag' && contextMenu.id === tag.id
-                      ? 'bg-surface-200 dark:bg-surface-700'
-                      : 'hover:bg-surface-200 dark:hover:bg-surface-700'
-                }`}
+        {!tagsSectionCollapsed &&
+          tags.map((tag) => {
+            const isActive = activeTagId === tag.id;
+            const TagIcon = getIconByName(tag.icon ?? 'tag');
+            const tagColor = tag.color ? resolveAccent(tag.color) : resolvedAccentColor;
+            return (
+              <Tooltip
+                key={tag.id}
+                content={<SidebarCollapsedItemTooltip name={tag.name} type="Tag" />}
+                position="right"
               >
-                {tag.emoji ? (
-                  <span className="text-base leading-none" style={{ color: tagColor }}>
-                    {tag.emoji}
-                  </span>
-                ) : (
-                  <TagIcon className="w-5 h-5" style={{ color: tagColor }} />
-                )}
-              </button>
-            </Tooltip>
-          );
-        })}
+                <button
+                  type="button"
+                  data-context-menu
+                  aria-label={`${tag.name} tag`}
+                  onClick={() => onSelectTag(tag.id)}
+                  onContextMenu={(e) => onContextMenu(e, 'tag', tag.id)}
+                  className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                    isActive
+                      ? 'bg-surface-200 dark:bg-surface-700'
+                      : contextMenu?.type === 'tag' && contextMenu.id === tag.id
+                        ? 'bg-surface-200 dark:bg-surface-700'
+                        : 'hover:bg-surface-200 dark:hover:bg-surface-700'
+                  }`}
+                >
+                  {tag.emoji ? (
+                    <span className="text-base leading-none" style={{ color: tagColor }}>
+                      {tag.emoji}
+                    </span>
+                  ) : (
+                    <TagIcon className="w-5 h-5" style={{ color: tagColor }} />
+                  )}
+                </button>
+              </Tooltip>
+            );
+          })}
+      </div>
 
-      <div className="mt-auto flex flex-col pt-2 border-t border-surface-200 dark:border-surface-700">
+      <div className="relative flex w-full shrink-0 flex-col items-center gap-1 bg-surface-100 px-1 py-2 dark:bg-surface-900">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-linear-to-t from-surface-100 to-transparent dark:from-surface-900"
+        />
+        <div aria-hidden="true" className="h-px w-6 shrink-0 bg-surface-200 dark:bg-surface-700" />
         {updateAvailable && (
           <Tooltip content="Update available!" position="right">
             <button
               type="button"
               onClick={() => onUpdateClick?.()}
-              className="p-2 mb-1 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="p-2 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
             >
               <Download className="w-5 h-5 text-primary-500" />
             </button>
@@ -250,7 +257,7 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={() => onOpenImport?.()}
-            className="p-2 mb-1 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="p-2 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
           >
             <Import className="w-5 h-5" />
           </button>
