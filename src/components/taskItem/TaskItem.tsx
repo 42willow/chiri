@@ -17,6 +17,7 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useContextMenu } from '$hooks/ui/useContextMenu';
+import { resetStaleCursorIfNeededAtEventPoint } from '$hooks/ui/useResetCursorOnOpen';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
@@ -29,6 +30,8 @@ const animateLayoutChanges: AnimateLayoutChanges = (args) => {
   if (wasDragging || !isSorting) return false;
   return defaultAnimateLayoutChanges(args);
 };
+
+const BADGE_VIEW_SWITCH_CURSOR_RESET_DELAY_FRAMES = 4;
 
 interface TaskItemProps {
   task: Task;
@@ -194,7 +197,20 @@ export const TaskItem = ({
     toggleTaskCollapsed(task.id);
   };
 
-  const handleCalendarClick = (calendarId: string) => {
+  const resetStaleBadgeCursor = (event: React.MouseEvent) => {
+    // WebKit can keep a badge's pointer cursor after switching to the tag/calendar view.
+    resetStaleCursorIfNeededAtEventPoint(event, {
+      delayFrames: BADGE_VIEW_SWITCH_CURSOR_RESET_DELAY_FRAMES,
+    });
+  };
+
+  const handleTagClick = (tagId: string, event: React.MouseEvent) => {
+    resetStaleBadgeCursor(event);
+    setActiveTagMutation.mutate(tagId);
+  };
+
+  const handleCalendarClick = (calendarId: string, event: React.MouseEvent) => {
+    resetStaleBadgeCursor(event);
     const account = accounts.find((a: Account) => a.calendars.some((c) => c.id === calendarId));
     if (account) setActiveAccountMutation.mutate(account.id);
     setActiveCalendarMutation.mutate(calendarId);
@@ -222,7 +238,7 @@ export const TaskItem = ({
     accounts,
     activeCalendarId,
     showCompletedTasks,
-    onTagClick: (tagId: string) => setActiveTagMutation.mutate(tagId),
+    onTagClick: handleTagClick,
     onCalendarClick: handleCalendarClick,
     onToggleCollapsed: handleToggleCollapsed,
     badgeVisibility: taskBadgeVisibility,

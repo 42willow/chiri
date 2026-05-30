@@ -1,3 +1,23 @@
+html.chiri-reset-cursor,
+html.chiri-reset-cursor * {
+  /* biome-ignore lint/complexity/noImportantStyles: WebKit can keep the clicked element's cursor after a modal opens under a stationary pointer. */
+  cursor: default !important;
+}
+
+html.chiri-reset-cursor .cursor-grab,
+html.chiri-reset-cursor .cursor-grab * {
+  /* biome-ignore lint/complexity/noImportantStyles: Explicit drag affordances should not flash to default during a cursor refresh. */
+  cursor: grab !important;
+}
+
+html.chiri-reset-cursor .cursor-grabbing,
+html.chiri-reset-cursor .cursor-grabbing *,
+html.chiri-reset-cursor .active\:cursor-grabbing:active,
+html.chiri-reset-cursor .active\:cursor-grabbing:active * {
+  /* biome-ignore lint/complexity/noImportantStyles: Explicit drag affordances should not flash to default during a cursor refresh. */
+  cursor: grabbing !important;
+}
+
 html.chiri-pointer-cursors
   :where(
     a[href]:not([aria-disabled="true"]),

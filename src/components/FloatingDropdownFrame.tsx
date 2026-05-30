@@ -1,8 +1,13 @@
-import type { CSSProperties, ReactNode, RefObject } from 'react';
+import type { CSSProperties, MouseEventHandler, ReactNode, RefObject } from 'react';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import type { DismissableLayerType } from '$context/dismissableLayerContext';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
+import {
+  resetStaleCursorAfterPointerInteraction,
+  resetStaleCursorOnClose,
+  useResetStaleCursorOnOpen,
+} from '$hooks/ui/useResetCursorOnOpen';
 
 interface FloatingDropdownFrameProps {
   anchorRef: RefObject<HTMLElement | null>;
@@ -60,6 +65,22 @@ export const FloatingDropdownFrame = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ left: viewportPadding, top: viewportPadding });
 
+  const handleClose = useCallback(() => {
+    resetStaleCursorOnClose();
+    onClose();
+  }, [onClose]);
+
+  const handleDropdownClickCapture: MouseEventHandler<HTMLDivElement> = useCallback((event) => {
+    // Menu items often close themselves from their own click handler. Wait for
+    // that state update, then reset only if the dropdown no longer leaves a
+    // pointer target under the stationary mouse.
+    resetStaleCursorAfterPointerInteraction(event);
+  }, []);
+
+  // WebKit can keep showing the clicked trigger's pointer cursor after the
+  // dropdown portal/backdrop appears under a stationary pointer.
+  useResetStaleCursorOnOpen(true);
+
   const updatePosition = useCallback(() => {
     const anchor = anchorRef.current;
     if (!anchor) return;
@@ -104,7 +125,7 @@ export const FloatingDropdownFrame = ({
     type: layerType,
     priority: getLayerPriority(dropdownClassName, backdropClassName),
     escapeBehavior: closeOnEscape ? 'dismiss' : 'block',
-    onEscape: closeOnEscape ? onClose : undefined,
+    onEscape: closeOnEscape ? handleClose : undefined,
   });
 
   const dataAttributes = dataAttribute ? { [dataAttribute]: '' } : {};
@@ -113,7 +134,7 @@ export const FloatingDropdownFrame = ({
     <>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Dropdown backdrop for closing on outside click */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: Dropdown backdrop for closing on outside click */}
-      <div className={backdropClassName} onClick={onClose} />
+      <div className={backdropClassName} onClick={handleClose} />
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Dropdown container stops document-level click handlers */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: Dropdown container stops document-level click handlers */}
       <div
@@ -121,6 +142,7 @@ export const FloatingDropdownFrame = ({
         {...dataAttributes}
         className={`${DROPDOWN_BASE_CLASS} ${dropdownClassName}`}
         style={{ ...dropdownStyle, left: position.left, top: position.top }}
+        onClickCapture={handleDropdownClickCapture}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

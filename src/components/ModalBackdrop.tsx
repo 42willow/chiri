@@ -1,4 +1,5 @@
-import type { DragEventHandler, ReactNode } from 'react';
+import type { DragEventHandler, MouseEventHandler, ReactNode } from 'react';
+import { resetStaleCursorAfterPointerInteraction } from '$hooks/ui/useResetCursorOnOpen';
 
 interface ModalBackdropProps {
   children: ReactNode;
@@ -29,6 +30,13 @@ export const ModalBackdrop = ({
   zIndex = 'z-60',
   closeOnBackdropClick = false,
 }: ModalBackdropProps) => {
+  const handleClickCapture: MouseEventHandler<HTMLDivElement> = (event) => {
+    // WebKit can keep a clicked control's pointer cursor after modal content
+    // changes under a stationary mouse. Wait for click handlers to settle, then
+    // only reset if the cursor is no longer over another pointer target.
+    resetStaleCursorAfterPointerInteraction(event);
+  };
+
   return (
     // biome-ignore lint/a11y/noStaticElementInteractions: Import modals need drag handlers on the backdrop to prevent browser file navigation.
     <div
@@ -37,6 +45,7 @@ export const ModalBackdrop = ({
       onDrop={onDrop}
       onDragOver={onDragOver}
       onDragLeave={onDragLeave}
+      onClickCapture={handleClickCapture}
     >
       {/* Backdrop button - accessible interactive element */}
       <button

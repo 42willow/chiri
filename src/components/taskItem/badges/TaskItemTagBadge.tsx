@@ -7,7 +7,7 @@ export const TaskItemTagBadge = ({
   onTagClick,
 }: {
   tag: Tag;
-  onTagClick: (tagId: string) => void;
+  onTagClick: (tagId: string, event: React.MouseEvent) => void;
 }) => {
   const resolveAccent = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
@@ -18,7 +18,7 @@ export const TaskItemTagBadge = ({
       type="button"
       onClick={(e) => {
         e.stopPropagation();
-        onTagClick(tag.id);
+        onTagClick(tag.id, e);
       }}
       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500"
       style={{ borderColor: tagColor }}

@@ -1,3 +1,4 @@
+import type { MouseEventHandler } from 'react';
 import { createPortal } from 'react-dom';
 import { SidebarAccountItemContextMenu } from '$components/sidebar/SidebarAccountItemContextMenu';
 import { SidebarAccountsContextMenu } from '$components/sidebar/SidebarAccountsContextMenu';
@@ -6,6 +7,10 @@ import { SidebarFilterItemContextMenu } from '$components/sidebar/SidebarFilterI
 import { SidebarTagItemContextMenu } from '$components/sidebar/SidebarTagItemContextMenu';
 import { useContextMenuPosition } from '$hooks/ui/useContextMenu';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
+import {
+  resetStaleCursorIfNeededAtEventPoint,
+  resetStaleCursorOnClose,
+} from '$hooks/ui/useResetCursorOnOpen';
 import type { Account } from '$types';
 
 interface ContextMenuState {
@@ -58,9 +63,20 @@ export const SidebarContextMenu = ({
   onCollapseAll,
 }: SidebarContextMenuProps) => {
   const { menuRef, position } = useContextMenuPosition(contextMenu);
+
+  const handleEscapeClose = () => {
+    resetStaleCursorOnClose();
+    onClose();
+  };
+
+  const handlePointerClose: MouseEventHandler<HTMLDivElement> = (event) => {
+    resetStaleCursorIfNeededAtEventPoint(event);
+    onClose();
+  };
+
   useDismissableLayer({
     type: 'context-menu',
-    onEscape: onClose,
+    onEscape: handleEscapeClose,
   });
 
   return createPortal(
@@ -69,9 +85,10 @@ export const SidebarContextMenu = ({
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: Context menu backdrop for closing on outside click */}
       <div
         className="fixed inset-0 z-40"
-        onClick={onClose}
+        onClick={handlePointerClose}
         onContextMenu={(e) => {
           e.preventDefault();
+          resetStaleCursorIfNeededAtEventPoint(e);
           onClose();
         }}
       />

@@ -32,6 +32,7 @@ import { useTray } from '$hooks/system/useTray';
 import { useUpdateChecker } from '$hooks/system/useUpdateChecker';
 import { useCursorPointers } from '$hooks/ui/useCursorPointers';
 import { useKeyboardShortcuts } from '$hooks/ui/useKeyboardShortcuts';
+import { useResetStaleCursorAfterPointerInteraction } from '$hooks/ui/useResetCursorOnOpen';
 import { useTaskEditorResize } from '$hooks/ui/useTaskEditorResize';
 import { useTheme } from '$hooks/ui/useTheme';
 import { toastManager } from '$hooks/ui/useToast';
@@ -197,6 +198,9 @@ const App = () => {
 
   useTheme();
   useCursorPointers();
+  // WebKit can keep the last pointer cursor after React removes or reshapes a
+  // clicked/right-clicked target under a stationary mouse.
+  useResetStaleCursorAfterPointerInteraction();
   useConfirmQuit();
   useDeepLink();
   useNotifications({

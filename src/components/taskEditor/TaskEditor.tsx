@@ -33,6 +33,7 @@ import {
 } from '$hooks/queries/useTasks';
 import { useSetEditorOpen } from '$hooks/queries/useUIState';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
+import { resetStaleCursorOnClose, useResetStaleCursorOnOpen } from '$hooks/ui/useResetCursorOnOpen';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import type { Task, TaskStatus } from '$types';
 import type { EditorFieldKey } from '$types/settings';
@@ -86,6 +87,8 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const renderedEditorFieldOrder = isReadOnly ? deletedEditorFieldOrder : editorFieldOrder;
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
+  // WebKit can keep a task row's grab cursor after the editor appears under a stationary mouse.
+  useResetStaleCursorOnOpen(true);
 
   // Tag picker state
   const [showTagPicker, setShowTagPicker] = useState(false);
@@ -133,6 +136,12 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
         completedAt: status === 'completed' ? (task.completedAt ?? new Date()) : undefined,
       },
     });
+  };
+
+  const handleClose = () => {
+    // WebKit can keep the close button's pointer cursor after the task row appears underneath.
+    resetStaleCursorOnClose();
+    setEditorOpenMutation.mutate(false);
   };
 
   const commitPercentComplete = (value: number) => {
@@ -320,7 +329,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
       <div className="flex flex-col h-full bg-white dark:bg-surface-900" ref={editorContainerRef}>
         <TaskEditorHeader
           onDelete={handleDelete}
-          onClose={() => setEditorOpenMutation.mutate(false)}
+          onClose={handleClose}
           isDeleted={isReadOnly}
           onRestore={handleRestore}
           onDeletePermanently={handlePermanentDelete}

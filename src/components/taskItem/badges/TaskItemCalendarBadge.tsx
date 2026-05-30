@@ -9,7 +9,7 @@ export const TaskItemCalendarBadge = ({
 }: {
   calendar: Calendar;
   calendarColor: string;
-  onCalendarClick: (calendarId: string) => void;
+  onCalendarClick: (calendarId: string, event: React.MouseEvent) => void;
   readOnly?: boolean;
 }) => {
   const CalendarIcon = getIconByName(calendar.icon || 'calendar');
@@ -39,7 +39,7 @@ export const TaskItemCalendarBadge = ({
       type="button"
       onClick={(e) => {
         e.stopPropagation();
-        onCalendarClick(calendar.id);
+        onCalendarClick(calendar.id, e);
       }}
       className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border border-surface-200 dark:border-surface-600 bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
     >

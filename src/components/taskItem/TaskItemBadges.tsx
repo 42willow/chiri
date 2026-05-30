@@ -21,8 +21,8 @@ interface TaskItemBadgesProps {
   accounts: Account[];
   activeCalendarId: string | null;
   showCompletedTasks: boolean;
-  onTagClick: (tagId: string) => void;
-  onCalendarClick: (calendarId: string) => void;
+  onTagClick: (tagId: string, event: React.MouseEvent) => void;
+  onCalendarClick: (calendarId: string, event: React.MouseEvent) => void;
   onToggleCollapsed: (e: React.MouseEvent) => void;
   compact: boolean;
   badgeVisibility: TaskBadgeVisibility;

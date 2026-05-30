@@ -5,6 +5,7 @@ import { MODAL_SIZE_CLASSES } from '$constants';
 import type { DismissableLayerType } from '$context/dismissableLayerContext';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { useFocusTrap } from '$hooks/ui/useFocusTrap';
+import { resetStaleCursorOnClose, useResetStaleCursorOnOpen } from '$hooks/ui/useResetCursorOnOpen';
 
 interface ModalWrapperBackdropProps {
   onDrop?: DragEventHandler<HTMLDivElement>;
@@ -66,6 +67,14 @@ export const ModalWrapper = ({
 }: ModalWrapperProps) => {
   const focusTrapRef = useFocusTrap(isOpen);
   const canHandleEscape = handleEscapeKey && (!preventClose || onEscape !== undefined);
+  const handleClose = () => {
+    resetStaleCursorOnClose();
+    onClose();
+  };
+
+  // WebKit can keep showing the cursor from the element that opened the modal
+  // until the mouse moves, even when the modal now sits under the pointer.
+  useResetStaleCursorOnOpen(isOpen);
 
   useDismissableLayer({
     enabled: isOpen,
@@ -78,6 +87,7 @@ export const ModalWrapper = ({
             document.activeElement.blur();
           }
 
+          resetStaleCursorOnClose();
           (onEscape ?? onClose)();
         }
       : undefined,
@@ -116,7 +126,7 @@ export const ModalWrapper = ({
             {!preventClose && (
               <button
                 type="button"
-                onClick={onClose}
+                onClick={handleClose}
                 className="shrink-0 p-2 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors"
                 aria-label="Close"
               >
