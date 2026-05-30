@@ -8,7 +8,7 @@ interface SidebarFooterProps {
   onOpenImport?: () => void;
   onOpenSettings?: () => void;
   importShortcut?: string;
-  settingsShortcut: string;
+  settingsShortcut?: string;
   isAnyModalOpen: boolean;
 }
 
@@ -59,7 +59,9 @@ export const SidebarFooter = ({
       >
         <Settings className="w-4 h-4" />
         Settings
-        <span className="ml-auto text-xs text-surface-400">{settingsShortcut}</span>
+        {settingsShortcut && (
+          <span className="ml-auto text-xs text-surface-400">{settingsShortcut}</span>
+        )}
       </button>
     </div>
   );

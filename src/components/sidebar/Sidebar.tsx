@@ -41,7 +41,7 @@ import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { useSidebarResize } from '$hooks/ui/useSidebarResize';
 import { getTasksByCalendar } from '$lib/store/tasks';
 import type { Account, Calendar, KeyboardShortcut } from '$types';
-import { formatShortcut, getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
+import { formatShortcut, getModifierJoiner } from '$utils/keyboard';
 
 interface SidebarProps {
   onOpenSettings?: () => void;
@@ -167,9 +167,7 @@ export const Sidebar = ({
     y: number;
   } | null>(null);
 
-  const metaKey = getMetaKeyLabel();
-  const modifierJoiner = getModifierJoiner();
-  const settingsShortcut = `${metaKey}${modifierJoiner},`;
+  const settingsShortcut = getSidebarShortcutHint(keyboardShortcuts, 'settings');
   const importShortcut = getSidebarShortcutHint(keyboardShortcuts, 'import-tasks');
 
   const { isResizing, resizeHandleRef, handleResizeStart } = useSidebarResize(onWidthChange);
