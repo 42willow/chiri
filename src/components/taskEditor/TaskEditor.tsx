@@ -33,8 +33,11 @@ import {
 } from '$hooks/queries/useTasks';
 import { useSetEditorOpen } from '$hooks/queries/useUIState';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
-import { resetStaleCursorOnClose, useResetStaleCursorOnOpen } from '$hooks/ui/useResetCursorOnOpen';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
+import {
+  resetStaleCursorOnLayerClose,
+  useResetStaleCursorOnLayerOpen,
+} from '$hooks/ui/useStaleCursorReset';
 import type { Task, TaskStatus } from '$types';
 import type { EditorFieldKey } from '$types/settings';
 import { getContrastTextColor } from '$utils/color';
@@ -88,7 +91,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
   // WebKit can keep a task row's grab cursor after the editor appears under a stationary mouse.
-  useResetStaleCursorOnOpen(true);
+  useResetStaleCursorOnLayerOpen(true);
 
   // Tag picker state
   const [showTagPicker, setShowTagPicker] = useState(false);
@@ -140,7 +143,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
 
   const handleClose = () => {
     // WebKit can keep the close button's pointer cursor after the task row appears underneath.
-    resetStaleCursorOnClose();
+    resetStaleCursorOnLayerClose();
     setEditorOpenMutation.mutate(false);
   };
 

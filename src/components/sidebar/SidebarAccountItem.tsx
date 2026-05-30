@@ -16,6 +16,7 @@ interface SidebarAccountItemProps {
   contextMenu: { type: string; id: string; accountId?: string } | null;
   isAnyModalOpen: boolean;
   isAnyAccountDragging?: boolean;
+  isAccountMenuTriggerActive?: boolean;
   calendarSortConfig: CalendarSortConfig;
   sortable?: boolean;
   onToggleAccount: (accountId: string) => void;
@@ -37,6 +38,7 @@ export const SidebarAccountItem = ({
   contextMenu,
   isAnyModalOpen,
   isAnyAccountDragging,
+  isAccountMenuTriggerActive = false,
   calendarSortConfig,
   sortable = false,
   onToggleAccount,
@@ -53,6 +55,20 @@ export const SidebarAccountItem = ({
   const dragHandleProps = sortable
     ? ({ ...attributes, ...listeners } as React.HTMLAttributes<HTMLButtonElement>)
     : undefined;
+  const isAccountContextMenuOpen = contextMenu?.type === 'account' && contextMenu.id === account.id;
+  const isAccountMenuButtonActive = isAccountContextMenuOpen || isAccountMenuTriggerActive;
+  const canRevealActions = !isDragging && !isAnyAccountDragging;
+  const actionVisibilityClass =
+    canRevealActions && isAccountMenuButtonActive
+      ? 'opacity-100 pointer-events-auto'
+      : `opacity-0 pointer-events-none ${
+          canRevealActions
+            ? 'group-hover/account-row:opacity-100 group-hover/account-row:pointer-events-auto focus-within:opacity-100 focus-within:pointer-events-auto'
+            : ''
+        }`;
+  const accountMenuButtonStateClass = isAccountMenuButtonActive
+    ? 'bg-surface-300 dark:bg-surface-600 text-surface-600 dark:text-surface-300'
+    : 'bg-transparent text-surface-400 hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-600 dark:hover:text-surface-300';
 
   return (
     <div
@@ -69,11 +85,9 @@ export const SidebarAccountItem = ({
           onClick={() => onToggleAccount(account.id)}
           onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
           className={`flex h-8 min-w-0 flex-1 items-center gap-2 px-3 rounded-lg text-sm transition-colors cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
-            contextMenu?.type === 'account' && contextMenu.id === account.id
-              ? 'bg-surface-200 dark:bg-surface-700'
-              : !isAnyModalOpen && !isAnyAccountDragging
-                ? 'hover:bg-surface-200 dark:hover:bg-surface-700'
-                : ''
+            !isAnyModalOpen && !isAnyAccountDragging
+              ? 'hover:bg-surface-200 dark:hover:bg-surface-700'
+              : ''
           }`}
           {...dragHandleProps}
         >
@@ -85,13 +99,13 @@ export const SidebarAccountItem = ({
           ) : (
             <AccountIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 shrink-0" />
           )}
-          <span className="flex-1 text-left truncate min-w-0 text-surface-600 dark:text-surface-400 group-hover/account-row:pr-2">
+          <span className="flex-1 text-left truncate min-w-0 pr-2 text-surface-600 dark:text-surface-400">
             {account.name}
           </span>
         </button>
 
         <div
-          className={`flex shrink-0 items-center gap-1 w-0 overflow-hidden focus-within:w-auto transition-all ${!isDragging && !isAnyAccountDragging ? 'group-hover/account-row:w-auto' : ''}`}
+          className={`flex h-8 w-15 shrink-0 items-center justify-end gap-1 overflow-hidden transition-opacity ${actionVisibilityClass}`}
         >
           <Tooltip content="Add a new calendar" position="top">
             <button
@@ -110,13 +124,16 @@ export const SidebarAccountItem = ({
           <Tooltip content="Account menu" position="top">
             <button
               type="button"
+              data-account-menu-trigger={account.id}
+              aria-expanded={isAccountContextMenuOpen}
+              aria-haspopup="menu"
               onClick={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className="flex h-8 w-7 shrink-0 items-center justify-center rounded-lg bg-transparent hover:bg-surface-300 dark:hover:bg-surface-600 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className={`flex h-8 w-7 shrink-0 items-center justify-center rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountMenuButtonStateClass}`}
             >
               <MoreVertical className="w-4 h-4" />
             </button>

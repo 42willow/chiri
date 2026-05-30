@@ -17,8 +17,8 @@ import {
   useUIState,
 } from '$hooks/queries/useUIState';
 import { useContextMenu } from '$hooks/ui/useContextMenu';
-import { resetStaleCursorIfNeededAtEventPoint } from '$hooks/ui/useResetCursorOnOpen';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
+import { refreshStaleCursorAfterLayoutAtEventPoint } from '$hooks/ui/useStaleCursorReset';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
 import type { Account, Task } from '$types';
@@ -203,7 +203,7 @@ export const TaskItem = ({
 
   const resetStaleBadgeCursor = (event: React.MouseEvent) => {
     // WebKit can keep a badge's pointer cursor after switching to the tag/calendar view.
-    resetStaleCursorIfNeededAtEventPoint(event, {
+    refreshStaleCursorAfterLayoutAtEventPoint(event, {
       delayFrames: BADGE_VIEW_SWITCH_CURSOR_RESET_DELAY_FRAMES,
     });
   };

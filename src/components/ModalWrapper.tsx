@@ -5,7 +5,10 @@ import { MODAL_SIZE_CLASSES } from '$constants';
 import type { DismissableLayerType } from '$context/dismissableLayerContext';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 import { useFocusTrap } from '$hooks/ui/useFocusTrap';
-import { resetStaleCursorOnClose, useResetStaleCursorOnOpen } from '$hooks/ui/useResetCursorOnOpen';
+import {
+  resetStaleCursorOnLayerClose,
+  useResetStaleCursorOnLayerOpen,
+} from '$hooks/ui/useStaleCursorReset';
 
 interface ModalWrapperBackdropProps {
   onDrop?: DragEventHandler<HTMLDivElement>;
@@ -68,13 +71,13 @@ export const ModalWrapper = ({
   const focusTrapRef = useFocusTrap(isOpen);
   const canHandleEscape = handleEscapeKey && (!preventClose || onEscape !== undefined);
   const handleClose = () => {
-    resetStaleCursorOnClose();
+    resetStaleCursorOnLayerClose();
     onClose();
   };
 
   // WebKit can keep showing the cursor from the element that opened the modal
   // until the mouse moves, even when the modal now sits under the pointer.
-  useResetStaleCursorOnOpen(isOpen);
+  useResetStaleCursorOnLayerOpen(isOpen);
 
   useDismissableLayer({
     enabled: isOpen,
@@ -87,7 +90,7 @@ export const ModalWrapper = ({
             document.activeElement.blur();
           }
 
-          resetStaleCursorOnClose();
+          resetStaleCursorOnLayerClose();
           (onEscape ?? onClose)();
         }
       : undefined,

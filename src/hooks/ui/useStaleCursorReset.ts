@@ -3,11 +3,11 @@ import { useEffect, useLayoutEffect } from 'react';
 const RESET_CURSOR_CLASS = 'chiri-reset-cursor';
 let cursorResetToken = 0;
 
-interface ResetStaleCursorOptions {
+interface ForceStaleCursorRefreshOptions {
   frames?: number;
 }
 
-interface ResetStaleCursorIfNeededOptions {
+interface RefreshStaleCursorAfterLayoutOptions {
   delayFrames?: number;
 }
 
@@ -42,33 +42,43 @@ interface CursorPointerEvent extends CursorEventPoint {
   target: EventTarget | null;
 }
 
-const resetStaleCursor = ({ frames = 2 }: ResetStaleCursorOptions = {}) => {
-  const root = document.documentElement;
-  const token = ++cursorResetToken;
-  root.classList.add(RESET_CURSOR_CLASS);
-
+const scheduleAfterFrames = (frames: number, callback: () => void) => {
   const frameIds: number[] = [];
-  const scheduleRemoval = (remainingFrames: number) => {
+  const schedule = (remainingFrames: number) => {
     const frameId = window.requestAnimationFrame(() => {
       if (remainingFrames > 1) {
-        scheduleRemoval(remainingFrames - 1);
+        schedule(remainingFrames - 1);
         return;
       }
 
-      if (cursorResetToken === token) {
-        root.classList.remove(RESET_CURSOR_CLASS);
-      }
+      callback();
     });
 
     frameIds.push(frameId);
   };
 
-  scheduleRemoval(frames);
+  schedule(frames);
 
   return () => {
     for (const frameId of frameIds) {
       window.cancelAnimationFrame(frameId);
     }
+  };
+};
+
+const forceStaleCursorRefresh = ({ frames = 2 }: ForceStaleCursorRefreshOptions = {}) => {
+  const root = document.documentElement;
+  const token = ++cursorResetToken;
+  root.classList.add(RESET_CURSOR_CLASS);
+
+  const cancelRemoval = scheduleAfterFrames(frames, () => {
+    if (cursorResetToken === token) {
+      root.classList.remove(RESET_CURSOR_CLASS);
+    }
+  });
+
+  return () => {
+    cancelRemoval();
 
     if (cursorResetToken === token) {
       root.classList.remove(RESET_CURSOR_CLASS);
@@ -76,64 +86,52 @@ const resetStaleCursor = ({ frames = 2 }: ResetStaleCursorOptions = {}) => {
   };
 };
 
-export const resetStaleCursorOnClose = () => resetStaleCursor({ frames: CLOSE_RESET_FRAMES });
+export const resetStaleCursorOnLayerClose = () =>
+  forceStaleCursorRefresh({ frames: CLOSE_RESET_FRAMES });
 
-const resetStaleCursorIfNeededAtPoint = (
+const refreshStaleCursorAfterLayoutAtPoint = (
   x: number,
   y: number,
-  { delayFrames = 1 }: ResetStaleCursorIfNeededOptions = {},
+  { delayFrames = 1 }: RefreshStaleCursorAfterLayoutOptions = {},
 ) => {
-  const frameIds: number[] = [];
-  const scheduleCheck = (remainingFrames: number) => {
-    const frameId = window.requestAnimationFrame(() => {
-      if (remainingFrames > 1) {
-        scheduleCheck(remainingFrames - 1);
-        return;
-      }
-
-      const element = document.elementFromPoint(x, y);
-      if (!element) return;
-      if (window.getComputedStyle(element).cursor !== 'pointer') resetStaleCursor();
-    });
-
-    frameIds.push(frameId);
-  };
-
-  scheduleCheck(delayFrames);
-
-  return () => {
-    for (const frameId of frameIds) {
-      window.cancelAnimationFrame(frameId);
-    }
-  };
+  return scheduleAfterFrames(delayFrames, () => {
+    if (!isPointOverPointerCursor(x, y)) forceStaleCursorRefresh();
+  });
 };
 
-const isPointerInteractionTarget = (target: EventTarget | null) => {
+const isPointOverPointerCursor = (x: number, y: number) => {
+  const element = document.elementFromPoint(x, y);
+  if (!element) return true;
+
+  return window.getComputedStyle(element).cursor === 'pointer';
+};
+
+const didPointerMutationStartFromPointerTarget = (target: EventTarget | null) => {
   if (!(target instanceof Element)) return false;
   if (window.getComputedStyle(target).cursor === 'pointer') return true;
 
   return target.closest(POINTER_TARGET_SELECTOR) !== null;
 };
 
-export const resetStaleCursorIfNeededAtEventPoint = (
+export const refreshStaleCursorAfterLayoutAtEventPoint = (
   { clientX, clientY }: CursorEventPoint,
-  options?: ResetStaleCursorIfNeededOptions,
-) => resetStaleCursorIfNeededAtPoint(clientX, clientY, options);
+  options?: RefreshStaleCursorAfterLayoutOptions,
+) => refreshStaleCursorAfterLayoutAtPoint(clientX, clientY, options);
 
-export const resetStaleCursorAfterPointerInteraction = ({
+export const refreshStaleCursorAfterPointerMutation = ({
   target,
   clientX,
   clientY,
 }: CursorPointerEvent) => {
-  if (!isPointerInteractionTarget(target)) return;
+  if (!didPointerMutationStartFromPointerTarget(target)) return;
 
-  return resetStaleCursorIfNeededAtPoint(clientX, clientY);
+  return refreshStaleCursorAfterLayoutAtPoint(clientX, clientY);
 };
 
-export const useResetStaleCursorAfterPointerInteraction = () => {
+export const useRefreshStaleCursorAfterPointerMutation = () => {
   useEffect(() => {
     const handlePointerInteraction = (event: MouseEvent) => {
-      resetStaleCursorAfterPointerInteraction(event);
+      refreshStaleCursorAfterPointerMutation(event);
     };
 
     document.addEventListener('click', handlePointerInteraction, true);
@@ -146,10 +144,10 @@ export const useResetStaleCursorAfterPointerInteraction = () => {
   }, []);
 };
 
-export const useResetStaleCursorOnOpen = (isOpen: boolean) => {
+export const useResetStaleCursorOnLayerOpen = (isOpen: boolean) => {
   useLayoutEffect(() => {
     if (!isOpen) return;
 
-    return resetStaleCursor();
+    return forceStaleCursorRefresh();
   }, [isOpen]);
 };

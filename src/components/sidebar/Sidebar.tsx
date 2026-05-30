@@ -39,6 +39,10 @@ import {
 import { CLOSE_CONTEXT_MENUS_EVENT, useContextMenuDismissal } from '$hooks/ui/useContextMenu';
 import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { useSidebarResize } from '$hooks/ui/useSidebarResize';
+import {
+  refreshStaleCursorAfterLayoutAtEventPoint,
+  resetStaleCursorOnLayerClose,
+} from '$hooks/ui/useStaleCursorReset';
 import { getTasksByCalendar } from '$lib/store/tasks';
 import type { Account, Calendar, KeyboardShortcut } from '$types';
 import { formatShortcut, getModifierJoiner } from '$utils/keyboard';
@@ -60,6 +64,18 @@ const getSidebarShortcutHint = (shortcuts: KeyboardShortcut[], id: string) => {
 
   return formatShortcut(shortcut).split(' + ').join(getModifierJoiner());
 };
+
+const CONTEXT_MENU_DISMISS_CURSOR_RESET_DELAY_FRAMES = 2;
+
+const isPointInsideRect = (
+  { clientX, clientY }: { clientX: number; clientY: number },
+  rect: DOMRect,
+) => clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+
+const findAccountMenuTrigger = (accountId: string) =>
+  Array.from(document.querySelectorAll<HTMLElement>('[data-account-menu-trigger]')).find(
+    (element) => element.dataset.accountMenuTrigger === accountId,
+  );
 
 export const Sidebar = ({
   onOpenSettings,
@@ -166,6 +182,7 @@ export const Sidebar = ({
     x: number;
     y: number;
   } | null>(null);
+  const [activeAccountMenuTriggerId, setActiveAccountMenuTriggerId] = useState<string | null>(null);
 
   const settingsShortcut = getSidebarShortcutHint(keyboardShortcuts, 'settings');
   const importShortcut = getSidebarShortcutHint(keyboardShortcuts, 'import-tasks');
@@ -224,6 +241,51 @@ export const Sidebar = ({
     settingsStore.setState({ accountsSectionCollapsed: true });
   };
 
+  useEffect(() => {
+    if (!activeAccountMenuTriggerId) return;
+
+    const clearIfPointerLeftTrigger = (event: PointerEvent) => {
+      const accountMenuTrigger = findAccountMenuTrigger(activeAccountMenuTriggerId);
+      if (
+        !accountMenuTrigger ||
+        !isPointInsideRect(event, accountMenuTrigger.getBoundingClientRect())
+      ) {
+        setActiveAccountMenuTriggerId(null);
+      }
+    };
+
+    document.addEventListener('pointermove', clearIfPointerLeftTrigger, true);
+    document.addEventListener('pointerdown', clearIfPointerLeftTrigger, true);
+
+    return () => {
+      document.removeEventListener('pointermove', clearIfPointerLeftTrigger, true);
+      document.removeEventListener('pointerdown', clearIfPointerLeftTrigger, true);
+    };
+  }, [activeAccountMenuTriggerId]);
+
+  const resetStaleCursorAfterContextMenuDismiss = useCallback(
+    (event: MouseEvent | React.MouseEvent) => {
+      const accountMenuId = contextMenu?.type === 'account' ? contextMenu.id : undefined;
+      const accountMenuTrigger = accountMenuId ? findAccountMenuTrigger(accountMenuId) : undefined;
+
+      if (
+        accountMenuId &&
+        accountMenuTrigger &&
+        isPointInsideRect(event, accountMenuTrigger.getBoundingClientRect())
+      ) {
+        setActiveAccountMenuTriggerId(accountMenuId);
+        resetStaleCursorOnLayerClose();
+        return;
+      }
+
+      setActiveAccountMenuTriggerId(null);
+      refreshStaleCursorAfterLayoutAtEventPoint(event, {
+        delayFrames: CONTEXT_MENU_DISMISS_CURSOR_RESET_DELAY_FRAMES,
+      });
+    },
+    [contextMenu],
+  );
+
   const handleContextMenu = (
     e: React.MouseEvent,
     type: 'account' | 'calendar' | 'tag' | 'filter' | 'accounts-section',
@@ -234,6 +296,7 @@ export const Sidebar = ({
     e.stopPropagation();
 
     if (contextMenu && contextMenu.type === type && contextMenu.id === id) {
+      resetStaleCursorAfterContextMenuDismiss(e);
       setContextMenu(null);
       lastMenuCloseTimeRef.current = Date.now();
       return;
@@ -244,6 +307,7 @@ export const Sidebar = ({
       return;
     }
 
+    setActiveAccountMenuTriggerId(null);
     document.dispatchEvent(new CustomEvent(CLOSE_CONTEXT_MENUS_EVENT));
     setContextMenu({ type, id, accountId, x: e.clientX, y: e.clientY });
   };
@@ -370,6 +434,7 @@ export const Sidebar = ({
                 activeCalendarId={activeCalendarId}
                 contextMenu={contextMenu}
                 isAnyModalOpen={isAnyModalOpen}
+                activeAccountMenuTriggerId={activeAccountMenuTriggerId}
                 accountsSectionCollapsed={accountsSectionCollapsed}
                 onToggleAccountsSection={toggleAccountsSectionCollapsed}
                 onContextMenu={handleContextMenu}
@@ -460,6 +525,7 @@ export const Sidebar = ({
           syncingCalendarId={syncingCalendarId}
           syncCalendar={syncCalendar}
           onClose={handleCloseContextMenu}
+          onPointerClose={resetStaleCursorAfterContextMenuDismiss}
           onEditAccount={(account) => {
             setEditingAccount(account);
             setShowAccountModal(true);

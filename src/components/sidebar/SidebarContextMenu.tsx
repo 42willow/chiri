@@ -1,16 +1,10 @@
 import type { MouseEventHandler } from 'react';
-import { createPortal } from 'react-dom';
+import { FloatingLayerFrame } from '$components/FloatingLayerFrame';
 import { SidebarAccountItemContextMenu } from '$components/sidebar/SidebarAccountItemContextMenu';
 import { SidebarAccountsContextMenu } from '$components/sidebar/SidebarAccountsContextMenu';
 import { SidebarCalendarContextMenu } from '$components/sidebar/SidebarCalendarContextMenu';
 import { SidebarFilterItemContextMenu } from '$components/sidebar/SidebarFilterItemContextMenu';
 import { SidebarTagItemContextMenu } from '$components/sidebar/SidebarTagItemContextMenu';
-import { useContextMenuPosition } from '$hooks/ui/useContextMenu';
-import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
-import {
-  resetStaleCursorIfNeededAtEventPoint,
-  resetStaleCursorOnClose,
-} from '$hooks/ui/useResetCursorOnOpen';
 import type { Account } from '$types';
 
 interface ContextMenuState {
@@ -27,6 +21,7 @@ interface SidebarContextMenuProps {
   syncingCalendarId: string | null;
   syncCalendar: (calendarId: string) => Promise<void>;
   onClose: () => void;
+  onPointerClose?: MouseEventHandler<HTMLDivElement>;
   onEditAccount: (account: Account) => void;
   onEditCalendar: (calendarId: string, accountId: string) => void;
   onEditTag: (tagId: string) => void;
@@ -48,6 +43,7 @@ export const SidebarContextMenu = ({
   syncingCalendarId,
   syncCalendar,
   onClose,
+  onPointerClose,
   onEditAccount,
   onEditCalendar,
   onEditTag,
@@ -62,101 +58,70 @@ export const SidebarContextMenu = ({
   onExpandAll,
   onCollapseAll,
 }: SidebarContextMenuProps) => {
-  const { menuRef, position } = useContextMenuPosition(contextMenu);
+  return (
+    <FloatingLayerFrame
+      anchor={{ type: 'point', x: contextMenu.x, y: contextMenu.y }}
+      onClose={onClose}
+      onPointerClose={onPointerClose}
+      pointerCloseCursorBehavior={onPointerClose ? 'none' : undefined}
+      layerType="context-menu"
+      layerClassName="z-50 min-w-24"
+      fallbackWidth={96}
+      dataAttribute="data-context-menu-content"
+    >
+      {contextMenu.type === 'account' && (
+        <SidebarAccountItemContextMenu
+          accountId={contextMenu.id}
+          accounts={accounts}
+          syncingCalendarId={syncingCalendarId}
+          syncCalendar={syncCalendar}
+          onClose={onClose}
+          onEditAccount={onEditAccount}
+          onCreateCalendar={onCreateCalendar}
+          onExportAccount={onExportAccount}
+          onDeleteAccount={onDeleteAccount}
+        />
+      )}
 
-  const handleEscapeClose = () => {
-    resetStaleCursorOnClose();
-    onClose();
-  };
+      {contextMenu.type === 'calendar' && (
+        <SidebarCalendarContextMenu
+          calendarId={contextMenu.id}
+          accountId={contextMenu.accountId}
+          accounts={accounts}
+          syncingCalendarId={syncingCalendarId}
+          syncCalendar={syncCalendar}
+          onClose={onClose}
+          onEditCalendar={onEditCalendar}
+          onExportCalendar={onExportCalendar}
+          onDeleteCalendar={onDeleteCalendar}
+        />
+      )}
 
-  const handlePointerClose: MouseEventHandler<HTMLDivElement> = (event) => {
-    resetStaleCursorIfNeededAtEventPoint(event);
-    onClose();
-  };
+      {contextMenu.type === 'accounts-section' && (
+        <SidebarAccountsContextMenu
+          onClose={onClose}
+          onExpandAll={onExpandAll}
+          onCollapseAll={onCollapseAll}
+        />
+      )}
 
-  useDismissableLayer({
-    type: 'context-menu',
-    onEscape: handleEscapeClose,
-  });
+      {contextMenu.type === 'tag' && (
+        <SidebarTagItemContextMenu
+          tagId={contextMenu.id}
+          onClose={onClose}
+          onEditTag={onEditTag}
+          onDeleteTag={onDeleteTag}
+        />
+      )}
 
-  return createPortal(
-    <>
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Context menu backdrop for closing on outside click */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Context menu backdrop for closing on outside click */}
-      <div
-        className="fixed inset-0 z-40"
-        onClick={handlePointerClose}
-        onContextMenu={(e) => {
-          e.preventDefault();
-          resetStaleCursorIfNeededAtEventPoint(e);
-          onClose();
-        }}
-      />
-
-      {/* biome-ignore lint/a11y/noStaticElementInteractions: Context menu container uses stopPropagation to prevent backdrop close */}
-      {/* biome-ignore lint/a11y/useKeyWithClickEvents: Context menu container uses stopPropagation to prevent backdrop close */}
-      <div
-        ref={menuRef}
-        data-context-menu-content
-        className="fixed bg-white dark:bg-surface-800 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700 z-50 animate-scale-in min-w-24"
-        style={{ left: position.left, top: position.top }}
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
-      >
-        {contextMenu.type === 'account' && (
-          <SidebarAccountItemContextMenu
-            accountId={contextMenu.id}
-            accounts={accounts}
-            syncingCalendarId={syncingCalendarId}
-            syncCalendar={syncCalendar}
-            onClose={onClose}
-            onEditAccount={onEditAccount}
-            onCreateCalendar={onCreateCalendar}
-            onExportAccount={onExportAccount}
-            onDeleteAccount={onDeleteAccount}
-          />
-        )}
-
-        {contextMenu.type === 'calendar' && (
-          <SidebarCalendarContextMenu
-            calendarId={contextMenu.id}
-            accountId={contextMenu.accountId}
-            accounts={accounts}
-            syncingCalendarId={syncingCalendarId}
-            syncCalendar={syncCalendar}
-            onClose={onClose}
-            onEditCalendar={onEditCalendar}
-            onExportCalendar={onExportCalendar}
-            onDeleteCalendar={onDeleteCalendar}
-          />
-        )}
-
-        {contextMenu.type === 'accounts-section' && (
-          <SidebarAccountsContextMenu
-            onClose={onClose}
-            onExpandAll={onExpandAll}
-            onCollapseAll={onCollapseAll}
-          />
-        )}
-
-        {contextMenu.type === 'tag' && (
-          <SidebarTagItemContextMenu
-            tagId={contextMenu.id}
-            onClose={onClose}
-            onEditTag={onEditTag}
-            onDeleteTag={onDeleteTag}
-          />
-        )}
-
-        {contextMenu.type === 'filter' && (
-          <SidebarFilterItemContextMenu
-            filterId={contextMenu.id}
-            onClose={onClose}
-            onEditFilter={onEditFilter}
-            onDeleteFilter={onDeleteFilter}
-          />
-        )}
-      </div>
-    </>,
-    document.body,
+      {contextMenu.type === 'filter' && (
+        <SidebarFilterItemContextMenu
+          filterId={contextMenu.id}
+          onClose={onClose}
+          onEditFilter={onEditFilter}
+          onDeleteFilter={onDeleteFilter}
+        />
+      )}
+    </FloatingLayerFrame>
   );
 };

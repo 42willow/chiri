@@ -26,6 +26,7 @@ interface SidebarAccountsListProps {
   activeCalendarId: string | null;
   contextMenu: { type: string; id: string; accountId?: string } | null;
   isAnyModalOpen: boolean;
+  activeAccountMenuTriggerId: string | null;
   accountsSectionCollapsed: boolean;
   onToggleAccountsSection: () => void;
   onContextMenu: (
@@ -47,6 +48,7 @@ export const SidebarAccountsList = ({
   activeCalendarId,
   contextMenu,
   isAnyModalOpen,
+  activeAccountMenuTriggerId,
   accountsSectionCollapsed,
   onToggleAccountsSection,
   onContextMenu,
@@ -116,6 +118,7 @@ export const SidebarAccountsList = ({
     activeCalendarId,
     contextMenu,
     isAnyModalOpen,
+    isAccountMenuTriggerActive: activeAccountMenuTriggerId === account.id,
     isAnyAccountDragging: isDraggingAccount,
     calendarSortConfig,
     onToggleAccount,
