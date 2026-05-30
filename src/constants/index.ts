@@ -105,7 +105,6 @@ export const DEFAULT_SHORTCUTS: KeyboardShortcut[] = [
     description: 'Toggle completed tasks',
   },
   { id: 'toggle-show-unstarted', key: 'u', meta: true, description: 'Toggle unstarted tasks' },
-  { id: 'close', key: 'Escape', description: 'Close editor / Clear search' },
   { id: 'nav-up', key: 'ArrowUp', description: 'Navigate to previous task' },
   { id: 'nav-down', key: 'ArrowDown', description: 'Navigate to next task' },
   { id: 'nav-prev-list', key: '[', meta: true, description: 'Go to previous list' },

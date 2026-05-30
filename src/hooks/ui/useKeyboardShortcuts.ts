@@ -49,11 +49,7 @@ const BLOCKED_IN_MODAL = new Set([
   'settings',
   'keyboard-shortcuts',
   'toggle-sidebar',
-  'close', // Let modals handle Escape themselves
 ]);
-
-// Keys allowed even when typing in inputs
-const ALLOWED_IN_INPUT = new Set(['Escape']);
 
 /**
  * Check if the current event target is an input element
@@ -349,7 +345,6 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       'select-all-tasks': handleSelectAllTasks,
       'toggle-show-completed': handleToggleShowCompleted,
       'toggle-show-unstarted': handleToggleShowUnstarted,
-      close: handleEscape,
       'nav-up': handleNavigateUp,
       'nav-down': handleNavigateDown,
       'nav-prev-list': handleNavPrevList,
@@ -367,7 +362,6 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
       handleSelectAllTasks,
       handleToggleShowCompleted,
       handleToggleShowUnstarted,
-      handleEscape,
       handleNavigateUp,
       handleNavigateDown,
       handleNavPrevList,
@@ -386,9 +380,17 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
         return;
       }
 
-      // Don't trigger shortcuts when typing in inputs (except allowed keys)
+      if (e.key === 'Escape') {
+        if (!isAnyModalOpen) {
+          e.preventDefault();
+          handleEscape();
+        }
+        return;
+      }
+
+      // Don't trigger shortcuts when typing in inputs
       const target = e.target as HTMLElement;
-      if (isInputElement(target) && !ALLOWED_IN_INPUT.has(e.key)) {
+      if (isInputElement(target)) {
         return;
       }
 
@@ -401,7 +403,7 @@ export const useKeyboardShortcuts = (options: UseKeyboardShortcutsOptions = {}) 
 
     window.addEventListener('keydown', handleKeyDown, true);
     return () => window.removeEventListener('keydown', handleKeyDown, true);
-  }, [keyboardShortcuts, actionHandlers, isConfirmDialogOpen, isAnyModalOpen]);
+  }, [keyboardShortcuts, actionHandlers, isConfirmDialogOpen, isAnyModalOpen, handleEscape]);
 
   return { shortcuts: keyboardShortcuts };
 };

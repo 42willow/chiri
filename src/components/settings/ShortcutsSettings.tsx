@@ -24,15 +24,7 @@ const SHORTCUT_GROUPS: { label: string; ids: string[] }[] = [
   },
   {
     label: 'Navigation',
-    ids: [
-      'nav-up',
-      'nav-down',
-      'nav-prev-list',
-      'nav-next-list',
-      'toggle-sidebar',
-      'search',
-      'close',
-    ],
+    ids: ['nav-up', 'nav-down', 'nav-prev-list', 'nav-next-list', 'toggle-sidebar', 'search'],
   },
   {
     label: 'General',

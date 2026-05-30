@@ -85,12 +85,15 @@ const loadFromStorage = (): { state: SettingsState; migrated: boolean } => {
         const newIds = loadedState.keyboardShortcuts
           .filter((s: KeyboardShortcut) => !originalIds.includes(s.id))
           .map((s: KeyboardShortcut) => s.id);
+        const removedIds = originalIds.filter(
+          (id: string) => !loadedState.keyboardShortcuts.find((s: KeyboardShortcut) => s.id === id),
+        );
 
-        // Mark if shortcuts were added during merge
-        if (newLength > originalLength) {
+        // Mark if shortcuts were added or deprecated shortcuts were removed during merge
+        if (newLength !== originalLength) {
           migrated = true;
           log.info(
-            `Migrated keyboard shortcuts: ${originalLength} → ${newLength} (added: ${newIds.join(', ')})`,
+            `Migrated keyboard shortcuts: ${originalLength} → ${newLength} (added: ${newIds.join(', ') || 'none'}, removed: ${removedIds.join(', ') || 'none'})`,
           );
         }
       }
@@ -221,10 +224,13 @@ export const settingsStore = {
     // Force a check and merge of shortcuts with current defaults
     const merged = mergeShortcuts(state.keyboardShortcuts, DEFAULT_SHORTCUTS);
     const hasNewShortcuts = merged.some((m) => !state.keyboardShortcuts.find((s) => s.id === m.id));
+    const hasDeprecatedShortcuts = state.keyboardShortcuts.some(
+      (shortcut) => !merged.find((s) => s.id === shortcut.id),
+    );
 
-    if (hasNewShortcuts) {
+    if (hasNewShortcuts || hasDeprecatedShortcuts) {
       const newCount = merged.length - state.keyboardShortcuts.length;
-      log.info(`Updating shortcuts: adding ${newCount} new shortcut(s) (${merged.length} total)`);
+      log.info(`Updating shortcuts: ${newCount} shortcut delta (${merged.length} total)`);
       setState({ keyboardShortcuts: merged });
       return true;
     }
