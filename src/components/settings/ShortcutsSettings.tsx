@@ -2,9 +2,11 @@ import Pencil from 'lucide-react/icons/pencil';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
 import { useEffect, useState } from 'react';
 import { KeyboardShortcutModal } from '$components/modals/KeyboardShortcutModal';
+import { Tooltip } from '$components/Tooltip';
+import { DEFAULT_SHORTCUTS } from '$constants';
 import { useSettingsStore } from '$context/settingsContext';
 import type { KeyboardShortcut } from '$types';
-import { formatShortcut } from '$utils/keyboard';
+import { formatShortcut, keyboardShortcutsMatch } from '$utils/keyboard';
 import { isMacPlatform } from '$utils/platform';
 
 const SHORTCUT_GROUPS: { label: string; ids: string[] }[] = [
@@ -45,6 +47,10 @@ export const ShortcutsSettings = ({
   const { keyboardShortcuts, updateShortcut, resetShortcuts, ensureLatestShortcuts } =
     useSettingsStore();
   const [editingShortcut, setEditingShortcut] = useState<KeyboardShortcut | null>(null);
+  const hasCustomShortcuts = !keyboardShortcutsMatch(keyboardShortcuts, DEFAULT_SHORTCUTS);
+  const resetTitle = hasCustomShortcuts
+    ? 'Reset to defaults'
+    : 'Keyboard shortcuts are already using defaults';
 
   // Ensure shortcuts are up-to-date with defaults when component mounts
   useEffect(() => {
@@ -74,15 +80,18 @@ export const ShortcutsSettings = ({
           <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
             Keyboard shortcuts
           </h3>
-          <button
-            type="button"
-            onClick={resetShortcuts}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-            title="Reset to defaults"
-          >
-            <RotateCcw className="w-3 h-3" />
-            Reset to defaults
-          </button>
+          <Tooltip content={resetTitle} position="bottom" allowInModal>
+            <button
+              type="button"
+              onClick={resetShortcuts}
+              disabled={!hasCustomShortcuts}
+              aria-label={resetTitle}
+              className="flex items-center gap-1.5 px-2 py-1 text-xs bg-surface-100 dark:bg-surface-700 enabled:hover:bg-surface-200 dark:enabled:hover:bg-surface-600 text-surface-700 dark:text-surface-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Reset to defaults
+            </button>
+          </Tooltip>
         </div>
 
         <div className="space-y-6">
@@ -121,14 +130,16 @@ export const ShortcutsSettings = ({
                               </span>
                             ))}
                         </div>
-                        <button
-                          type="button"
-                          onClick={() => handleOpenEdit(shortcut)}
-                          className="p-1.5 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
-                          title="Edit shortcut"
-                        >
-                          <Pencil className="w-3.5 h-3.5" />
-                        </button>
+                        <Tooltip content="Edit shortcut" position="bottom" allowInModal>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenEdit(shortcut)}
+                            aria-label={`Edit shortcut for ${shortcut.description}`}
+                            className="p-1.5 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                          >
+                            <Pencil className="w-3.5 h-3.5" />
+                          </button>
+                        </Tooltip>
                       </div>
                     </div>
                   ))}

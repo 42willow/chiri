@@ -49,6 +49,23 @@ export const shortcutsConflict = (
   return firstSignature !== null && firstSignature === secondSignature;
 };
 
+export const keyboardShortcutsMatch = (
+  shortcuts: KeyboardShortcut[],
+  defaults: KeyboardShortcut[],
+) => {
+  if (shortcuts.length !== defaults.length) return false;
+
+  const shortcutsById = new Map(shortcuts.map((shortcut) => [shortcut.id, shortcut]));
+
+  return defaults.every((defaultShortcut) => {
+    const shortcut = shortcutsById.get(defaultShortcut.id);
+    return (
+      shortcut !== undefined &&
+      getShortcutSignature(shortcut) === getShortcutSignature(defaultShortcut)
+    );
+  });
+};
+
 export const formatShortcut = (shortcut: KeyboardShortcut | Partial<KeyboardShortcut>) => {
   const parts: string[] = [];
   if (shortcut.meta) parts.push(getMetaKeyLabel());

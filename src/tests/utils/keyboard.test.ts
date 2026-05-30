@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { KeyboardShortcut } from '$types';
-import { getShortcutSignature, shortcutsConflict } from '$utils/keyboard';
+import { getShortcutSignature, keyboardShortcutsMatch, shortcutsConflict } from '$utils/keyboard';
 
 const shortcut = (overrides: Partial<KeyboardShortcut>): KeyboardShortcut => ({
   id: 'test-shortcut',
@@ -39,6 +39,43 @@ describe('shortcutsConflict', () => {
   it('allows the same key with different modifiers', () => {
     expect(
       shortcutsConflict(shortcut({ key: 'f', meta: true }), shortcut({ key: 'f', alt: true })),
+    ).toBe(false);
+  });
+});
+
+describe('keyboardShortcutsMatch', () => {
+  const defaults = [
+    shortcut({ id: 'new-task', key: 'n', meta: true }),
+    shortcut({ id: 'search', key: 'f', meta: true }),
+  ];
+
+  it('matches shortcuts with the same ids and combinations', () => {
+    expect(
+      keyboardShortcutsMatch(
+        [
+          shortcut({ id: 'search', key: 'F', meta: true }),
+          shortcut({ id: 'new-task', key: 'n', meta: true }),
+        ],
+        defaults,
+      ),
+    ).toBe(true);
+  });
+
+  it('detects changed shortcut combinations', () => {
+    expect(
+      keyboardShortcutsMatch(
+        [
+          shortcut({ id: 'new-task', key: 'x', meta: true }),
+          shortcut({ id: 'search', key: 'f', meta: true }),
+        ],
+        defaults,
+      ),
+    ).toBe(false);
+  });
+
+  it('detects missing shortcuts', () => {
+    expect(
+      keyboardShortcutsMatch([shortcut({ id: 'new-task', key: 'n', meta: true })], defaults),
     ).toBe(false);
   });
 });
