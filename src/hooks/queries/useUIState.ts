@@ -31,6 +31,16 @@ import {
 } from '$lib/store/ui';
 import type { AccountSortConfig, CalendarSortConfig, SortConfig, TagSortConfig } from '$types/sort';
 
+type SetSelectedTaskInput = string | null | { id: string | null; focusTitle?: boolean };
+
+let pendingTitleAutofocusTaskId: string | null = null;
+
+export const consumeSelectedTaskTitleAutofocus = (taskId: string) => {
+  if (pendingTitleAutofocusTaskId !== taskId) return false;
+  pendingTitleAutofocusTaskId = null;
+  return true;
+};
+
 /**
  * Hook to get the full UI state
  */
@@ -269,7 +279,12 @@ export const useSetSelectedTask = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (id: string | null) => {
+    mutationFn: (input: SetSelectedTaskInput) => {
+      const id = typeof input === 'object' && input !== null ? input.id : input;
+      const focusTitle =
+        typeof input === 'object' && input !== null ? (input.focusTitle ?? false) : false;
+
+      pendingTitleAutofocusTaskId = focusTitle && id !== null ? id : null;
       setSelectedTask(id);
       return Promise.resolve();
     },
@@ -287,6 +302,7 @@ export const useSetEditorOpen = () => {
 
   return useMutation({
     mutationFn: (open: boolean) => {
+      if (!open) pendingTitleAutofocusTaskId = null;
       setEditorOpen(open);
       return Promise.resolve();
     },

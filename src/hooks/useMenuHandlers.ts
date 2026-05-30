@@ -113,7 +113,7 @@ export const useMenuHandlers = (
       { title: '' },
       {
         onSuccess: (task) => {
-          setSelectedTaskMutation.mutate(task.id);
+          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
         },
       },
     );

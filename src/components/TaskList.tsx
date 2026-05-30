@@ -106,7 +106,7 @@ export const TaskList = () => {
       { title: '' },
       {
         onSuccess: (task) => {
-          setSelectedTaskMutation.mutate(task.id);
+          setSelectedTaskMutation.mutate({ id: task.id, focusTitle: true });
         },
       },
     );
