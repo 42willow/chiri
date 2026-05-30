@@ -15,6 +15,7 @@ import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { useTaskListSelection } from '$hooks/ui/useTaskListSelection';
 import type { LucideIcon } from '$types/lucide';
 import { getMetaKeyLabel, getModifierJoiner } from '$utils/keyboard';
+import { getSortableItemKey } from '$utils/sortable';
 
 const getEmptyState = (
   isRecentlyDeleted: boolean,
@@ -166,7 +167,7 @@ export const TaskList = () => {
           <div className="space-y-1.5">
             {visibleFlattenedTasks.map((task) => (
               <TaskItem
-                key={task.id}
+                key={getSortableItemKey(task.id, task.parentUid)}
                 task={task}
                 depth={task.depth}
                 ancestorIds={task.ancestorIds}

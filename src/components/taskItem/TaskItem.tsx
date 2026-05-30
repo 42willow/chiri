@@ -23,6 +23,7 @@ import { filterCalDavDescription } from '$lib/ical/vtodo';
 import { toggleTaskCollapsed } from '$lib/store/tasks';
 import type { Account, Task } from '$types';
 import { getContrastTextColor } from '$utils/color';
+import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
 
 // Moved outside component — does not close over any component state
 const animateLayoutChanges: AnimateLayoutChanges = (args) => {
@@ -126,9 +127,12 @@ export const TaskItem = ({
 
   const checkmarkColor = getContrastTextColor(resolvedAccentColor);
 
+  const sortableId = getSortableItemId(task.id, isOverlay);
+  const sortableDisabled = getSortableItemDisabled(isDragEnabled, isOverlay);
+
   const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
-    id: task.id,
-    disabled: !isDragEnabled,
+    id: sortableId,
+    disabled: sortableDisabled,
     data: { ancestorIds },
     animateLayoutChanges,
   });

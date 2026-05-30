@@ -10,6 +10,7 @@ import { getSortedTasks } from '$lib/store/filters';
 import { countChildren } from '$lib/store/tasks';
 import type { Task } from '$types';
 import type { FlattenedTask } from '$types/store';
+import { getSortableItemKey } from '$utils/sortable';
 
 interface SubtasksProps {
   task: Task;
@@ -144,7 +145,7 @@ export const TaskEditorSubtasks = ({
                 >
                   {visibleFlattenedSubtasks.slice(1).map((flatItem) => (
                     <TaskEditorSubtaskItem
-                      key={flatItem.id}
+                      key={getSortableItemKey(flatItem.id, flatItem.parentUid)}
                       task={flatItem}
                       depth={flatItem.depth - 1}
                       checkmarkColor={checkmarkColor}

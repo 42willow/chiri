@@ -6,6 +6,7 @@ import X from 'lucide-react/icons/x';
 import { useRef, useState } from 'react';
 import { useChildTasks } from '$hooks/queries/useTasks';
 import type { Task } from '$types';
+import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
 
 const animateLayoutChanges: AnimateLayoutChanges = (args) =>
   defaultAnimateLayoutChanges({ ...args, wasDragging: true });
@@ -87,9 +88,12 @@ export const TaskEditorSubtaskItem = ({
   const [editValue, setEditValue] = useState(task.title);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const sortableId = getSortableItemId(task.id, isOverlay);
+  const sortableDisabled = getSortableItemDisabled(isDragEnabled, isOverlay);
+
   const { listeners, setNodeRef, transform, isDragging } = useSortable({
-    id: task.id,
-    disabled: !isDragEnabled,
+    id: sortableId,
+    disabled: sortableDisabled,
     animateLayoutChanges,
   });
 
