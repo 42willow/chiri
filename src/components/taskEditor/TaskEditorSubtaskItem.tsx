@@ -80,7 +80,8 @@ export const TaskEditorSubtaskItem = ({
   readOnly = false,
   isOverlay = false,
 }: TaskEditorSubtaskItemProps) => {
-  const { data: children = [] } = useChildTasks(task.uid);
+  const childTaskFilter = task.deletedAt ? 'deleted' : 'active';
+  const { data: children = [] } = useChildTasks(task.uid, childTaskFilter);
   const hasChildren = children.length > 0;
   const isExpanded = expandedSubtasks.has(task.id);
 

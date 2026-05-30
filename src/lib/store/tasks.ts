@@ -177,6 +177,14 @@ const handleRecurringTaskCompletion = (
   return true;
 };
 
+export type ChildTaskFilter = 'all' | 'active' | 'deleted';
+
+const matchesChildTaskFilter = (task: Task, filter: ChildTaskFilter) => {
+  if (filter === 'active') return !task.deletedAt;
+  if (filter === 'deleted') return !!task.deletedAt;
+  return true;
+};
+
 // Task getters
 export const getAllTasks = () => {
   return dataStore.load().tasks;
@@ -202,12 +210,14 @@ export const getTasksByTag = (tagId: string) => {
   return dataStore.load().tasks.filter((t) => (t.tags ?? []).includes(tagId));
 };
 
-export const getChildTasks = (parentUid: string) => {
-  return dataStore.load().tasks.filter((t) => t.parentUid === parentUid);
+export const getChildTasks = (parentUid: string, filter: ChildTaskFilter = 'all') => {
+  return dataStore
+    .load()
+    .tasks.filter((t) => t.parentUid === parentUid && matchesChildTaskFilter(t, filter));
 };
 
-export const countChildren = (parentUid: string) => {
-  return dataStore.load().tasks.filter((t) => t.parentUid === parentUid).length;
+export const countChildren = (parentUid: string, filter: ChildTaskFilter = 'all') => {
+  return getChildTasks(parentUid, filter).length;
 };
 
 export const getAllDescendants = (parentUid: string) => {

@@ -7,7 +7,6 @@ import { TaskEditorSubtaskItem } from '$components/taskEditor/TaskEditorSubtaskI
 import { useChildTasks, useCreateTask, useTasks } from '$hooks/queries/useTasks';
 import { truncateName, useSortableDrag } from '$hooks/ui/useSortableDrag';
 import { getSortedTasks } from '$lib/store/filters';
-import { countChildren } from '$lib/store/tasks';
 import type { Task } from '$types';
 import type { FlattenedTask } from '$types/store';
 import { getSortableItemKey } from '$utils/sortable';
@@ -30,8 +29,9 @@ export const TaskEditorSubtasks = ({
   readOnly = false,
 }: SubtasksProps) => {
   const createTaskMutation = useCreateTask();
-  const { data: childTasks = [] } = useChildTasks(task.uid);
-  const childCount = countChildren(task.uid);
+  const childTaskFilter = task.deletedAt ? 'deleted' : 'active';
+  const { data: childTasks = [] } = useChildTasks(task.uid, childTaskFilter);
+  const childCount = childTasks.length;
   const { data: allTasks = [] } = useTasks();
 
   const [showAddSubtask, setShowAddSubtask] = useState(false);
@@ -40,7 +40,12 @@ export const TaskEditorSubtasks = ({
 
   const flattenedSubtasks = useMemo<FlattenedTask[]>(() => {
     const getChildren = (uid: string) =>
-      getSortedTasks(allTasks.filter((t) => t.parentUid === uid));
+      getSortedTasks(
+        allTasks.filter((t) => {
+          if (t.parentUid !== uid) return false;
+          return childTaskFilter === 'deleted' ? !!t.deletedAt : !t.deletedAt;
+        }),
+      );
 
     const flatten = (tasks: Task[], ancestorIds: string[]) => {
       const result: FlattenedTask[] = [];
@@ -53,7 +58,7 @@ export const TaskEditorSubtasks = ({
       return result;
     };
     return [{ ...task, depth: 0, ancestorIds: [] }, ...flatten(getChildren(task.uid), [task.id])];
-  }, [task, allTasks, expandedSubtasks]);
+  }, [task, allTasks, childTaskFilter, expandedSubtasks]);
 
   const anySubtaskDragEnabled = !readOnly && flattenedSubtasks.length > 2;
 

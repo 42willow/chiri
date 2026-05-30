@@ -11,7 +11,7 @@ import { TaskItemTagBadge } from '$components/taskItem/badges/TaskItemTagBadge';
 import { TaskItemURLBadge } from '$components/taskItem/badges/TaskItemURLBadge';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { getAllTags } from '$lib/store/tags';
-import { countChildren, getChildTasks } from '$lib/store/tasks';
+import { getChildTasks } from '$lib/store/tasks';
 import type { Account, Tag, Task } from '$types';
 import type { TaskBadgeKey, TaskBadgeVisibility } from '$types/settings';
 import { formatStartDate } from '$utils/date';
@@ -43,7 +43,8 @@ export const TaskItemBadges = ({
 }: TaskItemBadgesProps) => {
   const resolveAccent = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
-  const allChildTasks = getChildTasks(task.uid);
+  const childTaskFilter = task.deletedAt ? 'deleted' : 'active';
+  const allChildTasks = getChildTasks(task.uid, childTaskFilter);
   const hiddenChildCount = !showCompletedTasks
     ? allChildTasks.filter((c) => c.status === 'completed' || c.status === 'cancelled').length
     : 0;
@@ -51,7 +52,7 @@ export const TaskItemBadges = ({
     (s) => s.status === 'completed' || s.status === 'cancelled',
   ).length;
   const totalSubtasks = allChildTasks.length;
-  const childCount = countChildren(task.uid);
+  const childCount = allChildTasks.length;
   const allCalendars = accounts.flatMap((a) => a.calendars);
   const calendar = allCalendars.find((c) => c.id === task.calendarId);
   const calendarColor = calendar?.color ? resolveAccent(calendar.color) : resolvedAccentColor;

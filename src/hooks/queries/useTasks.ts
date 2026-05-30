@@ -12,6 +12,7 @@ import { addReminder, removeReminder, updateReminder } from '$lib/store/reminder
 import { reorderTaskList, reorderTasks } from '$lib/store/reorder/tasks';
 import {
   addTagToTask,
+  type ChildTaskFilter,
   createTask,
   deleteTask,
   getAllTasks,
@@ -30,10 +31,10 @@ import type { FlattenedTask } from '$types/store';
  * Hook to get sorted children of a task, reactive to any task store changes.
  * Uses a queryKey under queryKeys.tasks.all so it is invalidated alongside other task queries.
  */
-export const useChildTasks = (parentUid: string) => {
+export const useChildTasks = (parentUid: string, filter: ChildTaskFilter = 'all') => {
   return useQuery({
-    queryKey: [...queryKeys.tasks.all, 'children', parentUid] as const,
-    queryFn: () => getSortedTasks(getChildTasks(parentUid)),
+    queryKey: [...queryKeys.tasks.all, 'children', parentUid, filter] as const,
+    queryFn: () => getSortedTasks(getChildTasks(parentUid, filter)),
     staleTime: Infinity,
   });
 };
