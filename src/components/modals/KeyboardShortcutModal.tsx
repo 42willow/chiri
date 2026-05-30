@@ -141,13 +141,14 @@ export const KeyboardShortcutModal = ({
           role="application"
           // biome-ignore lint/a11y/noNoninteractiveTabindex: we need to make this div focusable to capture key events, but it doesn't have typical interactive behavior
           tabIndex={0}
+          onClick={() => inputRef.current?.focus()}
           onFocus={() => setIsRecording(true)}
           onBlur={() => setIsRecording(false)}
           onKeyDown={handleKeyCapture}
-          className={`relative w-full h-20 flex items-center justify-center bg-surface-50 dark:bg-surface-900 border rounded-lg shadow-inner focus:outline-hidden focus:bg-white dark:focus:bg-surface-800 focus:ring-2 focus:ring-primary-500 focus:ring-inset transition-colors cursor-text ${
+          className={`relative w-full h-20 flex items-center justify-center bg-surface-50 dark:bg-surface-900 border rounded-lg shadow-inner hover:bg-white dark:hover:bg-surface-800 focus:outline-hidden focus:bg-white dark:focus:bg-surface-800 focus:ring-2 focus:ring-primary-500 focus:ring-inset transition-colors cursor-pointer ${
             conflictingShortcut
               ? 'border-semantic-error focus:border-semantic-error focus:ring-semantic-error'
-              : 'border-surface-200 dark:border-surface-700 focus:border-primary-500'
+              : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 focus:border-primary-500'
           }`}
           aria-label="Press keys to set shortcut"
         >
