@@ -90,7 +90,6 @@ export const useTaskDeletion = () => {
           confirmLabel: 'Delete permanently',
           cancelLabel: 'Cancel',
           destructive: true,
-          delayConfirmSeconds: 1,
         });
         close();
         if (!confirmed) return false;
