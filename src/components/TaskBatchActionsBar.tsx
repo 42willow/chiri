@@ -16,19 +16,12 @@ import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { PRIORITIES } from '$constants/priority';
-import { useConfirmDialog } from '$context/confirmDialogContext';
-import { useSettingsStore } from '$context/settingsContext';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useTags } from '$hooks/queries/useTags';
-import {
-  useBatchUpdateTasks,
-  usePermanentDeleteTask,
-  useRestoreTask,
-} from '$hooks/queries/useTasks';
+import { useBatchUpdateTasks, useRestoreTask } from '$hooks/queries/useTasks';
 import { exportTaskAndChildren } from '$lib/store/tasks';
 import type { Priority, Task, TaskStatus } from '$types';
-import { pluralize } from '$utils/misc';
 
 interface TaskBatchActionsBarProps {
   selectedTasks: Task[];
@@ -99,10 +92,7 @@ export const TaskBatchActionsBar = ({
   const { data: tags = [] } = useTags();
   const batchUpdateTasksMutation = useBatchUpdateTasks();
   const restoreTaskMutation = useRestoreTask();
-  const permanentDeleteTaskMutation = usePermanentDeleteTask();
-  const { moveTaskToRecentlyDeleted } = useTaskDeletion();
-  const { confirmBeforePermanentDelete, deleteSubtasksWithParent } = useSettingsStore();
-  const { confirm, close } = useConfirmDialog();
+  const { moveTaskToRecentlyDeleted, deleteTasksPermanently } = useTaskDeletion();
   const [showTagsModal, setShowTagsModal] = useState(false);
   const [showMoveModal, setShowMoveModal] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
@@ -238,27 +228,10 @@ export const TaskBatchActionsBar = ({
   };
 
   const handlePermanentDelete = async () => {
-    if (confirmBeforePermanentDelete) {
-      const confirmed = await confirm({
-        title: 'Delete permanently',
-        subtitle: `${selectedCount} selected ${pluralize(selectedCount, 'task')}`,
-        message: `This will permanently delete ${selectedCount} selected ${pluralize(
-          selectedCount,
-          'task',
-        )}. This cannot be undone.`,
-        confirmLabel: 'Delete permanently',
-        cancelLabel: 'Cancel',
-        destructive: true,
-      });
-      close();
-      if (!confirmed) return;
+    const deleted = await deleteTasksPermanently(selectedTasks.map((task) => task.id));
+    if (deleted) {
+      onClearSelection();
     }
-
-    const deleteChildren = deleteSubtasksWithParent === 'delete';
-    for (const task of selectedTasks) {
-      permanentDeleteTaskMutation.mutate({ id: task.id, deleteChildren });
-    }
-    onClearSelection();
   };
 
   if (selectedCount === 0) return null;
