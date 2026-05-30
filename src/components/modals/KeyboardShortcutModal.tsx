@@ -4,6 +4,7 @@ import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import type { KeyboardShortcut } from '$types';
 import { formatShortcut, shortcutsConflict } from '$utils/keyboard';
+import { isMacPlatform } from '$utils/platform';
 
 interface KeyboardShortcutModalProps {
   isOpen: boolean;
@@ -73,10 +74,11 @@ export const KeyboardShortcutModal = ({
       return;
     }
 
+    const isMac = isMacPlatform();
     const newShortcut: Partial<KeyboardShortcut> = {
       key: e.key,
-      meta: e.metaKey || e.ctrlKey,
-      ctrl: e.ctrlKey && !e.metaKey,
+      meta: isMac ? e.metaKey : e.ctrlKey,
+      ctrl: isMac ? e.ctrlKey : false,
       shift: e.shiftKey,
       alt: e.altKey,
     };

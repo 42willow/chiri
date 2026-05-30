@@ -44,7 +44,7 @@ const shortcutToAccelerator = (shortcut?: KeyboardShortcut) => {
   const parts: string[] = [];
 
   if (shortcut.meta) parts.push('CmdOrCtrl');
-  if (shortcut.ctrl && !shortcut.meta) parts.push('Ctrl');
+  if (shortcut.ctrl && (isMacPlatform() || !shortcut.meta)) parts.push('Ctrl');
   if (shortcut.shift) parts.push('Shift');
   if (shortcut.alt) parts.push('Alt');
 

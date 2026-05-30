@@ -71,7 +71,7 @@ export const formatShortcut = (shortcut: KeyboardShortcut | Partial<KeyboardShor
 
   const parts: string[] = [];
   if (shortcut.meta) parts.push(getMetaKeyLabel());
-  if (shortcut.ctrl && !shortcut.meta) parts.push('Ctrl');
+  if (shortcut.ctrl && (isMacPlatform() || !shortcut.meta)) parts.push('Ctrl');
   if (shortcut.shift) parts.push(getShiftKeyLabel());
   if (shortcut.alt) parts.push(getAltKeyLabel());
   const keyDisplay =

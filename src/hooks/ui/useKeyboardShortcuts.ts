@@ -30,6 +30,7 @@ import {
   getModifierJoiner,
   getShiftKeyLabel,
 } from '$utils/keyboard';
+import { isMacPlatform } from '$utils/platform';
 
 // Shortcuts that should NOT work when a modal is open
 const BLOCKED_IN_MODAL = new Set([
@@ -64,17 +65,14 @@ const isInputElement = (target: HTMLElement): boolean =>
  * Check if a keyboard event matches a shortcut's modifier requirements
  */
 const matchesModifiers = (e: KeyboardEvent, shortcut: KeyboardShortcut): boolean => {
-  const metaMatch = shortcut.meta ? e.metaKey || e.ctrlKey : true;
-  const ctrlMatch = shortcut.ctrl ? e.ctrlKey : true;
+  const isMac = isMacPlatform();
+  const primaryModifierPressed = isMac ? e.metaKey : e.ctrlKey;
+  const metaMatch = shortcut.meta ? primaryModifierPressed : !primaryModifierPressed;
+  const ctrlMatch = shortcut.ctrl ? e.ctrlKey : isMac ? !e.ctrlKey : true;
   const shiftMatch = shortcut.shift ? e.shiftKey : !e.shiftKey;
   const altMatch = shortcut.alt ? e.altKey : !e.altKey;
 
-  if (!metaMatch || !ctrlMatch || !shiftMatch || !altMatch) return false;
-
-  // Verify modifier requirements are exactly met
-  if (shortcut.meta) return e.metaKey || e.ctrlKey;
-  if (shortcut.ctrl) return e.ctrlKey;
-  return true;
+  return metaMatch && ctrlMatch && shiftMatch && altMatch;
 };
 
 /**
@@ -416,7 +414,7 @@ export const getShortcutDisplay = (shortcut: KeyboardShortcut) => {
   if (shortcut.meta) {
     parts.push(getMetaKeyLabel());
   }
-  if (shortcut.ctrl && !shortcut.meta) {
+  if (shortcut.ctrl && (isMacPlatform() || !shortcut.meta)) {
     parts.push('Ctrl');
   }
   if (shortcut.shift) {
