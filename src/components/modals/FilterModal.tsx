@@ -3,7 +3,6 @@ import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
-import { getIconByName } from '$constants/icons';
 import { useFilters, useUpdateFilter } from '$hooks/queries/useFilters';
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
@@ -32,8 +31,6 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
   const nameInputRef = useInitialFocusRef<HTMLInputElement>();
 
   if (!existingFilter) return null;
-
-  const IconComponent = getIconByName(icon);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -126,27 +123,6 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
               className="flex-1 px-3 py-2 text-sm font-mono text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
             />
           </div>
-        </div>
-
-        <div className="pt-2">
-          <p className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
-            Preview
-          </p>
-          <span
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-xs font-medium border"
-            style={{
-              borderColor: color,
-              backgroundColor: `${color}15`,
-              color,
-            }}
-          >
-            {emoji ? (
-              <span className="text-sm leading-none">{emoji}</span>
-            ) : (
-              <IconComponent className="w-3.5 h-3.5" />
-            )}
-            {name || 'Filter name'}
-          </span>
         </div>
       </form>
     </ModalWrapper>
