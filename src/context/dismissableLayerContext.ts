@@ -5,6 +5,7 @@ export type DismissableLayerType =
   | 'modal'
   | 'context-menu'
   | 'dropdown'
+  | 'tooltip'
   | 'confirm-dialog';
 
 export type DismissableLayerEscapeBehavior = 'dismiss' | 'block' | 'none';
@@ -14,6 +15,7 @@ const DISMISSABLE_LAYER_PRIORITIES: Record<DismissableLayerType, number> = {
   modal: 50,
   'context-menu': 50,
   dropdown: 50,
+  tooltip: 110,
   'confirm-dialog': 100,
 };
 

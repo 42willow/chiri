@@ -1,13 +1,19 @@
 import {
   type CSSProperties,
+  cloneElement,
+  Fragment,
+  isValidElement,
+  type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
   useCallback,
   useEffect,
+  useId,
   useRef,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useModalState } from '$context/modalStateContext';
+import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
 
 interface TooltipProps {
   content: ReactNode;
@@ -19,6 +25,13 @@ interface TooltipProps {
   allowInModal?: boolean;
 }
 
+interface TooltipTriggerChildProps {
+  'aria-describedby'?: string;
+}
+
+const isEscapeKey = (event: KeyboardEvent | ReactKeyboardEvent) =>
+  event.key === 'Escape' || event.key === 'Esc';
+
 export const Tooltip = ({
   content,
   children,
@@ -29,22 +42,44 @@ export const Tooltip = ({
   allowInModal = false,
 }: TooltipProps) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
   const [coords, setCoords] = useState({ x: 0, y: 0 });
+  const tooltipId = useId();
   const triggerRef = useRef<HTMLDivElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const { isAnyModalOpen, isContextMenuOpen } = useModalState();
+  const hasContent = Boolean(content);
+  const describedBy = hasContent ? tooltipId : undefined;
+
+  const clearShowTimeout = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, []);
+
+  const hideTooltip = useCallback(() => {
+    clearShowTimeout();
+    setIsVisible(false);
+  }, [clearShowTimeout]);
+
+  const dismissTooltip = useCallback(() => {
+    setIsDismissed(true);
+    hideTooltip();
+  }, [hideTooltip]);
+
+  const resetDismissalAndHideTooltip = useCallback(() => {
+    setIsDismissed(false);
+    hideTooltip();
+  }, [hideTooltip]);
 
   // hide tooltip when a modal or context menu opens
   useEffect(() => {
-    if (!allowInModal && (isAnyModalOpen || isContextMenuOpen) && isVisible) {
-      setIsVisible(false);
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
+    if (!allowInModal && (isAnyModalOpen || isContextMenuOpen)) {
+      hideTooltip();
     }
-  }, [isAnyModalOpen, isContextMenuOpen, isVisible, allowInModal]);
+  }, [isAnyModalOpen, isContextMenuOpen, allowInModal, hideTooltip]);
 
   const updatePosition = useCallback(() => {
     if (!triggerRef.current || !tooltipRef.current) return;
@@ -108,13 +143,18 @@ export const Tooltip = ({
     setCoords({ x, y });
   }, [position]);
 
-  const showTooltip = () => {
+  const showTooltip = useCallback(() => {
+    if (!hasContent || isDismissed) return;
+
     // Don't show tooltip when a modal or context menu is open (unless allowInModal is true)
     if (!allowInModal && (isAnyModalOpen || isContextMenuOpen)) return;
+
+    clearShowTimeout();
 
     const show = () => {
       updatePosition();
       setIsVisible(true);
+      timeoutRef.current = null;
     };
 
     if (delay === 0) {
@@ -122,23 +162,48 @@ export const Tooltip = ({
     } else {
       timeoutRef.current = setTimeout(show, delay);
     }
-  };
-
-  const hideTooltip = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setIsVisible(false);
-  };
+  }, [
+    allowInModal,
+    clearShowTimeout,
+    delay,
+    hasContent,
+    isDismissed,
+    isAnyModalOpen,
+    isContextMenuOpen,
+    updatePosition,
+  ]);
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
+    return clearShowTimeout;
+  }, [clearShowTimeout]);
+
+  useDismissableLayer({
+    enabled: isVisible,
+    type: 'tooltip',
+    escapeBehavior: 'dismiss',
+    onEscape: dismissTooltip,
+  });
+
+  useEffect(() => {
+    if (!isVisible) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isEscapeKey(event)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      dismissTooltip();
     };
-  }, []);
+
+    window.addEventListener('keydown', handleKeyDown, { capture: true });
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown, {
+        capture: true,
+      } as EventListenerOptions);
+    };
+  }, [dismissTooltip, isVisible]);
 
   useEffect(() => {
     if (!isVisible) return;
@@ -181,23 +246,49 @@ export const Tooltip = ({
     }
   };
 
+  const handleTriggerKeyDown = useCallback(
+    (event: ReactKeyboardEvent<HTMLSpanElement>) => {
+      if (!isEscapeKey(event) || !isVisible) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      dismissTooltip();
+    },
+    [dismissTooltip, isVisible],
+  );
+
+  const getDescribedBy = (currentDescribedBy?: string) =>
+    [currentDescribedBy, describedBy].filter(Boolean).join(' ') || undefined;
+
+  const triggerChild =
+    isValidElement<TooltipTriggerChildProps>(children) && children.type !== Fragment
+      ? cloneElement(children, {
+          'aria-describedby': getDescribedBy(children.props['aria-describedby']),
+        })
+      : children;
+
   return (
     <>
+      {/* biome-ignore lint/a11y/noStaticElementInteractions: the wrapper delegates hover/focus while the child remains the described interactive trigger */}
       <span
         ref={triggerRef}
         onMouseEnter={showTooltip}
-        onMouseLeave={hideTooltip}
+        onMouseLeave={resetDismissalAndHideTooltip}
+        onFocus={showTooltip}
+        onBlur={resetDismissalAndHideTooltip}
+        onKeyDown={handleTriggerKeyDown}
         className={`inline-flex ${triggerClassName}`}
-        role="tooltip"
+        aria-describedby={triggerChild === children ? describedBy : undefined}
       >
-        {children}
+        {triggerChild}
       </span>
-      {isVisible &&
-        content &&
+      {hasContent &&
         createPortal(
           <div
+            id={tooltipId}
             ref={tooltipRef}
-            className={`fixed z-100 px-2 py-1 text-xs font-medium text-white bg-surface-900 dark:bg-surface-700 rounded-sm shadow-lg pointer-events-none tooltip-anim animate-tooltip-in ${className}`}
+            role="tooltip"
+            className={`fixed z-100 px-2 py-1 text-xs font-medium text-white bg-surface-900 dark:bg-surface-700 rounded-sm shadow-lg pointer-events-none ${isVisible ? 'tooltip-anim animate-tooltip-in' : 'invisible'} ${className}`}
             style={
               {
                 left: coords.x,

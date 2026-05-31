@@ -1,0 +1,160 @@
+import { act } from 'react';
+import { createRoot, type Root } from 'react-dom/client';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { Tooltip } from '$components/Tooltip';
+import { DismissableLayerProvider } from '$providers/DismissableLayerProvider';
+
+interface RenderTooltipProps {
+  content: string;
+  delay?: number;
+  describedBy?: string;
+}
+
+const renderTooltip = (props: RenderTooltipProps) => (
+  <Tooltip content={props.content} delay={props.delay}>
+    <button type="button" aria-describedby={props.describedBy}>
+      Trigger
+    </button>
+  </Tooltip>
+);
+
+const getButton = (container: HTMLElement) => {
+  const button = container.querySelector('button');
+  if (!button) throw new Error('Expected trigger button to render');
+  return button;
+};
+
+const getTriggerWrapper = (button: HTMLElement) => {
+  const wrapper = button.parentElement;
+  if (!wrapper) throw new Error('Expected trigger wrapper to render');
+  return wrapper;
+};
+
+const getDescribedTooltip = (button: HTMLElement) => {
+  const describedBy = button.getAttribute('aria-describedby');
+  if (!describedBy) throw new Error('Expected trigger to have aria-describedby');
+
+  const tooltipIds = describedBy.split(' ');
+  const tooltipId = tooltipIds[tooltipIds.length - 1];
+  if (!tooltipId) throw new Error('Expected trigger to include tooltip id');
+
+  const tooltip = document.getElementById(tooltipId);
+  if (!tooltip) throw new Error('Expected tooltip element to render');
+
+  return tooltip;
+};
+
+const pressEscape = (target: EventTarget = document.body) => {
+  target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+};
+
+const mouseEnter = (target: HTMLElement) => {
+  target.dispatchEvent(
+    new MouseEvent('mouseover', { bubbles: true, relatedTarget: document.body }),
+  );
+};
+
+const mouseLeave = (target: HTMLElement) => {
+  target.dispatchEvent(new MouseEvent('mouseout', { bubbles: true, relatedTarget: document.body }));
+};
+
+describe('Tooltip', () => {
+  let container: HTMLDivElement;
+  let root: Root;
+
+  beforeEach(() => {
+    (
+      globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }
+    ).IS_REACT_ACT_ENVIRONMENT = true;
+    vi.useFakeTimers();
+    container = document.createElement('div');
+    document.body.append(container);
+    root = createRoot(container);
+  });
+
+  afterEach(() => {
+    act(() => root.unmount());
+    container.remove();
+    vi.useRealTimers();
+  });
+
+  it('describes the actual trigger with a portal tooltip', () => {
+    act(() => {
+      root.render(renderTooltip({ content: 'Archive task', describedBy: 'existing-description' }));
+    });
+
+    const button = getButton(container);
+    const describedBy = button.getAttribute('aria-describedby');
+    const tooltip = getDescribedTooltip(button);
+
+    expect(button.getAttribute('role')).toBeNull();
+    expect(describedBy?.split(' ')).toContain('existing-description');
+    expect(tooltip.getAttribute('role')).toBe('tooltip');
+    expect(tooltip.textContent).toContain('Archive task');
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+  });
+
+  it('shows on focus and hides on Escape', () => {
+    act(() => {
+      root.render(renderTooltip({ content: 'Focus tooltip', delay: 25 }));
+    });
+
+    const button = getButton(container);
+    const tooltip = getDescribedTooltip(button);
+
+    act(() => {
+      button.focus();
+    });
+    act(() => {
+      vi.advanceTimersByTime(24);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+
+    act(() => {
+      vi.advanceTimersByTime(1);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(false);
+
+    act(() => {
+      pressEscape();
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+  });
+
+  it('hides a hovered tooltip on Escape without reopening until hover leaves', () => {
+    act(() => {
+      root.render(
+        <DismissableLayerProvider>
+          {renderTooltip({ content: 'Hover tooltip' })}
+        </DismissableLayerProvider>,
+      );
+    });
+
+    const button = getButton(container);
+    const wrapper = getTriggerWrapper(button);
+    const tooltip = getDescribedTooltip(button);
+
+    act(() => {
+      mouseEnter(wrapper);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(false);
+
+    act(() => {
+      pressEscape(button);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+
+    act(() => {
+      mouseEnter(wrapper);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(true);
+
+    act(() => {
+      mouseLeave(wrapper);
+    });
+    act(() => {
+      mouseEnter(wrapper);
+    });
+    expect(tooltip.classList.contains('invisible')).toBe(false);
+  });
+});
