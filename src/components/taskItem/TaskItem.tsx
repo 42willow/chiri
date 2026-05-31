@@ -109,6 +109,7 @@ export const TaskItem = ({
 
   const selectedTaskId = uiState?.selectedTaskId ?? null;
   const activeCalendarId = uiState?.activeCalendarId ?? null;
+  const activeTagId = uiState?.activeTagId ?? null;
   const showCompletedTasks = uiState?.showCompletedTasks ?? true;
   const isSelected = selectedTaskId === task.id;
   const isVisuallySelected = isSelected || isMultiSelected;
@@ -241,6 +242,7 @@ export const TaskItem = ({
     task,
     accounts,
     activeCalendarId,
+    activeTagId,
     showCompletedTasks,
     onTagClick: handleTagClick,
     onCalendarClick: handleCalendarClick,

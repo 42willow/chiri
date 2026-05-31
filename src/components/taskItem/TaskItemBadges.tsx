@@ -20,6 +20,7 @@ interface TaskItemBadgesProps {
   task: Task;
   accounts: Account[];
   activeCalendarId: string | null;
+  activeTagId: string | null;
   showCompletedTasks: boolean;
   onTagClick: (tagId: string, event: React.MouseEvent) => void;
   onCalendarClick: (calendarId: string, event: React.MouseEvent) => void;
@@ -33,6 +34,7 @@ export const TaskItemBadges = ({
   task,
   accounts,
   activeCalendarId,
+  activeTagId,
   showCompletedTasks,
   onTagClick,
   onCalendarClick,
@@ -61,7 +63,7 @@ export const TaskItemBadges = ({
   const startDateDisplay = isUnstarted && task.startDate ? formatStartDate(task.startDate) : null;
   const taskTags = (task.tags || [])
     .map((tagId) => getAllTags().find((t) => t.id === tagId))
-    .filter((tag): tag is Tag => !!tag);
+    .filter((tag): tag is Tag => !!tag && tag.id !== activeTagId);
 
   const hasAnyVisibleBadge =
     (badgeVisibility.startDate && startDateDisplay) ||
