@@ -5,6 +5,8 @@ import { loggers } from '$lib/logger';
 
 const log = loggers.http;
 const REQUEST_TIMEOUT_MS = 15_000;
+const REDIRECT_STATUS_CODES = new Set([301, 302, 307, 308]);
+const HREF_PROP_NAMES = new Set(['current-user-principal', 'calendar-home-set']);
 
 // Tracks which server hosts require Digest auth so we can skip the wasted
 // Basic-auth attempt on the first round-trip. Cleared on app restart (intentionally).
@@ -34,6 +36,106 @@ export interface CalDAVCredentials {
   /** If true, TLS certificate validation is skipped (self-signed / private CA). */
   acceptInvalidCerts?: boolean;
 }
+
+const shouldSkipBasicAuth = (url: string, credentials: CalDAVCredentials) => {
+  return !credentials.bearerToken && digestHosts.has(getHostname(url));
+};
+
+const getAuthHeader = (credentials: CalDAVCredentials, skipBasic: boolean) => {
+  if (credentials.bearerToken) {
+    return `Bearer ${credentials.bearerToken}`;
+  }
+
+  if (skipBasic) {
+    return undefined;
+  }
+
+  return `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`;
+};
+
+const getRequestHeaders = (
+  credentials: CalDAVCredentials,
+  headers: Record<string, string> | undefined,
+  skipBasic: boolean,
+) => {
+  const authHeader = getAuthHeader(credentials, skipBasic);
+
+  return {
+    'User-Agent': 'Chiri',
+    'Content-Type': 'application/xml; charset=utf-8',
+    ...headers,
+    ...(authHeader ? { Authorization: authHeader } : {}),
+  };
+};
+
+const sendHttpRequest = async (
+  url: string,
+  method: string,
+  credentials: CalDAVCredentials,
+  requestHeaders: Record<string, string>,
+  body?: string,
+): Promise<HttpResponse> => {
+  if (credentials.acceptInvalidCerts || credentials.bearerToken) {
+    return invoke<HttpResponse>('http_request', {
+      url,
+      method,
+      headers: requestHeaders,
+      body: body ?? null,
+      acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
+    });
+  }
+
+  const rawResponse = await tauriFetch(url, {
+    method: method,
+    headers: requestHeaders,
+    body: body,
+    maxRedirections: 0,
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
+  const responseBody = await rawResponse.text();
+  const headersObj: Record<string, string> = {};
+  rawResponse.headers.forEach((value, key) => {
+    headersObj[key] = value;
+  });
+
+  return { status: rawResponse.status, headers: headersObj, body: responseBody };
+};
+
+const getRedirectUrl = (response: HttpResponse, url: string) => {
+  if (!REDIRECT_STATUS_CODES.has(response.status)) {
+    return undefined;
+  }
+
+  const location = response.headers.location ?? response.headers.Location;
+  return location ? new URL(location, url).toString() : undefined;
+};
+
+const getDigestRetryHeader = (
+  response: HttpResponse,
+  method: string,
+  url: string,
+  credentials: CalDAVCredentials,
+) => {
+  if (response.status !== 401) {
+    return undefined;
+  }
+
+  const wwwAuth =
+    response.headers['www-authenticate'] ?? response.headers['WWW-Authenticate'] ?? '';
+  if (!wwwAuth.toLowerCase().includes('digest ')) {
+    return undefined;
+  }
+
+  const challenge = parseDigestChallenge(wwwAuth);
+  if (!challenge) {
+    return undefined;
+  }
+
+  return {
+    header: buildDigestAuth(method, url, credentials.username, credentials.password, challenge),
+    realm: challenge.realm,
+  };
+};
 
 /**
  * Returns true if the error looks like a TLS certificate validation failure.
@@ -82,94 +184,45 @@ export const tauriRequest = async (
   // For known Digest-only hosts, skip sending wrong Basic auth upfront.
   // We'll still do 2 round-trips (need server's nonce), but won't waste one
   // on a credential that's guaranteed to be rejected.
-  const skipBasic = !credentials.bearerToken && digestHosts.has(getHostname(url));
+  const skipBasic = shouldSkipBasicAuth(url, credentials);
 
   // Suppress logs for the nonce-fetch leg of a known Digest handshake. Logs fire on the authenticated retry.
   const silent = skipBasic && !_retried;
 
   if (!silent) log.debug(`${method} ${url}`);
 
-  const authHeader = credentials.bearerToken
-    ? `Bearer ${credentials.bearerToken}`
-    : skipBasic
-      ? undefined
-      : `Basic ${btoa(`${credentials.username}:${credentials.password}`)}`;
-
-  const requestHeaders: Record<string, string> = {
-    'User-Agent': 'Chiri',
-    'Content-Type': 'application/xml; charset=utf-8',
-    ...headers,
-    ...(authHeader ? { Authorization: authHeader } : {}),
-  };
+  const requestHeaders = getRequestHeaders(credentials, headers, skipBasic);
 
   // route through the Rust command when:
   //  - cert validation bypass is needed (self-signed / private CA), or
   //  - bearer token auth is in use (WebView injects an Origin header that
   //    some servers, including Fastmail, reject)
-  let response: HttpResponse;
-  if (credentials.acceptInvalidCerts || credentials.bearerToken) {
-    response = await invoke<HttpResponse>('http_request', {
-      url,
-      method,
-      headers: requestHeaders,
-      body: body ?? null,
-      acceptInvalidCerts: credentials.acceptInvalidCerts ?? false,
-    });
-  } else {
-    const rawResponse = await tauriFetch(url, {
-      method: method,
-      headers: requestHeaders,
-      body: body,
-      maxRedirections: 0,
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    });
-    const responseBody = await rawResponse.text();
-    const headersObj: Record<string, string> = {};
-    rawResponse.headers.forEach((value, key) => {
-      headersObj[key] = value;
-    });
-    response = { status: rawResponse.status, headers: headersObj, body: responseBody };
-  }
+  const response = await sendHttpRequest(url, method, credentials, requestHeaders, body);
 
   if (!silent) log.debug(`Response: ${response.status}`);
 
   // handle redirects manually for CalDAV
-  if ([301, 302, 307, 308].includes(response.status)) {
-    const location = response.headers.location ?? response.headers.Location;
-    if (location) {
-      if (!silent) log.debug(`Following redirect to: ${location}`);
-      // resolve relative URLs
-      const redirectUrl = new URL(location, url).toString();
-      return tauriRequest(redirectUrl, method, credentials, body, headers);
-    }
+  const redirectUrl = getRedirectUrl(response, url);
+  if (redirectUrl) {
+    if (!silent) log.debug(`Following redirect to: ${redirectUrl}`);
+    return tauriRequest(redirectUrl, method, credentials, body, headers);
   }
 
   // Retry once with Digest auth if the server requires it
-  if (response.status === 401 && !_retried) {
-    const wwwAuth =
-      response.headers['www-authenticate'] ?? response.headers['WWW-Authenticate'] ?? '';
-    if (wwwAuth.toLowerCase().includes('digest ')) {
-      const challenge = parseDigestChallenge(wwwAuth);
-      if (challenge) {
-        const digestHeader = buildDigestAuth(
-          method,
-          url,
-          credentials.username,
-          credentials.password,
-          challenge,
-        );
-        if (!silent) log.debug(`Retrying with Digest auth (realm: ${challenge.realm})`);
-        digestHosts.add(getHostname(url));
-        return tauriRequest(
-          url,
-          method,
-          credentials,
-          body,
-          { ...headers, Authorization: digestHeader },
-          true,
-        );
-      }
-    }
+  const digestRetry = _retried
+    ? undefined
+    : getDigestRetryHeader(response, method, url, credentials);
+  if (digestRetry) {
+    if (!silent) log.debug(`Retrying with Digest auth (realm: ${digestRetry.realm})`);
+    digestHosts.add(getHostname(url));
+    return tauriRequest(
+      url,
+      method,
+      credentials,
+      body,
+      { ...headers, Authorization: digestRetry.header },
+      true,
+    );
   }
 
   return response;
@@ -258,6 +311,37 @@ export const mkcalendar = async (url: string, credentials: CalDAVCredentials, bo
   return tauriRequest(url, 'MKCALENDAR', credentials, body);
 };
 
+const parsePropValue = (child: Element) => {
+  const localName = child.localName;
+
+  if (localName === 'resourcetype') {
+    return Array.from(child.children)
+      .map((c) => c.localName)
+      .join(',');
+  }
+
+  if (HREF_PROP_NAMES.has(localName)) {
+    return child.querySelector('href')?.textContent ?? null;
+  }
+
+  return child.children.length > 0 ? child.innerHTML : child.textContent;
+};
+
+const parseProps = (propstat: Element | null) => {
+  const props: Record<string, string | null> = {};
+  const prop = propstat?.querySelector('prop');
+
+  if (!prop) {
+    return props;
+  }
+
+  for (const child of prop.children) {
+    props[child.localName] = parsePropValue(child);
+  }
+
+  return props;
+};
+
 /**
  * parse multistatus XML response
  */
@@ -277,39 +361,11 @@ export const parseMultiStatus = (xml: string) => {
   const responseElements = doc.querySelectorAll('response');
 
   for (const resp of responseElements) {
-    const href = resp.querySelector('href')?.textContent ?? '';
-    const status = resp.querySelector('status')?.textContent ?? '';
-    const propstat = resp.querySelector('propstat');
-
-    const props: Record<string, string | null> = {};
-
-    if (propstat) {
-      const prop = propstat.querySelector('prop');
-      if (prop) {
-        for (const child of prop.children) {
-          // handle namespaced element names
-          const localName = child.localName;
-
-          // special handling for resourcetype - check for child elements
-          if (localName === 'resourcetype') {
-            // get all child element names (like "calendar", "collection", "principal")
-            const childNames = Array.from(child.children).map((c) => c.localName);
-            props[localName] = childNames.join(',');
-          } else if (localName === 'current-user-principal' || localName === 'calendar-home-set') {
-            // these properties contain an <href> child element
-            const hrefElement = child.querySelector('href');
-            props[localName] = hrefElement?.textContent ?? null;
-          } else if (child.children.length > 0) {
-            // for other elements with children, get innerHTML to preserve structure
-            props[localName] = child.innerHTML;
-          } else {
-            props[localName] = child.textContent;
-          }
-        }
-      }
-    }
-
-    responses.push({ href, status, props });
+    responses.push({
+      href: resp.querySelector('href')?.textContent ?? '',
+      status: resp.querySelector('status')?.textContent ?? '',
+      props: parseProps(resp.querySelector('propstat')),
+    });
   }
 
   return responses;
