@@ -111,7 +111,7 @@ export const TaskEditorTitle = ({
         className={`flex items-start gap-3 px-3 py-3 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg transition-colors ${
           readOnly
             ? 'cursor-not-allowed'
-            : 'has-focus:border-primary-500 has-[textarea:focus]:bg-white dark:has-[textarea:focus]:bg-surface-800 cursor-text'
+            : 'focus-within:border-primary-500 focus-within:bg-white dark:focus-within:bg-surface-800 cursor-text'
         }`}
       >
         <button

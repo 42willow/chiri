@@ -33,6 +33,7 @@ import {
 } from '$hooks/queries/useTasks';
 import { useSetEditorOpen } from '$hooks/queries/useUIState';
 import { useDismissableLayer } from '$hooks/ui/useDismissableLayer';
+import { usePreserveScrollOnWindowFocus } from '$hooks/ui/usePreserveScrollOnWindowFocus';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import {
   resetStaleCursorOnLayerClose,
@@ -90,8 +91,10 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
   const renderedEditorFieldOrder = isReadOnly ? deletedEditorFieldOrder : editorFieldOrder;
 
   const editorContainerRef = useRef<HTMLDivElement>(null);
+  const editorScrollRef = useRef<HTMLDivElement>(null);
   // WebKit can keep a task row's grab cursor after the editor appears under a stationary mouse.
   useResetStaleCursorOnLayerOpen(true);
+  usePreserveScrollOnWindowFocus(editorScrollRef);
 
   // Tag picker state
   const [showTagPicker, setShowTagPicker] = useState(false);
@@ -338,7 +341,10 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
           onDeletePermanently={handlePermanentDelete}
         />
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-6 flex overscroll-contain flex-col">
+        <div
+          ref={editorScrollRef}
+          className="flex-1 overflow-y-auto p-4 space-y-6 flex overscroll-contain flex-col"
+        >
           <TaskEditorTitle
             task={task}
             checkmarkColor={checkmarkColor}
