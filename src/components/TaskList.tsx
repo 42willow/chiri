@@ -120,6 +120,7 @@ export const TaskList = () => {
   const isRecentlyDeleted = activeView === 'recently-deleted';
   const isFilterView = activeView === 'filter';
   const isDragEnabled = sortConfig.mode === 'manual' && !isRecentlyDeleted;
+  const isDraggingTask = activeTask !== null;
 
   if (flattenedTasks.length === 0) {
     const isSearching = searchQuery.trim().length > 0;
@@ -206,7 +207,7 @@ export const TaskList = () => {
         </DragOverlay>
       </DndContext>
 
-      {!isRecentlyDeleted && !isSelectionMode && (
+      {!isRecentlyDeleted && !isSelectionMode && !isDraggingTask && (
         <button
           type="button"
           onClick={handleQuickAdd}
