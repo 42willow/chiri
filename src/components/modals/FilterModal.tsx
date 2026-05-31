@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { ColorSwatchPicker } from '$components/ColorSwatchPicker';
 import { ComposedInput } from '$components/ComposedInput';
 import { IconEmojiPicker } from '$components/IconEmojiPicker';
 import { ModalButton } from '$components/ModalButton';
@@ -19,7 +20,6 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
   const colorPresets = useColorPresets();
   const resolveAccentColor = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
-  const fallbackColor = colorPresets[0] ?? resolvedAccentColor;
 
   const existingFilter = filters.find((filter) => filter.id === filterId);
   const initialColor = resolveAccentColor(existingFilter?.color ?? resolvedAccentColor);
@@ -46,7 +46,8 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
     <ModalWrapper
       onClose={onClose}
       title="Edit Filter"
-      size="sm"
+      size="md"
+      className="max-w-120"
       zIndex="z-60"
       contentPadding={false}
       footer={
@@ -93,36 +94,17 @@ export const FilterModal = ({ filterId, onClose }: FilterModalProps) => {
           <p className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
             Color
           </p>
-          <div className="flex flex-wrap gap-2">
-            {colorPresets.map((preset) => (
-              <button
-                key={preset}
-                type="button"
-                onClick={() => setColor(preset)}
-                className={`
-                    w-8 h-8 rounded-full transition-all
-                    ${color === preset ? 'ring-2 ring-offset-2 dark:ring-offset-surface-800 ring-primary-500 scale-110' : 'hover:scale-110'}
-                  `}
-                style={{ backgroundColor: preset }}
-              />
-            ))}
-          </div>
-
-          <div className="mt-3 flex items-center gap-2">
-            <input
-              type="color"
-              value={color}
-              onChange={(e) => setColor(e.target.value)}
-              className="w-10 h-10 rounded-lg border border-surface-200 dark:border-surface-600 bg-surface-50 dark:bg-surface-700 flex items-center justify-center hover:border-surface-300 dark:hover:border-surface-500 transition-colors cursor-pointer [&::-webkit-color-swatch-wrapper]:p-2 [&::-webkit-color-swatch]:rounded-full"
-            />
-            <ComposedInput
-              type="text"
-              value={color}
-              onChange={setColor}
-              placeholder={fallbackColor}
-              className="flex-1 px-3 py-2 text-sm font-mono text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
-            />
-          </div>
+          <ColorSwatchPicker
+            options={colorPresets.map((preset) => ({
+              id: preset,
+              value: preset,
+              label: preset,
+            }))}
+            value={color}
+            colorInputValue={color}
+            onSelect={setColor}
+            onCustomChange={setColor}
+          />
         </div>
       </form>
     </ModalWrapper>
