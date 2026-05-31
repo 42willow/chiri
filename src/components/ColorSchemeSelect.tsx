@@ -112,11 +112,9 @@ const MiniAppSwatch = ({ flavor }: { flavor: ColorSchemeFlavor }) => {
 const OptionContent = ({
   option,
   isSelected,
-  compact = false,
 }: {
   option: ColorSchemeSelectOption;
   isSelected: boolean;
-  compact?: boolean;
 }) => {
   const palette = getColorSchemePreviewPalette(option.flavor);
   const accent = getColorSchemeFlavorDefaultAccentColor(option.flavor);
@@ -131,7 +129,7 @@ const OptionContent = ({
         </span>
       </span>
       <span className="flex shrink-0 items-center gap-2">
-        <AccentDots flavor={option.flavor} max={compact ? 4 : 5} />
+        <AccentDots flavor={option.flavor} />
         <span
           className="rounded-md border px-1.5 py-0.5 text-[11px] font-medium"
           style={{
@@ -306,7 +304,7 @@ export const ColorSchemeSelect = ({ label, value, options, onChange }: ColorSche
         style={getTriggerStyle(selectedOption)}
       >
         <span className="min-w-0 flex-1">
-          <OptionContent option={selectedOption} isSelected={false} compact />
+          <OptionContent option={selectedOption} isSelected={false} />
         </span>
         <ChevronDown className="h-4 w-4 shrink-0 opacity-70" />
       </button>
