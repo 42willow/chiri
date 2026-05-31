@@ -1,5 +1,6 @@
 import X from 'lucide-react/icons/x';
 import type { DragEventHandler, ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { ModalBackdrop } from '$components/ModalBackdrop';
 import { MODAL_SIZE_CLASSES } from '$constants';
 import type { DismissableLayerType } from '$context/dismissableLayerContext';
@@ -98,7 +99,7 @@ export const ModalWrapper = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <ModalBackdrop
       className="p-4 cursor-default"
       backdropClassName={backdropClassName}
@@ -154,6 +155,7 @@ export const ModalWrapper = ({
           </div>
         )}
       </div>
-    </ModalBackdrop>
+    </ModalBackdrop>,
+    document.body,
   );
 };
