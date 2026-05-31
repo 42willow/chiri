@@ -26,7 +26,6 @@ import {
   createNtfyProviderSubscription,
   isNtfyProviderAvailable,
   isNtfyProviderPushResource,
-  type NtfyProviderConfig,
   removeNtfyProviderSubscription,
   restoreNtfyProviderSubscription,
   startNtfyProviderListening,
@@ -40,17 +39,12 @@ import {
   NTFY_DIRECT_PROVIDER_ID,
   type PushEndpointSubscription,
   type PushMessageHandler,
-  type PushProviderId,
+  type PushProviderConfig,
   type PushStatus,
   type PushSubscription,
   type PushTrigger,
 } from '$types/push';
 import { generateUUID } from '$utils/misc';
-
-export interface PushProviderConfig {
-  providerId: PushProviderId;
-  ntfyConfig?: NtfyProviderConfig;
-}
 
 const DEFAULT_PUSH_PROVIDER_CONFIG: PushProviderConfig = {
   providerId: NTFY_DIRECT_PROVIDER_ID,
@@ -71,6 +65,8 @@ const RENEWAL_THRESHOLD_HOURS = 48;
  */
 let globalMessageHandler: PushMessageHandler | null = null;
 const pushEnableInFlight = new Map<string, Promise<boolean>>();
+const pushManagerStartedAt = new Date();
+const runtimeVerifiedSubscriptionIds = new Set<string>();
 
 const getPushSetupKey = (
   accountId: string,
@@ -187,6 +183,10 @@ const isActiveProviderSubscription = (
 ): boolean =>
   subscription.expiresAt > new Date() && subscriptionMatchesProvider(subscription, providerConfig);
 
+const isRuntimeVerifiedSubscription = (subscription: PushSubscription): boolean =>
+  runtimeVerifiedSubscriptionIds.has(subscription.id) ||
+  subscription.createdAt >= pushManagerStartedAt;
+
 const unregisterStoredSubscription = async (
   accountId: string,
   subscription: PushSubscription,
@@ -204,6 +204,7 @@ const unregisterStoredSubscription = async (
 const removeStoredSubscription = async (subscription: PushSubscription): Promise<void> => {
   await removeProviderSubscription(subscription);
   await db.deletePushSubscription(subscription.id);
+  runtimeVerifiedSubscriptionIds.delete(subscription.id);
   removeSubscriptionFromCaches(subscription);
 };
 
@@ -350,6 +351,7 @@ export const subscribeCalendarToPush = async (
   };
 
   await db.upsertPushSubscription(subscription);
+  runtimeVerifiedSubscriptionIds.add(subscription.id);
 
   // Invalidate caches so queries refetch
   invalidatePushCaches(calendar.id);
@@ -541,28 +543,37 @@ const enablePushForCalendarInner = async (
       log.info(`Removed ${removed} duplicate push subscription(s) for ${calendar.displayName}`);
     }
 
-    const restored = await restoreProviderSubscription(validSubscription, calendar, providerConfig);
-    if (restored) {
-      return startPushListeningForSubscription(validSubscription, providerConfig);
-    }
-
-    log.warn(
-      `Failed to restore push provider subscription for ${calendar.displayName}; recreating it`,
-    );
-
-    if (isConnected(accountId)) {
-      try {
-        const conn = getConnection(accountId);
-        await unregisterPushSubscription(validSubscription.registrationUrl, conn.credentials);
-      } catch (error) {
-        log.warn('Failed to unregister stale push subscription from server:', error);
+    if (!isRuntimeVerifiedSubscription(validSubscription)) {
+      log.info(`Refreshing stored push subscription for ${calendar.displayName} after app restart`);
+      await unregisterStoredSubscription(accountId, validSubscription);
+      await removeStoredSubscription(validSubscription);
+      invalidatePushCaches(calendar.id);
+    } else {
+      const restored = await restoreProviderSubscription(
+        validSubscription,
+        calendar,
+        providerConfig,
+      );
+      if (restored) {
+        return startPushListeningForSubscription(validSubscription, providerConfig);
       }
-    }
 
-    await removeProviderSubscription(validSubscription);
-    await db.deletePushSubscription(validSubscription.id);
-    removeSubscriptionFromCaches(validSubscription);
-    invalidatePushCaches(calendar.id);
+      log.warn(
+        `Failed to restore push provider subscription for ${calendar.displayName}; recreating it`,
+      );
+
+      if (isConnected(accountId)) {
+        try {
+          const conn = getConnection(accountId);
+          await unregisterPushSubscription(validSubscription.registrationUrl, conn.credentials);
+        } catch (error) {
+          log.warn('Failed to unregister stale push subscription from server:', error);
+        }
+      }
+
+      await removeStoredSubscription(validSubscription);
+      invalidatePushCaches(calendar.id);
+    }
   }
 
   // Subscribe to push

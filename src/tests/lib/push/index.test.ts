@@ -174,4 +174,27 @@ describe('enablePushForCalendar', () => {
     expect(mocks.startNtfyProviderListening).toHaveBeenCalledTimes(1);
     expect(mocks.getSubscriptions()).toEqual([kept]);
   });
+
+  it('recreates stored subscriptions from a previous app runtime before listening', async () => {
+    const stale = {
+      ...subscription('stale'),
+      createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([stale]);
+
+    const result = await enablePushForCalendar('account-1', calendar);
+
+    expect(result).toBe(true);
+    expect(mocks.unregisterPushSubscription).toHaveBeenCalledWith(stale.registrationUrl, {
+      username: 'unit-tests',
+      password: 'unit-tests',
+    });
+    expect(mocks.db.deletePushSubscription).toHaveBeenCalledWith(stale.id);
+    expect(mocks.restoreNtfyProviderSubscription).not.toHaveBeenCalled();
+    expect(mocks.registerPushSubscription).toHaveBeenCalledTimes(1);
+    expect(mocks.db.upsertPushSubscription).toHaveBeenCalledTimes(1);
+    expect(mocks.startNtfyProviderListening).toHaveBeenCalledTimes(1);
+    expect(mocks.getSubscriptions()).toHaveLength(1);
+    expect(mocks.getSubscriptions()[0].id).toBe('uuid-1');
+  });
 });
