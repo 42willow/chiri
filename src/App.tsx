@@ -1,5 +1,5 @@
 import { getVersion } from '@tauri-apps/api/app';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { DragOverlay } from '$components/DragOverlay';
 import { Header } from '$components/header/Header';
@@ -135,6 +135,7 @@ const App = () => {
 
   const { data: accounts = [], isPending: accountsPending } = useAccounts();
   const { data: tasks = [], isPending: tasksPending } = useTasks();
+  const [onboardingSessionActive, setOnboardingSessionActive] = useState(false);
   const {
     sidebarCollapsed,
     sidebarWidth,
@@ -150,11 +151,23 @@ const App = () => {
 
   const showOnboarding = shouldShowOnboarding({
     onboardingCompleted,
+    onboardingSessionActive,
     accountsPending,
     tasksPending,
     accounts,
     tasks,
   });
+
+  useEffect(() => {
+    if (onboardingCompleted) {
+      setOnboardingSessionActive(false);
+      return;
+    }
+
+    if (showOnboarding && !onboardingSessionActive) {
+      setOnboardingSessionActive(true);
+    }
+  }, [onboardingCompleted, onboardingSessionActive, showOnboarding]);
 
   // system tray integration (sync button, status updates)
   const isSyncInProgress = isSyncing || syncingCalendarId !== null;
@@ -414,6 +427,7 @@ const App = () => {
 
       {showOnboarding && (
         <OnboardingModal
+          hasCalDAVAccount={hasCalDAVAccounts}
           onAddAccount={() => {
             menuHandlers.setEditingAccountId(null);
             menuHandlers.setAccountModalZIndex('z-70');

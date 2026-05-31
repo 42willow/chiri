@@ -21,6 +21,7 @@ import { useSettingsStore } from '$context/settingsContext';
 import { isMacPlatform } from '$utils/platform';
 
 interface OnboardingModalProps {
+  hasCalDAVAccount: boolean;
   onAddAccount: () => void;
 }
 
@@ -29,9 +30,10 @@ type TaskHome = 'local' | 'caldav';
 const STEP_COUNT = 6;
 const STEP_IDS = ['welcome', 'home', 'theme', 'region-time', 'notifications', 'ready'] as const;
 
-export const OnboardingModal = ({ onAddAccount }: OnboardingModalProps) => {
+export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingModalProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [taskHome, setTaskHome] = useState<TaskHome>('caldav');
+  const [caldavConnectionRequested, setCaldavConnectionRequested] = useState(false);
   const appliedMacNotificationDefaultsRef = useRef(false);
   const {
     setOnboardingCompleted,
@@ -61,6 +63,20 @@ export const OnboardingModal = ({ onAddAccount }: OnboardingModalProps) => {
     setNotifyOverdue(false);
   }, [currentStep, isMac, setNotifications, setNotifyOverdue, setNotifyReminders]);
 
+  useEffect(() => {
+    if (
+      !caldavConnectionRequested ||
+      !hasCalDAVAccount ||
+      currentStep !== 1 ||
+      taskHome !== 'caldav'
+    ) {
+      return;
+    }
+
+    setCaldavConnectionRequested(false);
+    setCurrentStep(2);
+  }, [caldavConnectionRequested, currentStep, hasCalDAVAccount, taskHome]);
+
   const completeOnboarding = () => {
     setOnboardingCompleted(true);
   };
@@ -70,6 +86,7 @@ export const OnboardingModal = ({ onAddAccount }: OnboardingModalProps) => {
   };
 
   const connectCalDAVNow = () => {
+    setCaldavConnectionRequested(true);
     onAddAccount();
   };
 
@@ -94,14 +111,13 @@ export const OnboardingModal = ({ onAddAccount }: OnboardingModalProps) => {
     }
   };
 
-  const primaryLabel =
-    currentStep === 1
-      ? taskHome === 'caldav'
-        ? 'Connect account'
-        : 'Continue'
-      : isLastStep
-        ? 'Start Chiri'
-        : 'Continue';
+  const needsCalDAVConnection = currentStep === 1 && taskHome === 'caldav' && !hasCalDAVAccount;
+  const hasConnectedCalDAVHome = taskHome === 'caldav' && hasCalDAVAccount;
+  const primaryLabel = needsCalDAVConnection
+    ? 'Connect account'
+    : isLastStep
+      ? 'Start Chiri'
+      : 'Continue';
 
   const footerButtonClassName = 'h-9';
   const footerLeft = (
@@ -128,7 +144,7 @@ export const OnboardingModal = ({ onAddAccount }: OnboardingModalProps) => {
       footerLeft={footerLeft}
       footer={
         <ModalButton
-          onClick={currentStep === 1 && taskHome === 'caldav' ? connectCalDAVNow : handleNext}
+          onClick={needsCalDAVConnection ? connectCalDAVNow : handleNext}
           className={footerButtonClassName}
         >
           {primaryLabel}
@@ -320,19 +336,27 @@ export const OnboardingModal = ({ onAddAccount }: OnboardingModalProps) => {
                   Ready when you are
                 </h2>
                 <p className="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-400">
-                  Finish setup and Chiri will open straight into your local task list.
+                  {hasConnectedCalDAVHome
+                    ? 'Finish setup and Chiri will open with your synced task lists.'
+                    : 'Finish setup and Chiri will open straight into your local task list.'}
                 </p>
               </div>
             </div>
             <div className="rounded-lg border border-surface-200 p-4 dark:border-surface-700">
               <div className="flex items-center gap-3">
-                <HardDrive className="h-5 w-5 text-primary-500" />
+                {hasConnectedCalDAVHome ? (
+                  <Cloud className="h-5 w-5 text-primary-500" />
+                ) : (
+                  <HardDrive className="h-5 w-5 text-primary-500" />
+                )}
                 <div>
                   <div className="text-sm font-semibold text-surface-900 dark:text-surface-100">
-                    Local-only
+                    {hasConnectedCalDAVHome ? 'CalDAV sync' : 'Local-only'}
                   </div>
                   <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">
-                    No account needed. Sync can be added later.
+                    {hasConnectedCalDAVHome
+                      ? 'Your account is connected and ready to sync.'
+                      : 'No account needed. Sync can be added later.'}
                   </div>
                 </div>
               </div>

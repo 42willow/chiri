@@ -59,6 +59,26 @@ describe('shouldShowOnboarding', () => {
     expect(shouldShowOnboarding({ ...baseInput, accounts: [account] })).toBe(false);
   });
 
+  it('keeps showing during an active onboarding session after an account is added', () => {
+    const account = makeAccount({
+      caldav: {
+        serverUrl: 'https://cal.example.com',
+        username: 'user',
+        password: 'pass',
+        serverType: 'generic',
+        authType: 'basic',
+      },
+    });
+
+    expect(
+      shouldShowOnboarding({
+        ...baseInput,
+        onboardingSessionActive: true,
+        accounts: [account],
+      }),
+    ).toBe(true);
+  });
+
   it('does not show after local tasks exist', () => {
     const account = makeAccount({
       calendars: [
