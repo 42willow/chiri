@@ -7,7 +7,7 @@ cd "$(dirname "$0")/.."
 echo "==> Updating Nix hashes for Chiri"
 echo ""
 
-PACKAGE_FILE="nix/package.nix"
+PACKAGE_FILE="nix/packages/source.nix"
 TEMP_FILE=$(mktemp)
 
 extract_hash() {
@@ -57,10 +57,12 @@ mv "$TEMP_FILE" "$PACKAGE_FILE"
 #     exit 1
 # fi
 
-echo "  ✓ Build successful"
+echo "  ✓ Hashes updated"
 echo ""
 echo "==> All hashes updated successfully!"
 echo ""
 echo "Updated hashes:"
 echo "  pnpm: $PNPM_HASH"
 echo "  cargo: $CARGO_HASH"
+echo ""
+echo "Run 'nix build .#source' to verify the full build."

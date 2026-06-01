@@ -16,7 +16,8 @@
   glib-networking,
   libsoup_3,
 
-  # Optional: override version
+  # This tracks signed/notarized release artifacts, not the checkout version.
+  # Update the version and per-platform hashes when publishing new artifacts.
   version ? "0.8.1",
 }:
 
@@ -126,6 +127,7 @@ else
 
       if [ -f "$out/bin/Chiri" ]; then
         chmod +x $out/bin/Chiri
+        mv $out/bin/Chiri $out/bin/chiri
       fi
 
       # Copy desktop file and icons if present
@@ -138,9 +140,16 @@ else
 
     # Wrap to set required environment variables
     postFixup = ''
-      wrapProgram $out/bin/Chiri \
-        --set GIO_EXTRA_MODULES "${glib-networking}/lib/gio/modules" \
-        --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ libayatana-appindicator ]}"
+      if [ -f "$out/bin/chiri" ]; then
+        wrapProgram $out/bin/chiri \
+          --set GIO_EXTRA_MODULES "${glib-networking}/lib/gio/modules" \
+          --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath [ libayatana-appindicator ]}"
+      fi
+
+      if [ -f "$out/share/applications/Chiri.desktop" ]; then
+        substituteInPlace $out/share/applications/Chiri.desktop \
+          --replace-fail "Exec=Chiri" "Exec=chiri"
+      fi
     '';
 
     meta = {
@@ -148,7 +157,7 @@ else
       homepage = "https://github.com/chiriapp/chiri";
       license = lib.licenses.zlib;
       maintainers = with lib.maintainers; [ SapphoSys ];
-      mainProgram = "Chiri";
+      mainProgram = "chiri";
       platforms = [
         "x86_64-linux"
         "aarch64-linux"
