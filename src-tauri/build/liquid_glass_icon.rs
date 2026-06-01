@@ -8,6 +8,8 @@
 /// - https://developer.apple.com/documentation/xcode/configuring-your-app-icon-for-macos
 use std::process::Command;
 
+const REGENERATE_ICON_ENV: &str = "CHIRI_REGENERATE_ICON";
+
 fn has_precompiled_assets(gen_dir: &str) -> bool {
     let assets_car = format!("{}/Assets.car", gen_dir);
     let partial_plist = format!("{}/partial.plist", gen_dir);
@@ -18,10 +20,18 @@ fn has_precompiled_assets(gen_dir: &str) -> bool {
         && std::path::Path::new(&chiri_icns).exists()
 }
 
+fn should_regenerate_icon() -> bool {
+    std::env::var(REGENERATE_ICON_ENV)
+        .map(|value| matches!(value.as_str(), "1" | "true" | "yes"))
+        .unwrap_or(false)
+}
+
 pub fn compile() {
     let project_root = env!("CARGO_MANIFEST_DIR");
     let icon_source = format!("{}/icons/Chiri.icon", project_root);
     let gen_dir = format!("{}/gen", project_root);
+
+    println!("cargo:rerun-if-env-changed={REGENERATE_ICON_ENV}");
 
     // Create gen directory if it doesn't exist
     std::fs::create_dir_all(&gen_dir).expect("Failed to create gen directory");
@@ -30,6 +40,10 @@ pub fn compile() {
         println!("cargo:rerun-if-changed={}", icon_source);
         println!("cargo:rerun-if-changed={}/icon.json", icon_source);
         println!("cargo:rerun-if-changed={}/Assets", icon_source);
+
+        if has_precompiled_assets(&gen_dir) && !should_regenerate_icon() {
+            return;
+        }
 
         let partial_plist = format!("{}/partial.plist", gen_dir);
         let actool_args = [
