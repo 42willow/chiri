@@ -3,8 +3,8 @@
 mod liquid_glass_icon;
 
 #[cfg(target_os = "macos")]
-#[path = "build/swift_bridge.rs"]
-mod swift_bridge;
+#[path = "build/objc_bridge.rs"]
+mod objc_bridge;
 
 fn main() {
     // compile macOS liquid glass icon first: tauri_build::build() checks for
@@ -12,7 +12,7 @@ fn main() {
     #[cfg(target_os = "macos")]
     {
         liquid_glass_icon::compile();
-        swift_bridge::compile();
+        objc_bridge::compile();
     }
 
     tauri_build::build();

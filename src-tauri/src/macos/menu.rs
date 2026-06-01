@@ -6,7 +6,7 @@
 //! Help search bar never appears.
 //!
 //! The fix: after the Tauri menu is applied with `setAsAppMenu()`, call into
-//! the Swift bridge to find the live "Help" submenu in the real `mainMenu`
+//! the native macOS bridge to find the live "Help" submenu in the real `mainMenu`
 //! and register it with `NSApplication.setHelpMenu()`.
 //!
 //! See: https://github.com/tauri-apps/muda/pull/322
