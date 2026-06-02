@@ -93,6 +93,41 @@ record_result() {
   RESULT_DETAILS+=("$detail")
 }
 
+markdown_escape_cell() {
+  local value="$1"
+
+  printf '%s' "$value" | tr '\n' ' ' | sed 's/|/\\|/g'
+}
+
+vitest_line() {
+  local label="$1" log="$2"
+
+  grep -E "^[[:space:]]*${label}[[:space:]]+" "$log" \
+    | tail -n 1 \
+    | sed -E "s/^[[:space:]]*${label}[[:space:]]+//"
+}
+
+vitest_summary() {
+  local log="$1" files tests other detail
+
+  files=$(vitest_line "Test Files" "$log")
+  tests=$(vitest_line "Tests" "$log")
+  other=$(vitest_line "Other" "$log")
+
+  detail=""
+  if [ -n "$files" ]; then
+    detail="files: $files"
+  fi
+  if [ -n "$tests" ]; then
+    detail="${detail:+$detail; }tests: $tests"
+  fi
+  if [ -n "$other" ]; then
+    detail="${detail:+$detail; }other: $other"
+  fi
+
+  printf '%s' "${detail:-no Vitest summary found}"
+}
+
 print_summary() {
   echo ""
   echo "Integration summary"
@@ -114,7 +149,7 @@ print_summary() {
       echo "| Server | Status | Duration | Details |"
       echo "| --- | --- | ---: | --- |"
       for i in "${!RESULT_NAMES[@]}"; do
-        echo "| ${RESULT_NAMES[$i]} | ${RESULT_STATUSES[$i]} | ${RESULT_DURATIONS[$i]}s | ${RESULT_DETAILS[$i]} |"
+        echo "| ${RESULT_NAMES[$i]} | ${RESULT_STATUSES[$i]} | ${RESULT_DURATIONS[$i]}s | $(markdown_escape_cell "${RESULT_DETAILS[$i]}") |"
       done
     } >> "$GITHUB_STEP_SUMMARY"
   fi
@@ -208,10 +243,14 @@ run_server() {
     return 1
   fi
 
-  # run the suite, capture status
+  # Run the suite with GitHub's summary path hidden so Vitest doesn't append
+  # one generic "Vitest Test Report" block per CalDAV server.
+  local test_log
+  test_log=$(mktemp)
   set +e
-  pnpm test:integration
-  local status=$?
+  GITHUB_STEP_SUMMARY='' pnpm test:integration 2>&1 | tee "$test_log"
+  local status
+  status=${PIPESTATUS[0]}
 
   # tear down
   kill "$SERVER_PID" 2>/dev/null
@@ -220,16 +259,20 @@ run_server() {
   rm -f "$log"
 
   local duration
+  local detail
   duration=$(($(date +%s) - start))
+  detail=$(vitest_summary "$test_log")
+  rm -f "$test_log"
+
   if [ "$status" -eq 0 ]; then
     echo "  ✓ $name passed in ${duration}s"
-    record_result "$name" "PASS" "$duration" "ok"
+    record_result "$name" "PASS" "$duration" "$detail"
   else
     echo "  ✗ $name failed in ${duration}s"
-    record_result "$name" "FAIL" "$duration" "tests failed"
+    record_result "$name" "FAIL" "$duration" "tests failed; $detail"
   fi
 
-  return $status
+  return "$status"
 }
 
 FAIL=0
