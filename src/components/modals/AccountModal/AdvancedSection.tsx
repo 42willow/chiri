@@ -55,7 +55,7 @@ export const AdvancedSection = ({
             />
             <p className="mt-1.5 text-xs flex flex-row text-surface-500 dark:text-surface-400">
               <Info className="inline w-3.5 h-3.5 mr-1 shrink-0 text-surface-400" />
-              Override the auto-discovered principal URL.
+              Overrides the auto-discovered principal URL.
             </p>
           </div>
           <div>
@@ -75,7 +75,7 @@ export const AdvancedSection = ({
             />
             <p className="mt-1.5 text-xs flex flex-row text-surface-500 dark:text-surface-400">
               <Info className="inline w-3.5 h-3.5 mr-1 shrink-0 text-surface-400" />
-              Skip auto-discovery entirely and use this URL directly.
+              Uses calendar home URLs directly, bypassing auto-discovery.
             </p>
           </div>
         </div>
