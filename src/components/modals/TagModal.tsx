@@ -120,6 +120,7 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
             colorInputValue={color}
             onSelect={setColor}
             onCustomChange={setColor}
+            selectedVariant="border"
           />
         </div>
       </form>

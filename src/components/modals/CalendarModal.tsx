@@ -224,6 +224,7 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
             colorInputValue={color}
             onSelect={setColor}
             onCustomChange={setColor}
+            selectedVariant="border"
           />
         </div>
 
