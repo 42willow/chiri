@@ -48,7 +48,7 @@ dev:
   pnpm tauri dev
 
 hash:
-  ./nix/update-hashes.sh
+  ./scripts/update-hashes.sh
 
 install:
   pnpm install

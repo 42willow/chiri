@@ -212,8 +212,8 @@ jobs:
             print;
           }' "$BIN_PACKAGE_FILE" > "$BIN_PACKAGE_FILE.tmp" && mv "$BIN_PACKAGE_FILE.tmp" "$BIN_PACKAGE_FILE"
 
-          chmod +x ./nix/update-hashes.sh
-          ./nix/update-hashes.sh
+          chmod +x ./scripts/update-hashes.sh
+          ./scripts/update-hashes.sh
 
       - name: Verify updated Nix source package
         run: nix build .#source --print-build-logs
