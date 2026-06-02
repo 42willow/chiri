@@ -45,9 +45,6 @@ const CONNECT_METHOD_SERVER_TYPES = new Set<ServerType>([
   ...OAUTH_SERVER_TYPES,
 ]);
 
-const getServerTypeLabel = (type: ServerType) =>
-  SERVER_TYPE_OPTIONS.find((o) => o.value === type)?.label ?? type;
-
 interface AccountModalProps {
   account: Account | null;
   onClose: () => void;
@@ -132,7 +129,7 @@ export function AccountModal({
 
   const handleSelectServerType = (type: ServerType) => {
     setServerType(type);
-    setName(getServerTypeLabel(type));
+    setName('');
     setIcon('user');
     setEmoji('');
     setServerUrl(getPredefinedServerUrl(type) ?? '');
