@@ -41,6 +41,7 @@ import { usePrefersReducedMotion } from '$hooks/ui/usePrefersReducedMotion';
 import { useSidebarResize } from '$hooks/ui/useSidebarResize';
 import {
   refreshStaleCursorAfterLayoutAtEventPoint,
+  resetStaleCursorAfterLayout,
   resetStaleCursorOnLayerClose,
 } from '$hooks/ui/useStaleCursorReset';
 import { getTasksByCalendar } from '$lib/store/tasks';
@@ -266,11 +267,13 @@ export const Sidebar = ({
 
   const resetStaleCursorAfterContextMenuDismiss = useCallback(
     (event: MouseEvent | React.MouseEvent) => {
-      const accountMenuId = contextMenu?.type === 'account' ? contextMenu.id : undefined;
+      const isAccountMenu = contextMenu?.type === 'account';
+      const accountMenuId = isAccountMenu ? contextMenu.id : undefined;
       const accountMenuTrigger = accountMenuId ? findAccountMenuTrigger(accountMenuId) : undefined;
 
       if (
         accountMenuId &&
+        contextMenu?.source === 'account-menu-trigger' &&
         accountMenuTrigger &&
         isPointInsideRect(event, accountMenuTrigger.getBoundingClientRect())
       ) {
@@ -280,6 +283,13 @@ export const Sidebar = ({
       }
 
       setActiveAccountMenuTriggerId(null);
+      if (isAccountMenu) {
+        resetStaleCursorAfterLayout({
+          delayFrames: CONTEXT_MENU_DISMISS_CURSOR_RESET_DELAY_FRAMES,
+        });
+        return;
+      }
+
       refreshStaleCursorAfterLayoutAtEventPoint(event, {
         delayFrames: CONTEXT_MENU_DISMISS_CURSOR_RESET_DELAY_FRAMES,
       });

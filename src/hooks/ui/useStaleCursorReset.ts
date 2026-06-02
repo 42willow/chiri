@@ -11,6 +11,11 @@ interface RefreshStaleCursorAfterLayoutOptions {
   delayFrames?: number;
 }
 
+interface ResetStaleCursorAfterLayoutOptions {
+  delayFrames?: number;
+  resetFrames?: number;
+}
+
 const CLOSE_RESET_FRAMES = 8;
 const POINTER_TARGET_SELECTOR = [
   'a[href]:not([aria-disabled="true"])',
@@ -117,6 +122,14 @@ export const refreshStaleCursorAfterLayoutAtEventPoint = (
   { clientX, clientY }: CursorEventPoint,
   options?: RefreshStaleCursorAfterLayoutOptions,
 ) => refreshStaleCursorAfterLayoutAtPoint(clientX, clientY, options);
+
+export const resetStaleCursorAfterLayout = ({
+  delayFrames = 1,
+  resetFrames = 2,
+}: ResetStaleCursorAfterLayoutOptions = {}) =>
+  scheduleAfterFrames(delayFrames, () => {
+    forceStaleCursorRefresh({ frames: resetFrames });
+  });
 
 export const refreshStaleCursorAfterPointerMutation = ({
   target,
