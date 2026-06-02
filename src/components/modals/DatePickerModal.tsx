@@ -21,12 +21,13 @@ import Moon from 'lucide-react/icons/moon';
 import Sun from 'lucide-react/icons/sun';
 import Sunrise from 'lucide-react/icons/sunrise';
 import Sunset from 'lucide-react/icons/sunset';
-import { useState } from 'react';
+import { type PointerEvent, useRef, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
 import { DEFAULT_TIME } from '$constants';
 import { settingsStore } from '$context/settingsContext';
+import { useDatePickerKeyboardNavigation } from '$hooks/ui/useDatePickerKeyboardNavigation';
 import type { QuickTimePresets } from '$types/settings';
 import {
   createAllDayDate,
@@ -56,7 +57,7 @@ const CATEGORY_PRESETS: {
 ];
 
 const btnClass = (active: boolean) =>
-  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+  `w-full flex items-center gap-1.5 px-2 py-1.5 text-xs font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${
     active
       ? 'bg-primary-500 text-primary-contrast'
       : 'text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600'
@@ -151,6 +152,8 @@ export const DatePickerModal = ({
   const [showCustomModal, setShowCustomModal] = useState(false);
   const [customHour, setCustomHour] = useState(0);
   const [customMinute, setCustomMinute] = useState(0);
+  const presetListRef = useRef<HTMLDivElement>(null);
+  const calendarGridAreaRef = useRef<HTMLDivElement>(null);
 
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   if (isOpen !== prevIsOpen) {
@@ -163,6 +166,17 @@ export const DatePickerModal = ({
       setSelectedTime(getSelectedTime(value, allDay));
     }
   }
+
+  useDatePickerKeyboardNavigation({
+    enabled: isOpen && !showCustomModal,
+    presetListRef,
+    calendarGridRef: calendarGridAreaRef,
+    currentMonth,
+    preferredDate: localValue,
+    onPreviousMonth: () => setCurrentMonth((month) => subMonths(month, 1)),
+    onNextMonth: () => setCurrentMonth((month) => addMonths(month, 1)),
+    onCalendarMonthChange: setCurrentMonth,
+  });
 
   if (!isOpen) return null;
 
@@ -201,6 +215,11 @@ export const DatePickerModal = ({
         ? createAllDayDate(day)
         : setDateTime(day, selectedTime.hours, selectedTime.minutes),
     );
+  };
+
+  const handleCalendarGridAreaPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    if (event.target instanceof HTMLElement && event.target.closest('button')) return;
+    event.currentTarget.focus({ preventScroll: true });
   };
 
   const handlePresetTimeSelect = (minutes: number) => {
@@ -287,6 +306,7 @@ export const DatePickerModal = ({
         className="max-w-120"
         zIndex="z-60"
         contentPadding={false}
+        initialFocus="dialog"
         footerLeft={clearButton}
         footer={
           <>
@@ -300,7 +320,10 @@ export const DatePickerModal = ({
         }
       >
         <div className="flex">
-          <div className="w-44 p-4 flex flex-col gap-2 border-r border-surface-200 dark:border-surface-700">
+          <div
+            ref={presetListRef}
+            className="w-44 p-4 flex flex-col gap-2 border-r border-surface-200 dark:border-surface-700"
+          >
             {!hideTimeControls && (
               <div className="flex flex-col gap-1.5">
                 {CATEGORY_PRESETS.map(({ id, Icon }) => {
@@ -309,6 +332,7 @@ export const DatePickerModal = ({
                     <button
                       key={id}
                       type="button"
+                      data-vertical-list-item
                       onClick={() => handlePresetTimeSelect(minutes)}
                       className={btnClass(
                         timeSelected && !localNoTime && selectedMinutes === minutes,
@@ -323,6 +347,7 @@ export const DatePickerModal = ({
                 <div className="pt-2 border-t border-surface-200 dark:border-surface-700">
                   <button
                     type="button"
+                    data-vertical-list-item
                     onClick={handleOpenCustomModal}
                     className={btnClass(isCustomTime)}
                   >
@@ -333,6 +358,7 @@ export const DatePickerModal = ({
 
                 <button
                   type="button"
+                  data-vertical-list-item
                   onClick={handleNoTimeToggle}
                   className={btnClass(localNoTime)}
                 >
@@ -347,6 +373,7 @@ export const DatePickerModal = ({
             >
               <button
                 type="button"
+                data-vertical-list-item
                 onClick={() => handleQuickSelect(today)}
                 className={btnClass(isQuickToday)}
               >
@@ -355,6 +382,7 @@ export const DatePickerModal = ({
               </button>
               <button
                 type="button"
+                data-vertical-list-item
                 onClick={() => handleQuickSelect(addDays(today, 1))}
                 className={btnClass(isQuickTomorrow)}
               >
@@ -363,6 +391,7 @@ export const DatePickerModal = ({
               </button>
               <button
                 type="button"
+                data-vertical-list-item
                 onClick={() => handleQuickSelect(addDays(today, 7))}
                 className={btnClass(isQuickNextWeek)}
               >
@@ -410,41 +439,49 @@ export const DatePickerModal = ({
               </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {daysOfWeek.map((day) => (
-                <div
-                  key={day}
-                  className="text-center text-xs font-medium text-surface-500 dark:text-surface-400"
-                >
-                  {day}
-                </div>
-              ))}
-            </div>
-
-            <div className="grid grid-cols-7 gap-1">
-              {paddedDays.map((day, index) => {
-                if (!day) {
-                  // empty calendar grid cells reserve row height for shorter months
-                  // biome-ignore lint/suspicious/noArrayIndexKey: padding cells have no identity; index represents stable grid position
-                  return <div key={index} className="h-8" />;
-                }
-                const isLocalSelected = !!(localValue && isSameDay(day, localValue));
-                const isCurrentMonth = isSameMonth(day, currentMonth);
-                const isTodayDate = isToday(day);
-                return (
-                  <button
-                    key={day.toISOString()}
-                    type="button"
-                    onClick={() => handleDayClick(day)}
-                    className={`
-                      w-8 h-8 rounded-full text-sm flex items-center justify-center transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset
-                      ${getDayButtonClass(isLocalSelected, isTodayDate, isCurrentMonth)}
-                    `}
+            <div
+              ref={calendarGridAreaRef}
+              tabIndex={-1}
+              onPointerDown={handleCalendarGridAreaPointerDown}
+              className="outline-hidden"
+            >
+              <div className="grid grid-cols-7 gap-1 mb-2">
+                {daysOfWeek.map((day) => (
+                  <div
+                    key={day}
+                    className="text-center text-xs font-medium text-surface-500 dark:text-surface-400"
                   >
-                    {day.getDate()}
-                  </button>
-                );
-              })}
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="grid grid-cols-7 gap-1">
+                {paddedDays.map((day, index) => {
+                  if (!day) {
+                    // empty calendar grid cells reserve row height for shorter months
+                    // biome-ignore lint/suspicious/noArrayIndexKey: padding cells have no identity; index represents stable grid position
+                    return <div key={index} className="h-8" />;
+                  }
+                  const isLocalSelected = !!(localValue && isSameDay(day, localValue));
+                  const isCurrentMonth = isSameMonth(day, currentMonth);
+                  const isTodayDate = isToday(day);
+                  return (
+                    <button
+                      key={day.toISOString()}
+                      type="button"
+                      data-calendar-day-time={day.getTime()}
+                      onClick={() => handleDayClick(day)}
+                      className={`
+                        w-8 h-8 rounded-full text-sm flex items-center justify-center transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset
+                        ${getDayButtonClass(isLocalSelected, isTodayDate, isCurrentMonth)}
+                      `}
+                    >
+                      {day.getDate()}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>

@@ -1,12 +1,17 @@
 import { useEffect, useRef } from 'react';
 
+type InitialFocusTarget = 'first-focusable' | 'container';
+
 /**
  * Hook to trap focus within a modal or dialog
  * Prevents Tab navigation from reaching background elements
  * @param enabled - whether the focus trap is active (default: true)
  * @returns ref to attach to the container element
  */
-export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(enabled = true) => {
+export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(
+  enabled = true,
+  initialFocus: InitialFocusTarget = 'first-focusable',
+) => {
   const containerRef = useRef<T>(null);
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
@@ -45,8 +50,13 @@ export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(enabled = t
       });
     };
 
-    // Focus the first focusable element after a short delay to allow modal to render
-    const focusFirstElement = () => {
+    // Focus after a short delay to allow modal to render
+    const applyInitialFocus = () => {
+      if (initialFocus === 'container') {
+        container.focus({ preventScroll: true });
+        return;
+      }
+
       const focusableElements = getFocusableElements();
       if (focusableElements.length > 0) {
         // Try to focus the first non-close button element if possible
@@ -60,7 +70,7 @@ export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(enabled = t
     };
 
     // Small delay to ensure modal is fully rendered
-    const focusTimeout = setTimeout(focusFirstElement, 50);
+    const focusTimeout = setTimeout(applyInitialFocus, 50);
 
     // Handle Tab key to trap focus
     const handleTabKey = (e: KeyboardEvent) => {
@@ -77,6 +87,12 @@ export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(enabled = t
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
       const activeElement = document.activeElement as HTMLElement;
+
+      if (activeElement === container) {
+        e.preventDefault();
+        (e.shiftKey ? lastElement : firstElement).focus();
+        return;
+      }
 
       // If shift+tab from first element, wrap to last
       if (e.shiftKey && activeElement === firstElement) {
@@ -115,7 +131,7 @@ export const useFocusTrap = <T extends HTMLElement = HTMLDivElement>(enabled = t
         previouslyFocusedElement.current.focus();
       }
     };
-  }, [enabled]);
+  }, [enabled, initialFocus]);
 
   return containerRef;
 };

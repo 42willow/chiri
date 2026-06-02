@@ -34,6 +34,7 @@ interface ModalWrapperProps {
   zIndex?: 'z-50' | 'z-60' | 'z-70';
   contentPadding?: boolean;
   contentOverflow?: 'hidden' | 'auto';
+  initialFocus?: 'first-focusable' | 'dialog';
   handleEscapeKey?: boolean;
   onEscape?: () => void;
   escapeLayerType?: DismissableLayerType;
@@ -62,6 +63,7 @@ export const ModalWrapper = ({
   zIndex = 'z-60',
   contentPadding = true,
   contentOverflow = contentPadding ? 'auto' : 'hidden',
+  initialFocus = 'first-focusable',
   handleEscapeKey = true,
   onEscape,
   escapeLayerType = 'modal',
@@ -69,7 +71,10 @@ export const ModalWrapper = ({
   backdropClassName,
   className,
 }: ModalWrapperProps) => {
-  const focusTrapRef = useFocusTrap(isOpen);
+  const focusTrapRef = useFocusTrap(
+    isOpen,
+    initialFocus === 'dialog' ? 'container' : 'first-focusable',
+  );
   const canHandleEscape = handleEscapeKey && (!preventClose || onEscape !== undefined);
   const handleClose = () => {
     resetStaleCursorOnLayerClose();
@@ -110,7 +115,8 @@ export const ModalWrapper = ({
         ref={focusTrapRef}
         role="dialog"
         aria-modal="true"
-        className={`relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-scale-in ${className || MODAL_SIZE_CLASSES[size]}`}
+        tabIndex={initialFocus === 'dialog' ? -1 : undefined}
+        className={`relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-scale-in outline-hidden ${className || MODAL_SIZE_CLASSES[size]}`}
       >
         {title && (
           <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700 p-4 shrink-0 flex items-center justify-between rounded-t-xl">
