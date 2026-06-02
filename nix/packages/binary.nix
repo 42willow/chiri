@@ -27,19 +27,19 @@ let
   # Map Nix system to release asset info
   platformInfo = {
     "x86_64-linux" = {
-      asset = "chiri_${version}_amd64.deb";
+      asset = "Chiri_${version}_amd64.deb";
       hash = "sha256-DvFBj5IevVWLbqyM36HJlvg7EEyIo/g5c9O1x3mMgo8=";
     };
     "aarch64-linux" = {
-      asset = "chiri_${version}_arm64.deb";
+      asset = "Chiri_${version}_arm64.deb";
       hash = "sha256-OMNKX69wQ7D/MV/ntOjj9Omn6Iq8WBquWgNo67bwrnU=";
     };
     "x86_64-darwin" = {
-      asset = "chiri_${version}_x64.dmg";
+      asset = "Chiri_${version}_x64.dmg";
       hash = "sha256-aXQ80QAEVAFrXlwD16b61U7VZ2c8QXtFk9NAhaa4X38=";
     };
     "aarch64-darwin" = {
-      asset = "chiri_${version}_aarch64.dmg";
+      asset = "Chiri_${version}_aarch64.dmg";
       hash = "sha256-8jutJ5vOb4VNNtcv2WzSMMkaHCtPjFFnSsN9/Hz6rAk=";
     };
   };

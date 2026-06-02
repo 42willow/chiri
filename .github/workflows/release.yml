@@ -95,14 +95,18 @@ jobs:
 
           CHANGELOG="${CHANGELOG}---"$'\n\n'"## 📥 Downloads"$'\n\n'
           CHANGELOG="${CHANGELOG}### Windows"$'\n'
-          CHANGELOG="${CHANGELOG}- [Installer (.msi)](https://github.com/${REPO}/releases/download/${TAG}/chiri-${VERSION}-windows-x64.msi)"$'\n\n'
+          CHANGELOG="${CHANGELOG}- [x64 Installer (.exe)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_x64-setup.exe)"$'\n'
+          CHANGELOG="${CHANGELOG}- [ARM64 Installer (.exe)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64-setup.exe)"$'\n'
+          CHANGELOG="${CHANGELOG}- [x64 Installer (.msi)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_x64_en-US.msi)"$'\n'
+          CHANGELOG="${CHANGELOG}- [ARM64 Installer (.msi)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64_en-US.msi)"$'\n\n'
           CHANGELOG="${CHANGELOG}### macOS"$'\n'
-          CHANGELOG="${CHANGELOG}- [Apple Silicon (M1/M2/M3)](https://github.com/${REPO}/releases/download/${TAG}/chiri-${VERSION}-macos-aarch64.dmg)"$'\n'
-          CHANGELOG="${CHANGELOG}- [Intel](https://github.com/${REPO}/releases/download/${TAG}/chiri-${VERSION}-macos-x64.dmg)"$'\n\n'
+          CHANGELOG="${CHANGELOG}- [Apple Silicon](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_aarch64.dmg)"$'\n'
+          CHANGELOG="${CHANGELOG}- [Intel](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_x64.dmg)"$'\n\n'
           CHANGELOG="${CHANGELOG}### Linux"$'\n'
-          CHANGELOG="${CHANGELOG}- [Debian/Ubuntu (.deb)](https://github.com/${REPO}/releases/download/${TAG}/chiri-${VERSION}-linux-amd64.deb)"$'\n'
-          CHANGELOG="${CHANGELOG}- [Fedora/RHEL (.rpm)](https://github.com/${REPO}/releases/download/${TAG}/chiri-${VERSION}-linux-x64.rpm)"$'\n\n'
-          CHANGELOG="${CHANGELOG}*See the assets below for additional formats and architectures.*"
+          CHANGELOG="${CHANGELOG}- [Debian/Ubuntu x86_64 (.deb)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_amd64.deb)"$'\n'
+          CHANGELOG="${CHANGELOG}- [Debian/Ubuntu ARM64 (.deb)](https://github.com/${REPO}/releases/download/${TAG}/Chiri_${VERSION}_arm64.deb)"$'\n'
+          CHANGELOG="${CHANGELOG}- [Fedora/RHEL x86_64 (.rpm)](https://github.com/${REPO}/releases/download/${TAG}/Chiri-${VERSION}-1.x86_64.rpm)"$'\n'
+          CHANGELOG="${CHANGELOG}- [Fedora/RHEL ARM64 (.rpm)](https://github.com/${REPO}/releases/download/${TAG}/Chiri-${VERSION}-1.aarch64.rpm)"
 
           # Use heredoc syntax for multiline output
           {
@@ -218,7 +222,7 @@ jobs:
         if: matrix.platform == 'macos-latest' || matrix.platform == 'macos-15-intel'
         shell: bash
         run: |
-          echo $APPLE_CERTIFICATE | base64 --decode > certificate.p12
+          printf '%s' "$APPLE_CERTIFICATE" | base64 --decode > certificate.p12
           KEYCHAIN_PASSWORD="$(openssl rand -base64 32)"
           security create-keychain -p "$KEYCHAIN_PASSWORD" build.keychain
           security default-keychain -s build.keychain
@@ -273,9 +277,9 @@ jobs:
           VERSION="${{ needs.prepare-release.outputs.version }}"
 
           # Update all download links in README.md
-          sed -i "s|app-v[0-9]*\.[0-9]*\.[0-9]*|app-v${VERSION}|g" README.md
-          sed -i "s|chiri_[0-9]*\.[0-9]*\.[0-9]*|chiri_${VERSION}|g" README.md
-          sed -i "s|chiri-[0-9]*\.[0-9]*\.[0-9]*|chiri-${VERSION}|g" README.md
+          sed -i -E "s|app-v[0-9]+\.[0-9]+\.[0-9]+|app-v${VERSION}|g" README.md
+          sed -i -E "s|[Cc]hiri_[0-9]+\.[0-9]+\.[0-9]+|Chiri_${VERSION}|g" README.md
+          sed -i -E "s|[Cc]hiri-[0-9]+\.[0-9]+\.[0-9]+|Chiri-${VERSION}|g" README.md
 
       - name: Commit and push README changes
         run: |
