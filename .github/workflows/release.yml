@@ -1,4 +1,4 @@
-name: 'Publish release'
+name: 'Publish'
 
 on:
   workflow_dispatch:
@@ -14,6 +14,7 @@ concurrency:
 jobs:
   # first job: generate changelog and create the release
   prepare-release:
+    name: Prepare
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -129,6 +130,7 @@ jobs:
 
   # second job: Build and upload artifacts for each platform
   publish-tauri:
+    name: ${{ matrix.label }}
     needs: prepare-release
     permissions:
       contents: write
@@ -137,16 +139,22 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest'
+            label: 'macOS (Apple Silicon)'
             args: '--target aarch64-apple-darwin'
           - platform: 'macos-15-intel'
+            label: 'macOS (Intel)'
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
-          - platform: 'windows-latest'
-            args: ''
-          - platform: 'windows-11-arm'
+            label: 'Ubuntu'
             args: ''
           - platform: 'ubuntu-22.04-arm'
+            label: 'Ubuntu (ARM)'
+            args: ''
+          - platform: 'windows-latest'
+            label: 'Windows'
+            args: ''
+          - platform: 'windows-11-arm'
+            label: 'Windows (ARM)'
             args: ''
 
     runs-on: ${{ matrix.platform }}
@@ -263,6 +271,7 @@ jobs:
 
   # third job: Update README with new version
   update-readme:
+    name: Update README
     needs: [prepare-release, publish-tauri]
     runs-on: ubuntu-latest
     permissions:

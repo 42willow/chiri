@@ -1,4 +1,4 @@
-name: 'CI'
+name: 'Build'
 
 on:
   workflow_dispatch:
@@ -16,19 +16,26 @@ jobs:
       matrix:
         include:
           - platform: 'macos-latest'
+            label: 'macOS (Apple Silicon)'
             args: '--target aarch64-apple-darwin'
           - platform: 'macos-15-intel'
+            label: 'macOS (Intel)'
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
-            args: ''
-          - platform: 'windows-latest'
-            args: ''
-          - platform: 'windows-11-arm'
+            label: 'Ubuntu'
             args: ''
           - platform: 'ubuntu-22.04-arm'
+            label: 'Ubuntu (ARM)'
+            args: ''
+          - platform: 'windows-latest'
+            label: 'Windows'
+            args: ''
+          - platform: 'windows-11-arm'
+            label: 'Windows (ARM)'
             args: ''
 
     runs-on: ${{ matrix.platform }}
+    name: ${{ matrix.label }}
     steps:
       - uses: actions/checkout@v4
 

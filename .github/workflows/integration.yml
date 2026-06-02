@@ -1,4 +1,4 @@
-name: 'CalDAV integration'
+name: 'Integration'
 
 on:
   workflow_dispatch:
@@ -45,11 +45,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: caldav-integration-${{ github.ref }}
+  group: integration-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   integration:
+    name: CalDAV
     runs-on: ubuntu-22.04
     timeout-minutes: 75
     steps:

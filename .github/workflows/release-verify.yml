@@ -31,6 +31,7 @@ permissions:
 
 jobs:
   version-consistency:
+    name: Version metadata
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,6 +68,7 @@ jobs:
           fi
 
   published-assets:
+    name: Published assets
     needs: version-consistency
     if: github.event_name == 'release' || (github.event_name == 'workflow_dispatch' && inputs.tag != '')
     runs-on: ubuntu-latest
