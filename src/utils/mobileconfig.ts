@@ -13,6 +13,16 @@ export interface MobileConfigCalDAVSettings {
   serverType?: ServerType;
 }
 
+export type MobileConfigParseFailureReason =
+  | 'invalid-xml'
+  | 'missing-payload-content'
+  | 'missing-caldav-payload'
+  | 'unexpected-error';
+
+export type MobileConfigParseResult =
+  | { ok: true; config: MobileConfigCalDAVSettings }
+  | { ok: false; reason: MobileConfigParseFailureReason };
+
 /**
  * Detect server type based on hostname and principal URL
  *
@@ -67,24 +77,23 @@ const detectServerType = (hostname: string | null, principalUrl: string | null):
 };
 
 /**
- * Parse an Apple Configuration Profile XML and extract CalDAV settings
+ * Parse an Apple Configuration Profile XML and extract CalDAV settings.
  */
-export const parseAppleConfigProfile = (xmlContent: string): MobileConfigCalDAVSettings | null => {
+export const parseAppleConfigProfileResult = (xmlContent: string): MobileConfigParseResult => {
   try {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
 
-    // Check for parse errors
+    // DOMParser reports invalid XML by adding a parsererror element instead of throwing.
     const parserError = xmlDoc.querySelector('parsererror');
     if (parserError) {
-      console.error('XML parsing error:', parserError.textContent);
-      return null;
+      return { ok: false, reason: 'invalid-xml' };
     }
 
     // Find all dict elements in PayloadContent array
     const payloadContent = xmlDoc.querySelector('plist > dict > array');
     if (!payloadContent) {
-      return null;
+      return { ok: false, reason: 'missing-payload-content' };
     }
 
     // Find the CalDAV payload dict
@@ -109,7 +118,7 @@ export const parseAppleConfigProfile = (xmlContent: string): MobileConfigCalDAVS
     }
 
     if (!caldavDict) {
-      return null;
+      return { ok: false, reason: 'missing-caldav-payload' };
     }
 
     // Helper to get value from plist dict
@@ -160,15 +169,26 @@ export const parseAppleConfigProfile = (xmlContent: string): MobileConfigCalDAVS
     const serverType = detectServerType(hostname, principalUrl);
 
     return {
-      accountName: accountDescription || username || undefined,
-      serverUrl: serverUrl || undefined,
-      username: username || undefined,
-      password: password || undefined,
-      principalUrl: principalUrl || undefined,
-      serverType,
+      ok: true,
+      config: {
+        accountName: accountDescription || username || undefined,
+        serverUrl: serverUrl || undefined,
+        username: username || undefined,
+        password: password || undefined,
+        principalUrl: principalUrl || undefined,
+        serverType,
+      },
     };
-  } catch (error) {
-    console.error('Failed to parse Apple Configuration Profile:', error);
-    return null;
+  } catch {
+    return { ok: false, reason: 'unexpected-error' };
   }
+};
+
+/**
+ * Parse an Apple Configuration Profile XML and extract CalDAV settings.
+ */
+export const parseAppleConfigProfile = (xmlContent: string): MobileConfigCalDAVSettings | null => {
+  const result = parseAppleConfigProfileResult(xmlContent);
+
+  return result.ok ? result.config : null;
 };

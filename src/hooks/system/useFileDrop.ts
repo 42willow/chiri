@@ -3,12 +3,23 @@ import { listen } from '@tauri-apps/api/event';
 import { platform } from '@tauri-apps/plugin-os';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { loggers } from '$lib/logger';
-import { type MobileConfigCalDAVSettings, parseAppleConfigProfile } from '$utils/mobileconfig';
+import {
+  type MobileConfigCalDAVSettings,
+  type MobileConfigParseFailureReason,
+  parseAppleConfigProfileResult,
+} from '$utils/mobileconfig';
 
 const log = loggers.fileDrop;
 
 // Supported file extensions for import
 const SUPPORTED_EXTENSIONS = ['.ics', '.ical', '.json', '.mobileconfig'];
+const CONFIG_PROFILE_PARSE_ERRORS: Record<MobileConfigParseFailureReason, string> = {
+  'invalid-xml': 'This configuration profile is not valid XML.',
+  'missing-payload-content': 'This configuration profile does not contain payload data.',
+  'missing-caldav-payload': 'This configuration profile does not contain CalDAV account settings.',
+  'unexpected-error': 'The file may be corrupted or may not be a configuration profile.',
+};
+const CONFIG_PROFILE_READ_ERROR = 'The file could not be read as a configuration profile.';
 
 const isSupportedFile = (filename: string) => {
   const lower = filename.toLowerCase();
@@ -23,6 +34,7 @@ export interface FileDropResult {
 interface UseFileDropOptions {
   onFileDrop?: (file: FileDropResult) => void;
   onConfigProfileDrop?: (config: MobileConfigCalDAVSettings) => void;
+  onConfigProfileError?: (message: string) => void;
 }
 
 interface UseFileDropReturn {
@@ -41,7 +53,7 @@ interface UseFileDropReturn {
  * Supports .mobileconfig files for CalDAV account configuration
  */
 export const useFileDrop = (options: UseFileDropOptions = {}): UseFileDropReturn => {
-  const { onFileDrop, onConfigProfileDrop } = options;
+  const { onFileDrop, onConfigProfileDrop, onConfigProfileError } = options;
   const [isDragOver, setIsDragOver] = useState(false);
   const [isUnsupportedFile, setIsUnsupportedFile] = useState(false);
   // Tracks whether a Tauri native drag is active. On Linux/WebKitGTK, HTML5 drag
@@ -86,14 +98,16 @@ export const useFileDrop = (options: UseFileDropOptions = {}): UseFileDropReturn
             throw new Error('Empty XML content');
           }
 
-          const config = parseAppleConfigProfile(xmlContent);
-          if (config) {
-            onConfigProfileDrop?.(config);
+          const result = parseAppleConfigProfileResult(xmlContent);
+          if (result.ok) {
+            onConfigProfileDrop?.(result.config);
           } else {
-            log.warn('Failed to parse Apple Configuration Profile');
+            log.warn(`Failed to parse Apple Configuration Profile: ${result.reason}`);
+            onConfigProfileError?.(CONFIG_PROFILE_PARSE_ERRORS[result.reason]);
           }
         } catch (err) {
           log.error('Failed to read Apple Configuration Profile:', err);
+          onConfigProfileError?.(CONFIG_PROFILE_READ_ERROR);
         }
         return;
       }
@@ -111,7 +125,7 @@ export const useFileDrop = (options: UseFileDropOptions = {}): UseFileDropReturn
         }
       }
     },
-    [onFileDrop, onConfigProfileDrop],
+    [onFileDrop, onConfigProfileDrop, onConfigProfileError],
   );
 
   // Register Tauri drop event listeners for Linux (WebKitGTK).
@@ -221,14 +235,16 @@ export const useFileDrop = (options: UseFileDropOptions = {}): UseFileDropReturn
             throw new Error('Empty XML content');
           }
 
-          const config = parseAppleConfigProfile(xmlContent);
-          if (config) {
-            onConfigProfileDrop?.(config);
+          const result = parseAppleConfigProfileResult(xmlContent);
+          if (result.ok) {
+            onConfigProfileDrop?.(result.config);
           } else {
-            log.warn('Failed to parse Apple Configuration Profile');
+            log.warn(`Failed to parse Apple Configuration Profile: ${result.reason}`);
+            onConfigProfileError?.(CONFIG_PROFILE_PARSE_ERRORS[result.reason]);
           }
         } catch (err) {
           log.error('Failed to read Apple Configuration Profile:', err);
+          onConfigProfileError?.(CONFIG_PROFILE_READ_ERROR);
         }
         return;
       }
@@ -246,7 +262,7 @@ export const useFileDrop = (options: UseFileDropOptions = {}): UseFileDropReturn
         }
       }
     },
-    [onFileDrop, onConfigProfileDrop],
+    [onFileDrop, onConfigProfileDrop, onConfigProfileError],
   );
 
   const handleDragOver = useCallback(

@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { type FileDropResult, useFileDrop } from '$hooks/system/useFileDrop';
+import { toastManager } from '$hooks/ui/useToast';
 import type { MobileConfigCalDAVSettings } from '$utils/mobileconfig';
 
 type AccountModalZIndex = 'z-60' | 'z-70';
@@ -56,6 +57,15 @@ export const useAppFileDrop = ({
     [canHandleGlobalFileDrop, setAccountModalZIndex, setEditingAccountId, setShowAccountModal],
   );
 
+  const handleConfigProfileError = useCallback(
+    (message: string) => {
+      if (!canHandleGlobalFileDrop) return;
+
+      toastManager.error('Could not import configuration profile', message, 'config-profile-drop');
+    },
+    [canHandleGlobalFileDrop],
+  );
+
   const {
     isDragOver,
     isUnsupportedFile,
@@ -67,6 +77,7 @@ export const useAppFileDrop = ({
   } = useFileDrop({
     onFileDrop: handleDroppedFile,
     onConfigProfileDrop: handleDroppedConfigProfile,
+    onConfigProfileError: handleConfigProfileError,
   });
 
   const rootFileDropProps = useMemo(

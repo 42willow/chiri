@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseAppleConfigProfile } from '$utils/mobileconfig';
+import { parseAppleConfigProfile, parseAppleConfigProfileResult } from '$utils/mobileconfig';
 
 const profile = (caldavPayload: string) => `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -31,8 +31,24 @@ describe('parseAppleConfigProfile', () => {
     expect(parseAppleConfigProfile('not xml at all')).toBeNull();
   });
 
+  it('reports invalid XML', () => {
+    expect(parseAppleConfigProfileResult('not xml at all')).toEqual({
+      ok: false,
+      reason: 'invalid-xml',
+    });
+  });
+
   it('returns null when there is no PayloadContent array', () => {
     expect(parseAppleConfigProfile('<?xml version="1.0"?><plist><dict></dict></plist>')).toBeNull();
+  });
+
+  it('reports missing payload content', () => {
+    expect(
+      parseAppleConfigProfileResult('<?xml version="1.0"?><plist><dict></dict></plist>'),
+    ).toEqual({
+      ok: false,
+      reason: 'missing-payload-content',
+    });
   });
 
   it('returns null when no caldav payload is present', () => {
@@ -43,6 +59,20 @@ describe('parseAppleConfigProfile', () => {
       </dict>`,
     );
     expect(parseAppleConfigProfile(xml)).toBeNull();
+  });
+
+  it('reports missing CalDAV payload', () => {
+    const xml = profile(
+      `<dict>
+        <key>PayloadType</key>
+        <string>com.apple.mail.managed</string>
+      </dict>`,
+    );
+
+    expect(parseAppleConfigProfileResult(xml)).toEqual({
+      ok: false,
+      reason: 'missing-caldav-payload',
+    });
   });
 
   it('extracts CalDAV fields from a typical profile', () => {
@@ -60,6 +90,26 @@ describe('parseAppleConfigProfile', () => {
     expect(result?.password).toBe('s3cret');
     expect(result?.serverUrl).toBe('https://caldav.example.com');
     expect(result?.accountName).toBe('My Calendar');
+  });
+
+  it('returns parsed settings in the result API', () => {
+    const xml = profile(
+      caldavDict({
+        CalDAVHostName: 'caldav.example.com',
+        CalDAVUsername: 'alice',
+        CalDAVUseSSL: true,
+      }),
+    );
+    const result = parseAppleConfigProfileResult(xml);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.config).toMatchObject({
+        username: 'alice',
+        serverUrl: 'https://caldav.example.com',
+        serverType: 'generic',
+      });
+    }
   });
 
   it('uses http when CalDAVUseSSL is false', () => {
