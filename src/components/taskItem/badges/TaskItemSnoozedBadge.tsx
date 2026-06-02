@@ -18,7 +18,7 @@ export const TaskItemSnoozedBadge = ({ taskId }: { taskId: string }) => {
           e.stopPropagation();
           clear();
         }}
-        className="ml-0.5 rounded hover:bg-semantic-warning/20"
+        className="ml-0.5 rounded hover:bg-semantic-warning/20 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
         aria-label="Cancel snooze"
       >
         <X className="w-3 h-3" />

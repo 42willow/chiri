@@ -145,7 +145,7 @@ export const TaskList = () => {
             <button
               type="button"
               onClick={handleQuickAdd}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-primary-contrast rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-primary-contrast rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
             >
               <Plus className="w-4 h-4" />
               Create Task
