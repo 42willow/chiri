@@ -66,6 +66,7 @@ export const SidebarAccountItem = ({
   const isAccountMenuButtonActive =
     isAccountMenuButtonContextMenuOpen || isAccountMenuTriggerActive;
   const isAccountActionsActive = isAccountContextMenuOpen || isAccountMenuTriggerActive;
+  const isExpanded = expandedAccounts.has(account.id);
   const canRevealActions = !isDragging && !isAnyAccountDragging;
   const actionVisibilityClass =
     canRevealActions && isAccountActionsActive
@@ -103,7 +104,7 @@ export const SidebarAccountItem = ({
           {...dragHandleProps}
         >
           <ChevronDown
-            className={`w-4 h-4 text-surface-400 shrink-0 motion-safe:transition-transform motion-safe:duration-200 ${expandedAccounts.has(account.id) ? 'rotate-0' : '-rotate-90'}`}
+            className={`w-4 h-4 text-surface-400 shrink-0 motion-safe:transition-transform motion-safe:duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`}
           />
           {account.emoji ? (
             <span className="w-4 text-xs leading-none text-center shrink-0">{account.emoji}</span>
@@ -154,9 +155,9 @@ export const SidebarAccountItem = ({
 
       {!isDragging && (
         <div
-          className={`grid motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${expandedAccounts.has(account.id) ? 'grid-rows-[1fr] pt-1' : 'grid-rows-[0fr]'}`}
+          className={`grid motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${isExpanded ? 'grid-rows-[1fr] pt-1' : 'grid-rows-[0fr]'}`}
         >
-          <div className="overflow-hidden min-h-0">
+          <div className="overflow-hidden min-h-0" aria-hidden={!isExpanded} inert={!isExpanded}>
             <SidebarCalendarList
               account={account}
               tasks={tasks}

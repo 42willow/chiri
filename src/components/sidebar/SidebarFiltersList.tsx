@@ -113,7 +113,7 @@ export const SidebarFiltersList = ({
       <div
         className={`grid motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${collapsed ? 'grid-rows-[0fr]' : 'grid-rows-[1fr]'} pt-1`}
       >
-        <div className="overflow-hidden space-y-1">
+        <div className="overflow-hidden space-y-1" aria-hidden={collapsed} inert={collapsed}>
           {filters.length === 0 ? (
             <div className="px-3 py-1 text-sm text-surface-500 dark:text-surface-400">
               No filters. Click + to add one.
