@@ -31,7 +31,7 @@ jobs:
         with:
           name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: ${{ github.event_name == 'pull_request' || secrets.CACHIX_AUTH_TOKEN == '' }}
+          skipPush: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
 
       - name: Install dependencies
         run: nix develop -c pnpm install --frozen-lockfile
@@ -48,6 +48,8 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Install Nix
         uses: cachix/install-nix-action@v25
@@ -57,13 +59,69 @@ jobs:
         with:
           name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: ${{ github.event_name == 'pull_request' || secrets.CACHIX_AUTH_TOKEN == '' }}
+          skipPush: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
 
       - name: Evaluate flake outputs
         run: nix flake show --all-systems
 
+      - name: Check source package inputs
+        id: source-package-inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Manual run; building source package"
+            exit 0
+          fi
+
+          case "$GITHUB_EVENT_NAME" in
+            pull_request)
+              base="${{ github.event.pull_request.base.sha }}"
+              head="$GITHUB_SHA"
+              ;;
+            push)
+              base="${{ github.event.before }}"
+              head="$GITHUB_SHA"
+              ;;
+            *)
+              echo "changed=true" >> "$GITHUB_OUTPUT"
+              echo "Unknown event '$GITHUB_EVENT_NAME'; building source package"
+              exit 0
+              ;;
+          esac
+
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "No usable base commit; building source package"
+            exit 0
+          fi
+
+          if ! git cat-file -e "$base^{commit}" || ! git cat-file -e "$head^{commit}"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Could not resolve diff commits; building source package"
+            exit 0
+          fi
+
+          changed_files="$(git diff --name-only "$base" "$head")"
+          printf '%s\n' "$changed_files"
+
+          if printf '%s\n' "$changed_files" | grep -Eq '^(flake\.lock|flake\.nix|nix/|index\.html|package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|public/|src/|src-tauri/|tsconfig[^/]*\.json|vite\.config\.ts)'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Source package inputs changed; building source package"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No source package inputs changed; skipping source package build"
+          fi
+
       - name: Build source package
+        if: steps.source-package-inputs.outputs.changed == 'true'
         run: nix build .#source --print-build-logs
+
+      - name: Skip source package build
+        if: steps.source-package-inputs.outputs.changed != 'true'
+        run: echo "No source package inputs changed"
 
   rust:
     name: Rust
@@ -80,7 +138,7 @@ jobs:
         with:
           name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: ${{ github.event_name == 'pull_request' || secrets.CACHIX_AUTH_TOKEN == '' }}
+          skipPush: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
 
       - name: Check Rust formatting
         run: nix develop -c cargo fmt --manifest-path src-tauri/Cargo.toml -- --check

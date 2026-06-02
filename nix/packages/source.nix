@@ -26,10 +26,11 @@
 
 let
   packageJson = builtins.fromJSON (builtins.readFile ../../package.json);
+  sources = import ../sources.nix { inherit lib src; };
 in
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "chiri";
-  inherit src;
+  src = sources.app;
   version = packageJson.version;
 
   env = lib.optionalAttrs stdenv.hostPlatform.isDarwin (
