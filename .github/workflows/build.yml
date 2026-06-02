@@ -64,11 +64,13 @@ jobs:
             args: ''
           - platform: 'windows-latest'
             label: 'Windows'
-            artifact: 'windows'
+            nsis_artifact: 'windows-nsis'
+            msi_artifact: 'windows-msi'
             args: ''
           - platform: 'windows-11-arm'
             label: 'Windows (ARM)'
-            artifact: 'windows-arm'
+            nsis_artifact: 'windows-arm-nsis'
+            msi_artifact: 'windows-arm-msi'
             args: ''
 
     runs-on: ${{ matrix.platform }}
@@ -145,14 +147,24 @@ jobs:
           retention-days: 14
           compression-level: 0
 
-      - name: Upload Windows artifacts
+      - name: Upload Windows NSIS artifacts
         if: startsWith(matrix.platform, 'windows')
         uses: actions/upload-artifact@v7
         with:
-          name: Chiri-${{ matrix.artifact }}
+          name: Chiri-${{ matrix.nsis_artifact }}
+          path: |
+            src-tauri/target/**/release/bundle/**/*-setup.exe
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+      - name: Upload Windows MSI artifacts
+        if: startsWith(matrix.platform, 'windows')
+        uses: actions/upload-artifact@v7
+        with:
+          name: Chiri-${{ matrix.msi_artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.msi
-            src-tauri/target/**/release/bundle/**/*-setup.exe
           if-no-files-found: error
           retention-days: 14
           compression-level: 0
