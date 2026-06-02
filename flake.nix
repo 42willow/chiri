@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -13,31 +12,48 @@
   outputs =
     {
       nixpkgs,
-      flake-utils,
       rust-overlay,
       ...
     }:
-    flake-utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = import nixpkgs {
+    let
+      lib = nixpkgs.lib;
+
+      systems = [
+        "aarch64-darwin"
+        "aarch64-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
+
+      forAllSystems = function: lib.genAttrs systems (system: function (pkgsFor system));
+
+      pkgsFor =
+        system:
+        import nixpkgs {
           inherit system;
           overlays = [ (import rust-overlay) ];
           # temporary until my pr in nixos/nixpkgs is merged which unbreaks nsis on darwin
           config.allowBrokenPredicate = pkg: nixpkgs.lib.getName pkg == "nsis";
         };
-      in
-      {
-        packages = import ./nix/packages {
+    in
+    {
+      packages = forAllSystems (
+        pkgs:
+        import ./nix/packages {
           inherit pkgs;
           src = ./.;
-        };
+        }
+      );
 
-        apps = import ./nix/apps/caldav-servers { inherit pkgs; };
+      apps = forAllSystems (pkgs: import ./nix/apps/caldav-servers { inherit pkgs; });
 
-        devShells = {
+      devShells = forAllSystems (
+        pkgs:
+        {
           default = import ./nix/shell.nix { inherit pkgs; };
-        };
-      }
-    );
+        }
+      );
+
+      formatter = forAllSystems (pkgs: pkgs.nixfmt);
+    };
 }
