@@ -12,7 +12,7 @@
 { pkgs }:
 
 let
-  script = pkgs.writeShellApplication {
+  package = pkgs.writeShellApplication {
     name = "caldav-xandikos";
     runtimeInputs = [ pkgs.xandikos ];
     text = ''
@@ -47,6 +47,10 @@ let
   };
 in
 {
-  type = "app";
-  program = "${script}/bin/caldav-xandikos";
+  inherit package;
+
+  app = {
+    type = "app";
+    program = "${package}/bin/caldav-xandikos";
+  };
 }

@@ -25,8 +25,6 @@
         "x86_64-linux"
       ];
 
-      forAllSystems = function: lib.genAttrs systems (system: function (pkgsFor system));
-
       pkgsFor =
         system:
         import nixpkgs {
@@ -35,25 +33,36 @@
           # temporary until my pr in nixos/nixpkgs is merged which unbreaks nsis on darwin
           config.allowBrokenPredicate = pkg: nixpkgs.lib.getName pkg == "nsis";
         };
+
+      perSystem =
+        pkgs:
+        let
+          caldavServers = import ./nix/apps/caldav-servers { inherit pkgs; };
+        in
+        {
+          packages =
+            import ./nix/packages {
+              inherit pkgs;
+              src = ./.;
+            }
+            // caldavServers.packages;
+
+          apps = caldavServers.apps;
+
+          devShells = {
+            default = import ./nix/shell.nix { inherit pkgs; };
+          };
+
+          formatter = pkgs.nixfmt;
+        };
+
+      systemOutputs = lib.genAttrs systems (system: perSystem (pkgsFor system));
+      selectOutput = name: lib.mapAttrs (_: output: output.${name}) systemOutputs;
     in
     {
-      packages = forAllSystems (
-        pkgs:
-        import ./nix/packages {
-          inherit pkgs;
-          src = ./.;
-        }
-      );
-
-      apps = forAllSystems (pkgs: import ./nix/apps/caldav-servers { inherit pkgs; });
-
-      devShells = forAllSystems (
-        pkgs:
-        {
-          default = import ./nix/shell.nix { inherit pkgs; };
-        }
-      );
-
-      formatter = forAllSystems (pkgs: pkgs.nixfmt);
+      packages = selectOutput "packages";
+      apps = selectOutput "apps";
+      devShells = selectOutput "devShells";
+      formatter = selectOutput "formatter";
     };
 }

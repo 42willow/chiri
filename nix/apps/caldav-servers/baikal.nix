@@ -21,7 +21,7 @@
 let
   baikalSrc = "${pkgs.baikal}/share/php/baikal";
 
-  script = pkgs.writeShellApplication {
+  package = pkgs.writeShellApplication {
     name = "caldav-baikal";
     runtimeInputs = [
       pkgs.php
@@ -109,6 +109,10 @@ let
   };
 in
 {
-  type = "app";
-  program = "${script}/bin/caldav-baikal";
+  inherit package;
+
+  app = {
+    type = "app";
+    program = "${package}/bin/caldav-baikal";
+  };
 }

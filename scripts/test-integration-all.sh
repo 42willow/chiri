@@ -14,6 +14,20 @@
 set -uo pipefail
 cd "$(dirname "$0")/.." || exit
 
+REPO_ROOT=$(pwd -P)
+READY_TIMEOUT="${CHIRI_TEST_READY_TIMEOUT:-180}"
+DATA_ROOT="${CHIRI_TEST_DATA_ROOT:-}"
+DATA_ROOT_IS_TEMP=0
+
+if [ -z "$DATA_ROOT" ]; then
+  mkdir -p "$REPO_ROOT/tmp"
+  DATA_ROOT=$(mktemp -d "$REPO_ROOT/tmp/caldav-integration.XXXXXX")
+  DATA_ROOT_IS_TEMP=1
+else
+  mkdir -p "$DATA_ROOT"
+  DATA_ROOT=$(cd "$DATA_ROOT" && pwd -P)
+fi
+
 # Restore .env.local on exit, regardless of how we got here.
 ENV_BACKUP=""
 if [ -f .env.local ]; then
@@ -31,14 +45,18 @@ cleanup() {
     cp "$ENV_BACKUP" .env.local
     rm -f "$ENV_BACKUP"
   fi
+  if [ "$DATA_ROOT_IS_TEMP" -eq 1 ] && [ "${CHIRI_TEST_KEEP_DATA:-0}" != "1" ]; then
+    chmod -R u+w "$DATA_ROOT" 2>/dev/null || true
+    rm -rf "$DATA_ROOT"
+  fi
 }
 trap cleanup EXIT INT TERM
 
-# Wait up to ~30s for an HTTP endpoint to return a useful status code.
+# Wait for an HTTP endpoint to return a useful status code.
 wait_for_ready() {
   local url="$1"
   local auth="${2:-}"
-  for _ in $(seq 1 30); do
+  for _ in $(seq 1 "$READY_TIMEOUT"); do
     local code
     if [ -n "$auth" ]; then
       code=$(curl -s -o /dev/null -w "%{http_code}" -u "$auth" -X PROPFIND -H 'Depth: 0' "$url" 2>/dev/null)
@@ -57,6 +75,14 @@ RESULT_NAMES=()
 RESULT_STATUSES=()
 RESULT_DURATIONS=()
 RESULT_DETAILS=()
+SERVER_PACKAGES=(
+  caldav-xandikos
+  caldav-radicale
+  caldav-baikal
+  caldav-nextcloud
+  caldav-rustical
+)
+SERVER_BINARIES=()
 
 record_result() {
   local name="$1" status="$2" duration="$3" detail="$4"
@@ -94,10 +120,68 @@ print_summary() {
   fi
 }
 
+resolve_server_binaries() {
+  local package path binary paths index
+  local refs=()
+
+  echo "Resolving CalDAV server packages..."
+  for package in "${SERVER_PACKAGES[@]}"; do
+    refs+=(".#$package")
+  done
+
+  if ! paths=$(nix build --no-link --print-out-paths "${refs[@]}"); then
+    return 1
+  fi
+
+  index=0
+  while IFS= read -r path; do
+    [ -n "$path" ] || continue
+
+    if [ "$index" -ge "${#SERVER_PACKAGES[@]}" ]; then
+      echo "nix returned more CalDAV package paths than expected"
+      return 1
+    fi
+
+    package="${SERVER_PACKAGES[$index]}"
+    binary="$path/bin/$package"
+    if [ ! -x "$binary" ]; then
+      echo "missing executable for $package: $binary"
+      return 1
+    fi
+    SERVER_BINARIES+=("$binary")
+    index=$((index + 1))
+  done <<< "$paths"
+
+  if [ "$index" -ne "${#SERVER_PACKAGES[@]}" ]; then
+    echo "nix returned $index CalDAV package paths; expected ${#SERVER_PACKAGES[@]}"
+    return 1
+  fi
+}
+
+server_binary_for() {
+  local package="$1" i
+
+  for i in "${!SERVER_PACKAGES[@]}"; do
+    if [ "${SERVER_PACKAGES[$i]}" = "$package" ]; then
+      printf '%s\n' "${SERVER_BINARIES[$i]}"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
 run_server() {
-  local name="$1" nix_app="$2" env_block="$3" ready_url="$4" ready_auth="$5"
+  local name="$1" server_package="$2" env_block="$3" ready_url="$4" ready_auth="$5"
   local start
   start=$(date +%s)
+  local server_data_dir="$DATA_ROOT/$name"
+  local server_binary
+  server_binary=$(server_binary_for "$server_package") || {
+    echo "missing resolved server binary for $server_package"
+    record_result "$name" "FAIL" 0 "server binary not resolved"
+    return 1
+  }
 
   echo ""
   echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -110,7 +194,7 @@ run_server() {
   # boot server
   local log
   log=$(mktemp)
-  nix run ".#$nix_app" > "$log" 2>&1 &
+  CALDAV_DATA_DIR="$server_data_dir" "$server_binary" > "$log" 2>&1 &
   SERVER_PID=$!
 
   if ! wait_for_ready "$ready_url" "$ready_auth"; then
@@ -149,6 +233,11 @@ run_server() {
 }
 
 FAIL=0
+
+echo "Integration data root: $DATA_ROOT"
+echo "Ready timeout: ${READY_TIMEOUT}s"
+
+resolve_server_binaries || exit 1
 
 run_server "xandikos" "caldav-xandikos" \
   "$(cat <<EOF

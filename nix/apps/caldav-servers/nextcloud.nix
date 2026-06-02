@@ -52,6 +52,15 @@ let
     hash = "sha256-tSLsSgPHdpfcKPzJubwchBqQykLf9WV/mXfKKM2CSxs=";
   };
 
+  nextcloudWithDavPush = pkgs.runCommand "${nextcloudPackageName}-with-dav-push" { } ''
+    mkdir -p "$out"
+    cp -R "${nextcloud}/." "$out/"
+    chmod -R u+w "$out"
+
+    rm -rf "$out/apps/dav_push"
+    tar -xzf "${davPushApp}" -C "$out/apps"
+  '';
+
   davPushTestCa = pkgs.writeText "chiri-dav-push-test-ca.pem" ''
     -----BEGIN CERTIFICATE-----
     MIIBMjCB2AIJAIRABrIYORE/MAoGCCqGSM49BAMCMCExHzAdBgNVBAMMFkNoaXJp
@@ -64,44 +73,25 @@ let
     -----END CERTIFICATE-----
   '';
 
-  script = pkgs.writeShellApplication {
+  package = pkgs.writeShellApplication {
     name = "caldav-nextcloud";
     runtimeInputs = [
       php
-      pkgs.gnutar
-      pkgs.gzip
-      pkgs.rsync
     ];
     text = ''
       DATA_DIR="''${CALDAV_DATA_DIR:-$HOME/.local/share/chiri-caldav-test/nextcloud}"
       PORT="''${CALDAV_PORT:-8081}"
       USERNAME="''${CALDAV_USERNAME:-unit-tests}"
       PASSWORD="''${CALDAV_PASSWORD:-unit-tests}"
-      INSTALL_DIR="$DATA_DIR/server"
-      CONFIG_DIR="$INSTALL_DIR/config"
+      INSTALL_DIR="${nextcloudWithDavPush}"
+      CONFIG_DIR="$DATA_DIR/config"
       NEXTCLOUD_DATA_DIR="$DATA_DIR/data"
       PHP_STATE_DIR="$DATA_DIR/php"
 
-      mkdir -p "$DATA_DIR" "$PHP_STATE_DIR/tmp" "$PHP_STATE_DIR/sessions"
-
-      # Copy Nextcloud into a writable location on first run (or refresh source
-      # on package upgrade). config/ and data/ hold per-install state and MUST
-      # persist across runs.
-      if [ ! -d "$INSTALL_DIR" ]; then
-        echo "First run: copying Nextcloud source to $INSTALL_DIR ..."
-        mkdir -p "$INSTALL_DIR"
-        rsync -a "${nextcloud}/" "$INSTALL_DIR/"
-      else
-        rsync -a --exclude=config --exclude=data "${nextcloud}/" "$INSTALL_DIR/"
-      fi
-      chmod -R u+w "$INSTALL_DIR"
-      mkdir -p "$CONFIG_DIR" "$NEXTCLOUD_DATA_DIR"
-
-      rm -rf "$INSTALL_DIR/apps/dav_push"
-      tar -xzf "${davPushApp}" -C "$INSTALL_DIR/apps"
-      chmod -R u+w "$INSTALL_DIR/apps/dav_push"
+      mkdir -p "$DATA_DIR" "$CONFIG_DIR" "$NEXTCLOUD_DATA_DIR" "$PHP_STATE_DIR/tmp" "$PHP_STATE_DIR/sessions"
 
       export NEXTCLOUD_CONFIG_DIR="$CONFIG_DIR"
+      export CHIRI_NEXTCLOUD_INSTALL_DIR="$INSTALL_DIR"
       export CI=1
 
       occ() {
@@ -141,6 +131,7 @@ let
       ROUTER="$DATA_DIR/router.php"
       cat > "$ROUTER" <<'EOF'
       <?php
+      $installDir = getenv('CHIRI_NEXTCLOUD_INSTALL_DIR');
       $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
       if ($path === '/.well-known/caldav' || $path === '/.well-known/carddav') {
@@ -149,23 +140,23 @@ let
       }
 
       if ($path === '/remote.php' || str_starts_with($path, '/remote.php/')) {
-          $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/server/remote.php';
+          $_SERVER['SCRIPT_FILENAME'] = $installDir . '/remote.php';
           $_SERVER['SCRIPT_NAME'] = '/remote.php';
           $_SERVER['PHP_SELF'] = $path;
           $_SERVER['PATH_INFO'] = substr($path, strlen('/remote.php'));
-          require __DIR__ . '/server/remote.php';
+          require $installDir . '/remote.php';
           return true;
       }
 
-      $file = __DIR__ . '/server' . $path;
+      $file = $installDir . $path;
       if ($path !== '/' && is_file($file)) {
           return false;
       }
 
-      $_SERVER['SCRIPT_FILENAME'] = __DIR__ . '/server/index.php';
+      $_SERVER['SCRIPT_FILENAME'] = $installDir . '/index.php';
       $_SERVER['SCRIPT_NAME'] = '/index.php';
       $_SERVER['PHP_SELF'] = '/index.php';
-      require __DIR__ . '/server/index.php';
+      require $installDir . '/index.php';
       return true;
       EOF
 
@@ -190,6 +181,10 @@ let
   };
 in
 {
-  type = "app";
-  program = "${script}/bin/caldav-nextcloud";
+  inherit package;
+
+  app = {
+    type = "app";
+    program = "${package}/bin/caldav-nextcloud";
+  };
 }

@@ -18,7 +18,7 @@
 { pkgs }:
 
 let
-  script = pkgs.writeShellApplication {
+  package = pkgs.writeShellApplication {
     name = "caldav-rustical";
     runtimeInputs = [
       pkgs.rustical
@@ -158,6 +158,10 @@ let
   };
 in
 {
-  type = "app";
-  program = "${script}/bin/caldav-rustical";
+  inherit package;
+
+  app = {
+    type = "app";
+    program = "${package}/bin/caldav-rustical";
+  };
 }
