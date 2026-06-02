@@ -1,10 +1,12 @@
 import { openUrl } from '@tauri-apps/plugin-opener';
 import Bug from 'lucide-react/icons/bug';
+import CircleDollarSign from 'lucide-react/icons/circle-dollar-sign';
 import Code from 'lucide-react/icons/code';
-import Coffee from 'lucide-react/icons/coffee';
 import ExternalLink from 'lucide-react/icons/external-link';
 import Globe from 'lucide-react/icons/globe';
+import HandHeart from 'lucide-react/icons/hand-heart';
 import Heart from 'lucide-react/icons/heart';
+import HeartHandshake from 'lucide-react/icons/heart-handshake';
 import Mail from 'lucide-react/icons/mail';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import ScrollText from 'lucide-react/icons/scroll-text';
@@ -113,17 +115,31 @@ export const AboutSettings = ({ onNavigateToUpdates }: AboutSettingsProps) => {
 
         <AboutSettingsSection title="Donate">
           <AboutSettingsLinkRow
-            icon={<Coffee className="w-5 h-5" />}
-            label="Ko-fi"
-            description="ko-fi.com/solelychloe"
-            onClick={link('https://ko-fi.com/solelychloe')}
+            icon={<HeartHandshake className="w-5 h-5" />}
+            label="GitHub Sponsors"
+            description="github.com/chiriapp"
+            onClick={link('https://github.com/chiriapp')}
+          />
+
+          <AboutSettingsLinkRow
+            icon={<HandHeart className="w-5 h-5" />}
+            label="Liberapay"
+            description="liberapay.com/chloe"
+            onClick={link('https://liberapay.com/chloe')}
+          />
+
+          <AboutSettingsLinkRow
+            icon={<CircleDollarSign className="w-5 h-5" />}
+            label="Open Collective"
+            description="opencollective.com/chiri"
+            onClick={link('https://opencollective.com/chiri')}
           />
 
           <AboutSettingsLinkRow
             icon={<Heart className="w-5 h-5" />}
-            label="Liberapay"
-            description="liberapay.com/chloe"
-            onClick={link('https://liberapay.com/chloe')}
+            label="Patreon"
+            description="patreon.com/c/chiriapp"
+            onClick={link('https://www.patreon.com/c/chiriapp')}
           />
         </AboutSettingsSection>
 
