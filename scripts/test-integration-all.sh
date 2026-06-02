@@ -99,10 +99,15 @@ markdown_escape_cell() {
   printf '%s' "$value" | tr '\n' ' ' | sed 's/|/\\|/g'
 }
 
+strip_ansi() {
+  sed -E $'s|\x1b\\[[0-?]*[ -/]*[@-~]||g'
+}
+
 vitest_line() {
   local label="$1" log="$2"
 
-  grep -E "^[[:space:]]*${label}[[:space:]]+" "$log" \
+  strip_ansi < "$log" \
+    | grep -E "^[[:space:]]*${label}[[:space:]]+" \
     | tail -n 1 \
     | sed -E "s/^[[:space:]]*${label}[[:space:]]+//"
 }
@@ -164,7 +169,7 @@ resolve_server_binaries() {
     refs+=(".#$package")
   done
 
-  if ! paths=$(nix build --no-link --print-out-paths "${refs[@]}"); then
+  if ! paths=$(nix build --quiet --no-link --print-out-paths "${refs[@]}"); then
     return 1
   fi
 
