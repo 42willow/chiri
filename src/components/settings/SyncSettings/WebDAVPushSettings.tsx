@@ -1,17 +1,14 @@
 import { AppSelect } from '$components/AppSelect';
 import { useSettingsStore } from '$context/settingsContext';
-import { useAccounts } from '$hooks/queries/useAccounts';
 import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/ntfyProvider';
 import {
   LINUX_UNIFIED_PUSH_PROVIDER_ID,
   NTFY_DIRECT_PROVIDER_ID,
   type PushProviderId,
 } from '$types/push';
-import { pluralize } from '$utils/misc';
 import { isLinuxPlatform } from '$utils/platform';
 
 export const WebDAVPushSettings = () => {
-  const { data: accounts = [] } = useAccounts();
   const {
     enablePush,
     setEnablePush,
@@ -23,20 +20,6 @@ export const WebDAVPushSettings = () => {
   const showLinuxUnifiedPushOption =
     isLinuxPlatform() || pushProvider === LINUX_UNIFIED_PUSH_PROVIDER_ID;
   const showPushProviderSelect = showLinuxUnifiedPushOption;
-  const caldavAccounts = accounts.filter((account) => account.caldav);
-  const webdavPushAccountCount = caldavAccounts.filter((account) =>
-    account.calendars.some((calendar) => calendar.pushSupported),
-  ).length;
-  const webdavPushAvailability =
-    caldavAccounts.length === 0
-      ? 'No CalDAV accounts connected.'
-      : webdavPushAccountCount === 0
-        ? 'No connected CalDAV accounts advertise WebDAV Push.'
-        : `Available for ${webdavPushAccountCount} of ${caldavAccounts.length} ${pluralize(
-            caldavAccounts.length,
-            'CalDAV account',
-            'CalDAV accounts',
-          )}.`;
 
   return (
     <>
@@ -63,15 +46,6 @@ export const WebDAVPushSettings = () => {
 
         {enablePush && (
           <>
-            <div className="border-t border-surface-200 dark:border-surface-700" />
-
-            <div className="p-4">
-              <p className="text-sm text-surface-700 dark:text-surface-300">Availability</p>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
-                {webdavPushAvailability}
-              </p>
-            </div>
-
             {showPushProviderSelect && (
               <>
                 <div className="border-t border-surface-200 dark:border-surface-700" />
