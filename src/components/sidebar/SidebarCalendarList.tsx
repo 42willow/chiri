@@ -122,7 +122,7 @@ export const SidebarCalendarList = ({
     };
 
     return (
-      <div ref={calendarDragBoundsRef}>
+      <div ref={calendarDragBoundsRef} className="space-y-1">
         <DndContext
           sensors={sensors}
           collisionDetection={closestCenter}
@@ -145,7 +145,7 @@ export const SidebarCalendarList = ({
   }
 
   return (
-    <div ref={calendarDragBoundsRef}>
+    <div ref={calendarDragBoundsRef} className="space-y-1">
       {sortedCalendars.map((calendar) => (
         <SidebarCalendarItem key={calendar.id} {...sharedItemProps(calendar)} />
       ))}

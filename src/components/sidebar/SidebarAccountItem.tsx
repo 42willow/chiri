@@ -94,7 +94,7 @@ export const SidebarAccountItem = ({
           type="button"
           onClick={() => onToggleAccount(account.id)}
           onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
-          className={`flex h-8 min-w-0 flex-1 items-center gap-2 px-3 rounded-lg text-sm transition-colors cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`flex h-9 min-w-0 flex-1 items-center gap-2 px-3 rounded-lg text-sm transition-colors cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
             isAccountContextMenuOpen && !isAccountMenuButtonContextMenuOpen
               ? 'bg-surface-200 dark:bg-surface-700'
               : !isAnyModalOpen && !isAnyAccountDragging
@@ -117,7 +117,7 @@ export const SidebarAccountItem = ({
         </button>
 
         <div
-          className={`flex h-8 w-15 shrink-0 items-center justify-end gap-1 overflow-hidden transition-opacity ${actionVisibilityClass}`}
+          className={`flex h-9 w-17 shrink-0 items-center justify-end gap-1 overflow-hidden transition-opacity ${actionVisibilityClass}`}
         >
           <Tooltip content="Add a new calendar" position="top">
             <button
@@ -128,7 +128,7 @@ export const SidebarAccountItem = ({
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`flex h-8 w-7 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -145,7 +145,7 @@ export const SidebarAccountItem = ({
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`flex h-8 w-7 shrink-0 items-center justify-center rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountMenuButtonStateClass}`}
+              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountMenuButtonStateClass}`}
             >
               <MoreVertical className="w-4 h-4" />
             </button>
@@ -155,7 +155,7 @@ export const SidebarAccountItem = ({
 
       {!isDragging && (
         <div
-          className={`grid motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${isExpanded ? 'grid-rows-[1fr] pt-1' : 'grid-rows-[0fr]'}`}
+          className={`grid pt-1 motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
         >
           <div className="overflow-hidden min-h-0" aria-hidden={!isExpanded} inert={!isExpanded}>
             <SidebarCalendarList
