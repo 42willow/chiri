@@ -29,23 +29,11 @@ export interface PushProviderConfig {
 export type PushMessageHandler = (calendarId: string, message: string) => void;
 
 /**
- * Supported push transports
- */
-type PushTransport = 'web-push';
-
-/**
  * Supported trigger types for WebDAV Push
  */
 export interface PushTrigger {
   type: 'content-update' | 'property-update';
   depth: '0' | '1' | 'infinity';
-}
-
-export interface PushStatus {
-  totalCalendars: number;
-  pushSupportedCalendars: number;
-  activeSubscriptions: number;
-  expiringSubscriptions: number;
 }
 
 /**
@@ -101,22 +89,6 @@ export interface WebPushKeyPair {
   privateKey: string;
   /** Authentication secret (base64url) */
   authSecret: string;
-}
-
-/**
- * Push capabilities advertised by a resource
- */
-export interface PushCapabilities {
-  /** Whether WebDAV Push is supported */
-  supported: boolean;
-  /** Unique topic identifier for WebDAV Push messages */
-  topic?: string;
-  /** Available push transports */
-  transports: PushTransport[];
-  /** VAPID public key for Web Push (base64url, uncompressed P-256) */
-  vapidPublicKey?: string;
-  /** Supported trigger types */
-  supportedTriggers: PushTrigger[];
 }
 
 /**

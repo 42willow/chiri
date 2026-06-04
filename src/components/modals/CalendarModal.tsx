@@ -10,8 +10,13 @@ import { useAccounts, useAddCalendar, useUpdateAccount } from '$hooks/queries/us
 import { useColorPresets } from '$hooks/ui/useColorPresets';
 import { useInitialFocusRef } from '$hooks/ui/useInitialFocusRef';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
+import { usePushProviderConfigState } from '$hooks/usePushProviderAvailability';
 import { CalDAVClient } from '$lib/caldav';
+import { loggers } from '$lib/logger';
+import { enablePushForCalendar, isPushProviderAvailable } from '$lib/push';
 import type { Calendar } from '$types';
+
+const log = loggers.caldav;
 
 interface CalendarModalProps {
   calendar?: Calendar;
@@ -23,7 +28,11 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
   const { data: accounts = [] } = useAccounts();
   const addCalendarMutation = useAddCalendar();
   const updateAccountMutation = useUpdateAccount();
-  const { defaultCalendarColor } = useSettingsStore();
+  const { defaultCalendarColor, enablePush, pushProvider, ntfyServerUrl } = useSettingsStore();
+  const { isResolvingLinuxUnifiedPush, pushProviderConfig } = usePushProviderConfigState(
+    pushProvider,
+    ntfyServerUrl,
+  );
   const colorPresets = useColorPresets();
   const resolveAccentColor = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
@@ -122,12 +131,37 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
         displayName,
         color,
       );
-      addCalendarMutation.mutate({ accountId, calendarData: { ...newCalendar, icon, emoji } });
+      const calendarData = { ...newCalendar, icon, emoji };
+      await addCalendarMutation.mutateAsync({ accountId, calendarData });
+
+      if (
+        enablePush &&
+        !isResolvingLinuxUnifiedPush &&
+        calendarData.pushSupported &&
+        calendarData.pushTopic
+      ) {
+        try {
+          const providerAvailable = await isPushProviderAvailable(pushProviderConfig);
+          if (!providerAvailable) {
+            log.warn(
+              `Push provider unavailable; skipping push setup for ${calendarData.displayName}`,
+            );
+            return;
+          }
+
+          await enablePushForCalendar(accountId, calendarData, pushProviderConfig);
+        } catch (error) {
+          log.warn(
+            `Failed to enable push for newly created calendar ${calendarData.displayName}:`,
+            error,
+          );
+        }
+      }
       return;
     }
 
     const id = crypto.randomUUID();
-    addCalendarMutation.mutate({
+    await addCalendarMutation.mutateAsync({
       accountId,
       calendarData: { id, displayName, color, icon, emoji, url: `local://${id}` },
     });

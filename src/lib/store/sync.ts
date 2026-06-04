@@ -617,7 +617,7 @@ export const syncCalendarsForAccount = async (accountId: string, queryClient: Qu
 
   // persist new calendars to database
   for (const calendar of newCalendars) {
-    addCalendar(accountId, calendar);
+    await addCalendar(accountId, calendar);
   }
 
   // persist calendar property updates to database

@@ -5,138 +5,16 @@
  * https://github.com/bitfireAT/webdav-push
  *
  * This module provides:
- * - Push support detection via PROPFIND
  * - Push subscription registration via POST
- * - Push subscription management (renewal, removal)
+ * - Push subscription removal via DELETE
  */
 
-import type { Connection } from '$lib/caldav/connection';
 import { log } from '$lib/caldav/utils';
-import { type CalDAVCredentials, propfind, tauriRequest } from '$lib/tauriHttp';
-import type {
-  PushCapabilities,
-  PushRegistration,
-  PushTrigger,
-  WebPushSubscription,
-} from '$types/push';
+import { type CalDAVCredentials, tauriRequest } from '$lib/tauriHttp';
+import type { PushRegistration, PushTrigger, WebPushSubscription } from '$types/push';
 
 // WebDAV Push XML namespace
 export const NS_WEBDAV_PUSH = 'https://bitfire.at/webdav-push';
-
-/**
- * Parse push capabilities from PROPFIND response
- */
-const parsePushCapabilities = (xml: string): PushCapabilities => {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xml, 'application/xml');
-
-  const capabilities: PushCapabilities = {
-    supported: false,
-    transports: [],
-    supportedTriggers: [],
-  };
-
-  // Check for topic element (indicates push support)
-  const topicEl = doc.querySelector('topic');
-  if (topicEl?.textContent) {
-    capabilities.supported = true;
-    capabilities.topic = topicEl.textContent.trim();
-  }
-
-  // Parse transports
-  const transportsEl = doc.querySelector('transports');
-  if (transportsEl) {
-    // Check for web-push transport
-    const webPushEl = transportsEl.querySelector('web-push');
-    if (webPushEl) {
-      capabilities.transports.push('web-push');
-
-      // Extract VAPID public key if present
-      const vapidKeyEl = webPushEl.querySelector('vapid-public-key');
-      if (vapidKeyEl?.textContent) {
-        capabilities.vapidPublicKey = vapidKeyEl.textContent.trim();
-      }
-    }
-  }
-
-  // Parse supported triggers
-  const triggersEl = doc.querySelector('supported-triggers');
-  if (triggersEl) {
-    const contentUpdateEl = triggersEl.querySelector('content-update');
-    if (contentUpdateEl) {
-      const depthEl = contentUpdateEl.querySelector('depth');
-      const depth = (depthEl?.textContent?.trim() as '0' | '1' | 'infinity') || '1';
-      capabilities.supportedTriggers.push({ type: 'content-update', depth });
-    }
-
-    const propertyUpdateEl = triggersEl.querySelector('property-update');
-    if (propertyUpdateEl) {
-      const depthEl = propertyUpdateEl.querySelector('depth');
-      const depth = (depthEl?.textContent?.trim() as '0' | '1' | 'infinity') || '0';
-      capabilities.supportedTriggers.push({ type: 'property-update', depth });
-    }
-  }
-
-  return capabilities;
-};
-
-/**
- * Quick server-level WebDAV Push detection via OPTIONS.
- *
- * The spec requires servers that support WebDAV Push to include "webdav-push"
- * in the DAV header of OPTIONS responses. This is cheaper than a PROPFIND and
- * can be used to skip push subscriptions entirely for non-supporting servers.
- *
- * Returns false on any error (network failure, unexpected response, etc.).
- */
-export const checkPushSupportViaOptions = async (url: string, credentials: CalDAVCredentials) => {
-  try {
-    const response = await tauriRequest(url, 'OPTIONS', credentials);
-    const davHeader = response.headers.dav ?? response.headers.DAV ?? '';
-    return davHeader
-      .split(',')
-      .map((s) => s.trim())
-      .includes('webdav-push');
-  } catch {
-    return false;
-  }
-};
-
-/**
- * Check if a resource supports WebDAV Push
- *
- * Performs a PROPFIND request to check for push-related properties:
- * - transports: available push transports (e.g., web-push)
- * - topic: unique identifier for WebDAV Push messages
- * - supported-triggers: types of changes that can trigger messages
- */
-export const checkPushSupport = async (
-  url: string,
-  credentials: CalDAVCredentials,
-): Promise<PushCapabilities> => {
-  const propfindBody = `<?xml version="1.0" encoding="utf-8"?>
-<d:propfind xmlns:d="DAV:" xmlns:P="${NS_WEBDAV_PUSH}">
-  <d:prop>
-    <P:transports/>
-    <P:topic/>
-    <P:supported-triggers/>
-  </d:prop>
-</d:propfind>`;
-
-  try {
-    const response = await propfind(url, credentials, propfindBody, '0');
-
-    if (response.status !== 207) {
-      log.debug(`Push support check failed for ${url}: HTTP ${response.status}`);
-      return { supported: false, transports: [], supportedTriggers: [] };
-    }
-
-    return parsePushCapabilities(response.body);
-  } catch (error) {
-    log.warn(`Error checking push support for ${url}:`, error);
-    return { supported: false, transports: [], supportedTriggers: [] };
-  }
-};
 
 /**
  * Build push-register XML body
@@ -291,67 +169,5 @@ export const unregisterPushSubscription = async (
   } catch (error) {
     log.error('Error unregistering push subscription:', error);
     return false;
-  }
-};
-
-/**
- * Check push support for a connection's calendar home
- */
-export const checkPushSupportForConnection = async (
-  conn: Connection,
-): Promise<PushCapabilities> => {
-  return checkPushSupport(conn.calendarHome, conn.credentials);
-};
-
-/**
- * Parse an incoming push message XML
- */
-interface PushMessage {
-  topic: string;
-  contentUpdate?: {
-    syncToken?: string;
-  };
-  propertyUpdate?: boolean;
-}
-
-export const parsePushMessage = (xml: string): PushMessage | null => {
-  try {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'application/xml');
-
-    const pushMessageEl = doc.querySelector('push-message');
-    if (!pushMessageEl) {
-      log.warn('Invalid push message: missing push-message element');
-      return null;
-    }
-
-    const topicEl = pushMessageEl.querySelector('topic');
-    if (!topicEl?.textContent) {
-      log.warn('Invalid push message: missing topic');
-      return null;
-    }
-
-    const message: PushMessage = {
-      topic: topicEl.textContent.trim(),
-    };
-
-    const contentUpdateEl = pushMessageEl.querySelector('content-update');
-    if (contentUpdateEl) {
-      message.contentUpdate = {};
-      const syncTokenEl = contentUpdateEl.querySelector('sync-token');
-      if (syncTokenEl?.textContent) {
-        message.contentUpdate.syncToken = syncTokenEl.textContent.trim();
-      }
-    }
-
-    const propertyUpdateEl = pushMessageEl.querySelector('property-update');
-    if (propertyUpdateEl) {
-      message.propertyUpdate = true;
-    }
-
-    return message;
-  } catch (error) {
-    log.error('Error parsing push message:', error);
-    return null;
   }
 };

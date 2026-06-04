@@ -39,7 +39,6 @@ export const queryKeys = {
   pushSubscriptions: {
     all: ['pushSubscriptions'] as const,
     byCalendar: (calendarId: string) => ['pushSubscriptions', 'calendar', calendarId] as const,
-    expiring: (withinHours: number) => ['pushSubscriptions', 'expiring', withinHours] as const,
   },
   pendingDeletions: ['pendingDeletions'] as const,
   ui: {

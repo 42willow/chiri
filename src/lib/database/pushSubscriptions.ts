@@ -49,21 +49,6 @@ export const getPushSubscriptionsByCalendar = async (
 };
 
 /**
- * Get push subscriptions that are expiring soon (within specified hours)
- */
-export const getExpiringSubscriptions = async (
-  conn: DatabasePlugin,
-  withinHours: number = 48,
-): Promise<PushSubscription[]> => {
-  const expiryThreshold = new Date(Date.now() + withinHours * 60 * 60 * 1000);
-  const rows = await conn.select<PushSubscriptionRow[]>(
-    'SELECT * FROM push_subscriptions WHERE expires_at < $1',
-    [expiryThreshold.toISOString()],
-  );
-  return rows.map(rowToSubscription);
-};
-
-/**
  * Add or update a push subscription
  */
 export const upsertPushSubscription = async (
@@ -105,13 +90,4 @@ export const deletePushSubscriptionsByCalendar = async (
   calendarId: string,
 ): Promise<void> => {
   await conn.execute('DELETE FROM push_subscriptions WHERE calendar_id = $1', [calendarId]);
-};
-
-/**
- * Delete all expired push subscriptions
- */
-export const deleteExpiredSubscriptions = async (conn: DatabasePlugin): Promise<number> => {
-  const now = new Date().toISOString();
-  const result = await conn.execute('DELETE FROM push_subscriptions WHERE expires_at < $1', [now]);
-  return result.rowsAffected;
 };

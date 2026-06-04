@@ -3,9 +3,9 @@
  *
  * Handles the lifecycle of push subscriptions:
  * - Registration of new subscriptions
- * - Renewal of expiring subscriptions
+ * - Refresh of expired or expiring subscriptions
  * - Removal of subscriptions
- * - Matching incoming push messages to calendars
+ * - Restoring provider listeners after app restart
  */
 
 import type { Connection } from '$lib/caldav/connection';
@@ -40,7 +40,7 @@ import {
   type PushEndpointSubscription,
   type PushMessageHandler,
   type PushProviderConfig,
-  type PushStatus,
+  type PushRegistration,
   type PushSubscription,
   type PushTrigger,
 } from '$types/push';
@@ -65,8 +65,6 @@ const RENEWAL_THRESHOLD_HOURS = 48;
  */
 let globalMessageHandler: PushMessageHandler | null = null;
 const pushEnableInFlight = new Map<string, Promise<boolean>>();
-const pushManagerStartedAt = new Date();
-const runtimeVerifiedSubscriptionIds = new Set<string>();
 
 const getPushSetupKey = (
   accountId: string,
@@ -86,17 +84,7 @@ const getFreshCalendarSubscriptions = async (calendarId: string) => {
   return subscriptions;
 };
 
-/**
- * Helper to get all cached subscriptions, falling back to DB
- */
-const getAllSubscriptions = async () => {
-  // Try to get from cache first
-  const cached = queryClient.getQueryData<PushSubscription[]>(queryKeys.pushSubscriptions.all);
-  if (cached) {
-    return cached;
-  }
-
-  // Fetch from DB and cache it
+const getFreshAllSubscriptions = async () => {
   const subscriptions = await db.getAllPushSubscriptions();
   queryClient.setQueryData(queryKeys.pushSubscriptions.all, subscriptions);
   return subscriptions;
@@ -183,10 +171,6 @@ const isActiveProviderSubscription = (
 ): boolean =>
   subscription.expiresAt > new Date() && subscriptionMatchesProvider(subscription, providerConfig);
 
-const isRuntimeVerifiedSubscription = (subscription: PushSubscription): boolean =>
-  runtimeVerifiedSubscriptionIds.has(subscription.id) ||
-  subscription.createdAt >= pushManagerStartedAt;
-
 const unregisterStoredSubscription = async (
   accountId: string,
   subscription: PushSubscription,
@@ -204,8 +188,38 @@ const unregisterStoredSubscription = async (
 const removeStoredSubscription = async (subscription: PushSubscription): Promise<void> => {
   await removeProviderSubscription(subscription);
   await db.deletePushSubscription(subscription.id);
-  runtimeVerifiedSubscriptionIds.delete(subscription.id);
   removeSubscriptionFromCaches(subscription);
+};
+
+const removeStoredSubscriptionRecord = async (subscription: PushSubscription): Promise<void> => {
+  await db.deletePushSubscription(subscription.id);
+  removeSubscriptionFromCaches(subscription);
+};
+
+const createProviderCleanupSubscription = (
+  accountId: string,
+  calendar: Calendar,
+  endpoint: PushEndpointSubscription,
+): PushSubscription => ({
+  id: `pending:${calendar.id}:${endpoint.pushResource}`,
+  calendarId: calendar.id,
+  accountId,
+  registrationUrl: '',
+  pushResource: endpoint.pushResource,
+  providerId: endpoint.providerId,
+  providerToken: endpoint.providerToken,
+  expiresAt: new Date(0),
+  createdAt: new Date(),
+});
+
+const cleanupProviderEndpoint = async (
+  accountId: string,
+  calendar: Calendar,
+  endpoint: PushEndpointSubscription,
+): Promise<void> => {
+  await removeProviderSubscription(
+    createProviderCleanupSubscription(accountId, calendar, endpoint),
+  );
 };
 
 const removeDuplicateProviderSubscriptions = async (
@@ -251,6 +265,127 @@ const removeProviderSubscription = async (subscription: PushSubscription): Promi
   }
 
   removeNtfyProviderSubscription(subscription);
+};
+
+const createRegisteredPushSubscription = async (
+  accountId: string,
+  calendar: Calendar,
+  conn: Connection,
+  providerConfig: PushProviderConfig,
+): Promise<PushSubscription | null> => {
+  const webPushSubscription = await createWebPushSubscription(calendar, providerConfig);
+  if (!webPushSubscription) {
+    log.warn(`Failed to create Web Push subscription for ${calendar.displayName}`);
+    return null;
+  }
+
+  const triggers: PushTrigger[] = [{ type: 'content-update', depth: '1' }];
+  const expiresAt = new Date(Date.now() + DEFAULT_EXPIRATION_HOURS * 60 * 60 * 1000);
+
+  let registration: PushRegistration | null;
+  try {
+    registration = await registerPushSubscription(
+      calendar.url,
+      conn.credentials,
+      webPushSubscription,
+      triggers,
+      expiresAt,
+    );
+  } catch (error) {
+    log.error(`Failed to register push subscription for ${calendar.displayName}:`, error);
+    await cleanupProviderEndpoint(accountId, calendar, webPushSubscription);
+    return null;
+  }
+
+  if (!registration) {
+    log.error(`Failed to register push subscription for ${calendar.displayName}`);
+    await cleanupProviderEndpoint(accountId, calendar, webPushSubscription);
+    return null;
+  }
+
+  const subscription: PushSubscription = {
+    id: generateUUID(),
+    calendarId: calendar.id,
+    accountId,
+    registrationUrl: registration.registrationUrl,
+    pushResource: webPushSubscription.pushResource,
+    providerId: webPushSubscription.providerId,
+    providerToken: webPushSubscription.providerToken,
+    expiresAt: registration.expires,
+    createdAt: new Date(),
+  };
+
+  await db.upsertPushSubscription(subscription);
+  invalidatePushCaches(calendar.id);
+
+  log.info(
+    `Push subscription created for ${calendar.displayName}, expires: ${registration.expires.toISOString()}`,
+  );
+
+  return subscription;
+};
+
+const cleanupSupersededSubscriptions = async (
+  accountId: string,
+  calendar: Calendar,
+  supersededSubscriptions: PushSubscription[],
+  replacement: PushSubscription,
+): Promise<void> => {
+  for (const subscription of supersededSubscriptions) {
+    await unregisterStoredSubscription(accountId, subscription);
+
+    if (
+      subscription.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID &&
+      subscription.providerToken &&
+      subscription.providerToken !== replacement.providerToken
+    ) {
+      await removeProviderSubscription(subscription);
+    }
+
+    await removeStoredSubscriptionRecord(subscription);
+  }
+
+  if (supersededSubscriptions.length > 0) {
+    invalidatePushCaches(calendar.id);
+    log.info(
+      `Removed ${supersededSubscriptions.length} superseded push subscription(s) for ${calendar.displayName}`,
+    );
+  }
+};
+
+const recreateCalendarPushSubscription = async (
+  accountId: string,
+  calendar: Calendar,
+  supersededSubscriptions: PushSubscription[],
+  providerConfig: PushProviderConfig,
+  reason: string,
+): Promise<PushSubscription | null> => {
+  if (!isConnected(accountId)) {
+    log.warn(
+      `Cannot recreate push subscription for ${calendar.displayName}: account ${accountId} is not connected`,
+    );
+    return null;
+  }
+
+  log.info(`Recreating push subscription for ${calendar.displayName}: ${reason}`);
+  const conn = getConnection(accountId);
+
+  for (const subscription of supersededSubscriptions) {
+    await removeProviderSubscription(subscription);
+  }
+
+  const replacement = await createRegisteredPushSubscription(
+    accountId,
+    calendar,
+    conn,
+    providerConfig,
+  );
+  if (!replacement) {
+    return null;
+  }
+
+  await cleanupSupersededSubscriptions(accountId, calendar, supersededSubscriptions, replacement);
+  return replacement;
 };
 
 /**
@@ -299,67 +434,26 @@ export const subscribeCalendarToPush = async (
   );
 
   for (const subscription of mismatchedSubscriptions) {
-    await unregisterStoredSubscription(accountId, subscription);
-    await removeStoredSubscription(subscription);
+    await removeProviderSubscription(subscription);
   }
 
   if (mismatchedSubscriptions.length > 0) {
-    invalidatePushCaches(calendar.id);
     log.info(
-      `Removed ${mismatchedSubscriptions.length} push subscription(s) for ${calendar.displayName} from a previous push provider`,
+      `Stopped ${mismatchedSubscriptions.length} active push provider subscription(s) for ${calendar.displayName} from a previous push provider`,
     );
   }
 
-  // Create Web Push subscription (requires UnifiedPush integration)
-  const webPushSubscription = await createWebPushSubscription(calendar, providerConfig);
-  if (!webPushSubscription) {
-    log.warn(`Failed to create Web Push subscription for ${calendar.displayName}`);
-    return null;
-  }
-
-  // Define triggers (content updates with depth 1)
-  const triggers: PushTrigger[] = [{ type: 'content-update', depth: '1' }];
-
-  // Request expiration time
-  const expiresAt = new Date(Date.now() + DEFAULT_EXPIRATION_HOURS * 60 * 60 * 1000);
-
-  // Register with server
-  const registration = await registerPushSubscription(
-    calendar.url,
-    conn.credentials,
-    webPushSubscription,
-    triggers,
-    expiresAt,
-  );
-
-  if (!registration) {
-    log.error(`Failed to register push subscription for ${calendar.displayName}`);
-    return null;
-  }
-
-  // Store subscription locally
-  const subscription: PushSubscription = {
-    id: generateUUID(),
-    calendarId: calendar.id,
+  const subscription = await createRegisteredPushSubscription(
     accountId,
-    registrationUrl: registration.registrationUrl,
-    pushResource: webPushSubscription.pushResource,
-    providerId: webPushSubscription.providerId,
-    providerToken: webPushSubscription.providerToken,
-    expiresAt: registration.expires,
-    createdAt: new Date(),
-  };
-
-  await db.upsertPushSubscription(subscription);
-  runtimeVerifiedSubscriptionIds.add(subscription.id);
-
-  // Invalidate caches so queries refetch
-  invalidatePushCaches(calendar.id);
-
-  log.info(
-    `Push subscription created for ${calendar.displayName}, expires: ${registration.expires.toISOString()}`,
+    calendar,
+    conn,
+    providerConfig,
   );
+  if (!subscription) {
+    return null;
+  }
 
+  await cleanupSupersededSubscriptions(accountId, calendar, existingSubscriptions, subscription);
   return subscription;
 };
 
@@ -392,7 +486,6 @@ export const unsubscribeCalendarFromPush = async (accountId: string, calendarId:
     }
 
     await db.deletePushSubscription(subscription.id);
-    runtimeVerifiedSubscriptionIds.delete(subscription.id);
     removeSubscriptionFromCaches(subscription);
   }
 
@@ -402,88 +495,10 @@ export const unsubscribeCalendarFromPush = async (accountId: string, calendarId:
   log.info(`Removed ${subscriptions.length} push subscriptions for calendar ${calendarId}`);
 };
 
-/**
- * Renew expiring push subscriptions
- *
- * Should be called periodically (e.g., daily) to ensure subscriptions stay active.
- */
-export const renewExpiringSubscriptions = async () => {
-  const expiring = await db.getExpiringSubscriptions(RENEWAL_THRESHOLD_HOURS);
-
-  if (expiring.length === 0) {
-    return 0;
-  }
-
-  log.info(`Found ${expiring.length} expiring push subscriptions to renew`);
-  const renewed = 0;
-
-  for (const subscription of expiring) {
-    try {
-      // Remove old subscription
-      await db.deletePushSubscription(subscription.id);
-
-      // Re-subscribe (this will create a new subscription)
-      // We need to get the calendar to re-subscribe
-      // For now, just log that we would renew
-      log.warn(
-        `Would renew subscription for calendar ${subscription.calendarId} - not yet implemented`,
-      );
-
-      // TODO: Get calendar from store and call subscribeCalendarToPush
-      // const calendar = getCalendarById(subscription.calendarId);
-      // if (calendar) {
-      //   await subscribeCalendarToPush(subscription.accountId, calendar);
-      //   renewed++;
-      // }
-    } catch (error) {
-      log.error(`Failed to renew subscription ${subscription.id}:`, error);
-    }
-  }
-
-  return renewed;
-};
-
-/**
- * Find calendar by push topic
- *
- * Used to match incoming push messages to the correct calendar.
- */
-export const findCalendarByTopic = (calendars: Calendar[], topic: string) => {
-  return calendars.find((cal) => cal.pushTopic === topic);
-};
-
-/**
- * Clean up expired subscriptions
- */
-export const cleanupExpiredSubscriptions = async () => {
-  const deleted = await db.deleteExpiredSubscriptions();
-  if (deleted > 0) {
-    log.info(`Cleaned up ${deleted} expired push subscriptions`);
-    // Invalidate all caches since we don't know which calendars were affected
-    invalidatePushCaches();
-  }
-  return deleted;
-};
-
-/**
- * Get push status summary for all calendars
- */
-
-export const getPushStatus = async (calendars: Calendar[]): Promise<PushStatus> => {
-  const allSubscriptions = await getAllSubscriptions();
-  const expiringSubscriptions = await db.getExpiringSubscriptions(RENEWAL_THRESHOLD_HOURS);
-
-  return {
-    totalCalendars: calendars.length,
-    pushSupportedCalendars: calendars.filter((c) => c.pushSupported).length,
-    activeSubscriptions: allSubscriptions.length,
-    expiringSubscriptions: expiringSubscriptions.length,
-  };
-};
-
 export const startPushListeningForSubscription = (
   subscription: PushSubscription,
   providerConfig: PushProviderConfig = DEFAULT_PUSH_PROVIDER_CONFIG,
+  calendar?: Calendar,
 ) => {
   if (!globalMessageHandler) {
     log.warn('Push message handler not set - call initializePushManager first');
@@ -491,7 +506,32 @@ export const startPushListeningForSubscription = (
   }
 
   if (providerConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID) {
-    return startLinuxUnifiedPushProviderListening(subscription, globalMessageHandler);
+    return startLinuxUnifiedPushProviderListening(
+      subscription,
+      globalMessageHandler,
+      calendar
+        ? (_calendarId, reason) => {
+            log.warn(`Linux UnifiedPush invalidated for ${calendar.displayName}: ${reason}`);
+            void recreateCalendarPushSubscription(
+              subscription.accountId,
+              calendar,
+              [subscription],
+              providerConfig,
+              reason,
+            ).then((replacement) => {
+              if (replacement) {
+                startPushListeningForSubscription(replacement, providerConfig, calendar);
+                return;
+              }
+
+              globalMessageHandler?.(
+                calendar.id,
+                `Linux UnifiedPush invalidated and recreation failed: ${reason}`,
+              );
+            });
+          }
+        : undefined,
+    );
   }
 
   return startNtfyProviderListening(subscription, globalMessageHandler);
@@ -545,37 +585,38 @@ const enablePushForCalendarInner = async (
       log.info(`Removed ${removed} duplicate push subscription(s) for ${calendar.displayName}`);
     }
 
-    if (!isRuntimeVerifiedSubscription(validSubscription)) {
-      log.info(`Refreshing stored push subscription for ${calendar.displayName} after app restart`);
-      await unregisterStoredSubscription(accountId, validSubscription);
-      await removeStoredSubscription(validSubscription);
-      invalidatePushCaches(calendar.id);
-    } else {
-      const restored = await restoreProviderSubscription(
+    const restored = await restoreProviderSubscription(validSubscription, calendar, providerConfig);
+    if (restored) {
+      const listening = startPushListeningForSubscription(
         validSubscription,
-        calendar,
         providerConfig,
+        calendar,
       );
-      if (restored) {
-        return startPushListeningForSubscription(validSubscription, providerConfig);
+      if (listening) {
+        return true;
       }
 
       log.warn(
+        `Push provider subscription restored but listener did not start for ${calendar.displayName}; recreating it`,
+      );
+    } else {
+      log.warn(
         `Failed to restore push provider subscription for ${calendar.displayName}; recreating it`,
       );
-
-      if (isConnected(accountId)) {
-        try {
-          const conn = getConnection(accountId);
-          await unregisterPushSubscription(validSubscription.registrationUrl, conn.credentials);
-        } catch (error) {
-          log.warn('Failed to unregister stale push subscription from server:', error);
-        }
-      }
-
-      await removeStoredSubscription(validSubscription);
-      invalidatePushCaches(calendar.id);
     }
+
+    const replacement = await recreateCalendarPushSubscription(
+      accountId,
+      calendar,
+      [validSubscription],
+      providerConfig,
+      restored ? 'provider listener failed to start' : 'provider restore failed',
+    );
+    if (!replacement) {
+      return false;
+    }
+
+    return startPushListeningForSubscription(replacement, providerConfig, calendar);
   }
 
   // Subscribe to push
@@ -585,7 +626,7 @@ const enablePushForCalendarInner = async (
   }
 
   // Start listening
-  const listening = startPushListeningForSubscription(subscription, providerConfig);
+  const listening = startPushListeningForSubscription(subscription, providerConfig, calendar);
   if (!listening) {
     log.warn(`Push subscribed but not listening for ${calendar.displayName}`);
   }
@@ -636,53 +677,99 @@ export const disablePushForCalendar = async (accountId: string, calendarId: stri
   await unsubscribeCalendarFromPush(accountId, calendarId);
 };
 
+export const disableAllPushSubscriptions = async (): Promise<void> => {
+  const subscriptions = await getFreshAllSubscriptions();
+
+  for (const subscription of subscriptions) {
+    await removeProviderSubscription(subscription);
+    await unregisterStoredSubscription(subscription.accountId, subscription);
+    await removeStoredSubscriptionRecord(subscription);
+  }
+
+  stopAllPushSubscriptions();
+  invalidatePushCaches();
+
+  if (subscriptions.length > 0) {
+    log.info(`Disabled WebDAV Push and removed ${subscriptions.length} stored subscription(s)`);
+  }
+};
+
 /**
  * Restore push listening for all active subscriptions
  *
  * Should be called on app startup to reconnect provider listeners for
  * calendars that still have valid push subscriptions.
  */
-export const restorePushListeners = async (calendars: Calendar[]) => {
+export const restorePushListeners = async (
+  calendars: Calendar[],
+  providerConfig: PushProviderConfig = DEFAULT_PUSH_PROVIDER_CONFIG,
+) => {
   if (!globalMessageHandler) {
     log.warn('Cannot restore push listeners - message handler not set');
     return 0;
   }
 
   let restored = 0;
-  const allSubscriptions = await getAllSubscriptions();
+  const allSubscriptions = await getFreshAllSubscriptions();
 
   for (const subscription of allSubscriptions) {
     // Find the calendar
     const calendar = calendars.find((c) => c.id === subscription.calendarId);
     if (!calendar) {
       log.warn(`Calendar ${subscription.calendarId} not found for push subscription`);
+      await unregisterStoredSubscription(subscription.accountId, subscription);
+      await removeStoredSubscription(subscription);
       continue;
     }
 
-    // Check if subscription is still valid
-    if (subscription.expiresAt <= new Date()) {
-      log.debug(`Push subscription for ${calendar.displayName} has expired`);
+    const recreateSubscription = async (reason: string) => {
+      const replacement = await recreateCalendarPushSubscription(
+        subscription.accountId,
+        calendar,
+        [subscription],
+        providerConfig,
+        reason,
+      );
+      if (!replacement) {
+        return false;
+      }
+
+      return startPushListeningForSubscription(replacement, providerConfig, calendar);
+    };
+
+    if (!isRenewablyValidSubscription(subscription, providerConfig)) {
+      if (await recreateSubscription('stored subscription is expired or nearing expiration')) {
+        restored++;
+      }
       continue;
     }
 
     // Restore the provider subscription using the existing push resource URL.
     try {
-      const restoredProvider = await restoreProviderSubscription(subscription, calendar, {
-        providerId: subscription.providerId,
-      });
+      const restoredProvider = await restoreProviderSubscription(
+        subscription,
+        calendar,
+        providerConfig,
+      );
       if (!restoredProvider) {
         log.warn(`Failed to restore push provider subscription for ${calendar.displayName}`);
+        if (await recreateSubscription('provider restore failed')) {
+          restored++;
+        }
         continue;
       }
 
-      if (
-        startPushListeningForSubscription(subscription, { providerId: subscription.providerId })
-      ) {
+      if (startPushListeningForSubscription(subscription, providerConfig, calendar)) {
         restored++;
         log.info(`Restored push listener for ${calendar.displayName}`);
+      } else if (await recreateSubscription('provider listener failed to start')) {
+        restored++;
       }
     } catch (error) {
       log.error(`Failed to restore push listener for ${calendar.displayName}:`, error);
+      if (await recreateSubscription('provider restore threw')) {
+        restored++;
+      }
     }
   }
 

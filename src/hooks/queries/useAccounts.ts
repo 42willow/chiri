@@ -157,15 +157,14 @@ export const useAddCalendar = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       accountId,
       calendarData,
     }: {
       accountId: string;
       calendarData: Partial<Calendar>;
     }) => {
-      addCalendar(accountId, calendarData);
-      return Promise.resolve();
+      await addCalendar(accountId, calendarData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.accounts.all });

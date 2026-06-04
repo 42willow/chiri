@@ -10,7 +10,6 @@ import {
   NTFY_DIRECT_PROVIDER_ID,
   type PushProviderId,
 } from '$types/push';
-import { isLinuxPlatform } from '$utils/platform';
 
 export const WebDAVPushSettings = () => {
   const {
@@ -21,16 +20,17 @@ export const WebDAVPushSettings = () => {
     ntfyServerUrl,
     setNtfyServerUrl,
   } = useSettingsStore();
-  const showLinuxUnifiedPushOption =
-    isLinuxPlatform() || pushProvider === LINUX_UNIFIED_PUSH_PROVIDER_ID;
+  const {
+    availability: providerAvailability,
+    isResolvingLinuxUnifiedPush,
+    linuxUnifiedPushAllowed,
+    pushProviderConfig,
+  } = usePushProviderAvailability({ enabled: enablePush, pushProvider, ntfyServerUrl });
+  const showLinuxUnifiedPushOption = linuxUnifiedPushAllowed;
   const showPushProviderSelect = showLinuxUnifiedPushOption;
-  const { availability: providerAvailability, pushProviderConfig } = usePushProviderAvailability({
-    enabled: enablePush,
-    pushProvider,
-    ntfyServerUrl,
-  });
   const providerChecking =
-    providerAvailability.isFetching && providerAvailability.data === undefined;
+    isResolvingLinuxUnifiedPush ||
+    (providerAvailability.isFetching && providerAvailability.data === undefined);
   const providerAvailable = providerAvailability.data === true;
   const providerStatusLabel = providerChecking
     ? 'Checking'
@@ -43,9 +43,9 @@ export const WebDAVPushSettings = () => {
       ? 'text-semantic-success'
       : 'text-semantic-warning';
   const providerName =
-    pushProvider === LINUX_UNIFIED_PUSH_PROVIDER_ID ? 'Linux UnifiedPush' : 'ntfy';
+    pushProviderConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID ? 'Linux UnifiedPush' : 'ntfy';
   const providerDescription =
-    pushProvider === LINUX_UNIFIED_PUSH_PROVIDER_ID
+    pushProviderConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID
       ? 'Uses your system UnifiedPush distributor'
       : `Uses ${pushProviderConfig.ntfyConfig?.serverUrl ?? DEFAULT_NTFY_SERVER_URL}`;
 
@@ -101,7 +101,7 @@ export const WebDAVPushSettings = () => {
               </>
             )}
 
-            {pushProvider === NTFY_DIRECT_PROVIDER_ID && (
+            {pushProviderConfig.providerId === NTFY_DIRECT_PROVIDER_ID && (
               <>
                 <div className="border-t border-surface-200 dark:border-surface-700" />
 

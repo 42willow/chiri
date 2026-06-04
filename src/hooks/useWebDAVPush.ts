@@ -5,24 +5,36 @@
  * Connects incoming push messages to calendar sync operations.
  */
 
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import type { SyncTrigger } from '$hooks/queries/useSync';
+import { usePushProviderConfigState } from '$hooks/usePushProviderAvailability';
 import { loggers } from '$lib/logger';
 import {
+  disableAllPushSubscriptions,
   enablePushForCalendar,
-  findCalendarByTopic,
   initializePushManager,
   isPushProviderAvailable,
   restorePushListeners,
   stopAllPushSubscriptions,
 } from '$lib/push';
-import { createNtfyProviderConfig } from '$lib/push/ntfyProvider';
-import type { Account, Calendar } from '$types';
-import { NTFY_DIRECT_PROVIDER_ID, type PushProviderConfig } from '$types/push';
+import type { Account } from '$types';
+import {
+  LINUX_UNIFIED_PUSH_PROVIDER_ID,
+  NTFY_DIRECT_PROVIDER_ID,
+  type PushProviderConfig,
+} from '$types/push';
 
 const log = loggers.sync;
+const PUSH_MAINTENANCE_INTERVAL_SECONDS = 12 * 60 * 60;
+
+interface PushMaintenanceEvent {
+  intervalSeconds: number;
+  reason: string;
+}
 
 const getPushSubscriptionTargets = (accounts: Account[]) =>
   accounts.flatMap((account) =>
@@ -88,31 +100,27 @@ interface UseWebDAVPushProps {
  */
 export const useWebDAVPush = ({ onSyncCalendar, lastSyncTime }: UseWebDAVPushProps) => {
   const { data: accounts = [] } = useAccounts();
-  const { enablePush, pushProvider, ntfyServerUrl } = useSettingsStore();
-  const pushProviderConfig = useMemo<PushProviderConfig>(
-    () => ({
-      providerId: pushProvider,
-      ntfyConfig:
-        pushProvider === NTFY_DIRECT_PROVIDER_ID
-          ? createNtfyProviderConfig(ntfyServerUrl)
-          : undefined,
-    }),
-    [pushProvider, ntfyServerUrl],
-  );
+  const { enablePush, pushProvider, ntfyServerUrl, setPushProvider } = useSettingsStore();
+  const { isResolvingLinuxUnifiedPush, linuxUnifiedPushAllowed, pushProviderConfig } =
+    usePushProviderConfigState(pushProvider, ntfyServerUrl);
   const initializedRef = useRef(false);
   const restoreCompletedRef = useRef(false);
   const lastPushSetupKeyRef = useRef<string | null>(null);
+  const previousEnablePushRef = useRef(enablePush);
   const accountsRef = useRef(accounts);
 
   // Keep accounts ref in sync
   accountsRef.current = accounts;
 
-  // Get all calendars across all accounts
-  const allCalendars = useMemo(() => accounts.flatMap((a) => a.calendars), [accounts]);
   const pushSubscriptionTargetKey = useMemo(
     () => getPushSubscriptionTargetKey(accounts),
     [accounts],
   );
+  const pushProviderConfigKey = useMemo(
+    () => `${pushProviderConfig.providerId}|${pushProviderConfig.ntfyConfig?.serverUrl ?? ''}`,
+    [pushProviderConfig],
+  );
+  const previousPushProviderConfigKeyRef = useRef(pushProviderConfigKey);
 
   // Push message handler - triggers sync for the affected calendar
   const handlePushMessage = useCallback(
@@ -143,8 +151,19 @@ export const useWebDAVPush = ({ onSyncCalendar, lastSyncTime }: UseWebDAVPushPro
     log.info('Push manager initialized');
   }, [handlePushMessage]);
 
+  useEffect(() => {
+    if (isResolvingLinuxUnifiedPush) return;
+    if (pushProvider !== LINUX_UNIFIED_PUSH_PROVIDER_ID || linuxUnifiedPushAllowed) return;
+
+    setPushProvider(NTFY_DIRECT_PROVIDER_ID);
+    restoreCompletedRef.current = false;
+    lastPushSetupKeyRef.current = null;
+  }, [isResolvingLinuxUnifiedPush, linuxUnifiedPushAllowed, pushProvider, setPushProvider]);
+
   // Subscribe to push for push-enabled calendars after sync completes
   useEffect(() => {
+    if (isResolvingLinuxUnifiedPush) return;
+
     // Skip if push is disabled
     if (!enablePush) return;
 
@@ -155,7 +174,7 @@ export const useWebDAVPush = ({ onSyncCalendar, lastSyncTime }: UseWebDAVPushPro
     if (!lastSyncTime) return;
 
     // Skip if we've already processed this sync
-    const pushSetupKey = `${lastSyncTime.getTime()}|${pushProviderConfig.providerId}|${pushProviderConfig.ntfyConfig?.serverUrl ?? ''}|${pushSubscriptionTargetKey}`;
+    const pushSetupKey = `${lastSyncTime.getTime()}|${pushProviderConfigKey}|${pushSubscriptionTargetKey}`;
     if (lastPushSetupKeyRef.current === pushSetupKey) {
       return;
     }
@@ -178,15 +197,132 @@ export const useWebDAVPush = ({ onSyncCalendar, lastSyncTime }: UseWebDAVPushPro
     return () => {
       cancelled = true;
     };
-  }, [enablePush, lastSyncTime, pushProviderConfig, pushSubscriptionTargetKey]); // Trigger after successful sync or push-capable calendar changes
+  }, [
+    enablePush,
+    isResolvingLinuxUnifiedPush,
+    lastSyncTime,
+    pushProviderConfig,
+    pushProviderConfigKey,
+    pushSubscriptionTargetKey,
+  ]); // trigger after successful sync or push-capable calendar changes
+
+  useEffect(() => {
+    if (previousPushProviderConfigKeyRef.current === pushProviderConfigKey) return;
+
+    previousPushProviderConfigKeyRef.current = pushProviderConfigKey;
+    restoreCompletedRef.current = false;
+    lastPushSetupKeyRef.current = null;
+  }, [pushProviderConfigKey]);
+
+  useEffect(() => {
+    const wasEnabled = previousEnablePushRef.current;
+    previousEnablePushRef.current = enablePush;
+
+    if (enablePush) {
+      return;
+    }
+
+    restoreCompletedRef.current = false;
+    lastPushSetupKeyRef.current = null;
+
+    if (!wasEnabled) {
+      return;
+    }
+
+    let cancelled = false;
+    const disablePush = async () => {
+      try {
+        await disableAllPushSubscriptions();
+        if (!cancelled) {
+          log.info('WebDAV Push disabled');
+        }
+      } catch (error) {
+        if (!cancelled) {
+          log.warn('Failed to disable WebDAV Push subscriptions:', error);
+        }
+      }
+    };
+
+    disablePush();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [enablePush]);
+
+  useEffect(() => {
+    let cancelled = false;
+    let unlistenMaintenance: (() => void) | undefined;
+
+    const setupMaintenanceListener = async () => {
+      try {
+        const unlisten = await listen<PushMaintenanceEvent>(
+          'webdav-push://maintenance',
+          async (event) => {
+            if (cancelled || !enablePush || isResolvingLinuxUnifiedPush) return;
+
+            log.info('Running WebDAV Push maintenance', {
+              intervalSeconds: event.payload.intervalSeconds,
+              reason: event.payload.reason,
+            });
+
+            await subscribeToPushEnabledCalendars(
+              accountsRef.current,
+              pushProviderConfig,
+              () => cancelled,
+            );
+          },
+        );
+        if (cancelled) {
+          unlisten();
+          return;
+        }
+        unlistenMaintenance = unlisten;
+      } catch (error) {
+        log.warn('Failed to listen for WebDAV Push maintenance events:', error);
+      }
+    };
+
+    setupMaintenanceListener();
+
+    return () => {
+      cancelled = true;
+      unlistenMaintenance?.();
+    };
+  }, [enablePush, isResolvingLinuxUnifiedPush, pushProviderConfig]);
+
+  useEffect(() => {
+    const hasPushTargets = getPushSubscriptionTargets(accounts).length > 0;
+    const enabled = enablePush && hasPushTargets && !isResolvingLinuxUnifiedPush;
+
+    invoke('start_webdav_push_maintenance', {
+      enabled,
+      intervalSeconds: PUSH_MAINTENANCE_INTERVAL_SECONDS,
+    }).catch((error) => {
+      log.warn('Failed to configure WebDAV Push maintenance:', error);
+    });
+
+    return () => {
+      invoke('stop_webdav_push_maintenance').catch((error) => {
+        log.warn('Failed to stop WebDAV Push maintenance:', error);
+      });
+    };
+  }, [accounts, enablePush, isResolvingLinuxUnifiedPush]);
 
   // Restore push listeners on app startup (for existing subscriptions)
   useEffect(() => {
-    if (!enablePush || accountsRef.current.length === 0 || restoreCompletedRef.current) return;
+    if (
+      isResolvingLinuxUnifiedPush ||
+      !enablePush ||
+      accounts.length === 0 ||
+      restoreCompletedRef.current
+    ) {
+      return;
+    }
 
     const restore = async () => {
-      const allCalendars = accountsRef.current.flatMap((a) => a.calendars);
-      const restored = await restorePushListeners(allCalendars);
+      const allCalendars = accounts.flatMap((a) => a.calendars);
+      const restored = await restorePushListeners(allCalendars, pushProviderConfig);
       if (restored > 0) {
         log.info(`Restored ${restored} push listeners`);
       }
@@ -194,7 +330,7 @@ export const useWebDAVPush = ({ onSyncCalendar, lastSyncTime }: UseWebDAVPushPro
     };
 
     restore();
-  }, [enablePush]); // Only run when enablePush changes; accounts accessed via ref
+  }, [accounts, enablePush, isResolvingLinuxUnifiedPush, pushProviderConfig]);
 
   // Cleanup on unmount
   useEffect(() => {
@@ -203,12 +339,5 @@ export const useWebDAVPush = ({ onSyncCalendar, lastSyncTime }: UseWebDAVPushPro
     };
   }, []);
 
-  // Return utility functions
-  return {
-    /** Find calendar by its push topic (for debugging) */
-    findCalendarByTopic: useCallback(
-      (topic: string): Calendar | undefined => findCalendarByTopic(allCalendars, topic),
-      [allCalendars],
-    ),
-  };
+  return undefined;
 };

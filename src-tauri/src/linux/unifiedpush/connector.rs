@@ -5,6 +5,8 @@ use tauri::{AppHandle, Emitter, Manager};
 use super::state::PendingEndpoints;
 
 const MESSAGE_EVENT: &str = "unifiedpush://message";
+const ENDPOINT_EVENT: &str = "unifiedpush://endpoint";
+const UNREGISTERED_EVENT: &str = "unifiedpush://unregistered";
 pub(super) const CONNECTOR_PATH: &str = "/org/unifiedpush/Connector";
 const CONNECTOR_INTERFACE: &str = "org.unifiedpush.Connector2";
 const CONNECTOR_INTROSPECTION_XML: &str = r#"
@@ -27,9 +29,22 @@ const CONNECTOR_INTROSPECTION_XML: &str = r#"
 "#;
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 struct LinuxUnifiedPushMessageEvent {
     token: String,
     message: String,
+    message_bytes: usize,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct LinuxUnifiedPushEndpointEvent {
+    token: String,
+    endpoint: String,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct LinuxUnifiedPushUnregisteredEvent {
+    token: String,
 }
 
 pub(super) fn gtk_application_dbus_connection(
@@ -100,8 +115,8 @@ fn handle_method_call(
 
     match method_name {
         "Message" => handle_message(app, &args, invocation),
-        "NewEndpoint" => handle_new_endpoint(pending_endpoints, &args, invocation),
-        "Unregistered" => handle_unregistered(pending_endpoints, &args, invocation),
+        "NewEndpoint" => handle_new_endpoint(app, pending_endpoints, &args, invocation),
+        "Unregistered" => handle_unregistered(app, pending_endpoints, &args, invocation),
         _ => return_empty_response(invocation),
     }
 }
@@ -120,7 +135,11 @@ fn handle_message(
 
         let _ = app.emit(
             MESSAGE_EVENT,
-            LinuxUnifiedPushMessageEvent { token, message },
+            LinuxUnifiedPushMessageEvent {
+                token,
+                message,
+                message_bytes: message_len,
+            },
         );
     }
 
@@ -132,6 +151,7 @@ fn handle_message(
 }
 
 fn handle_new_endpoint(
+    app: &AppHandle,
     pending_endpoints: &PendingEndpoints,
     args: &glib::VariantDict,
     invocation: gio::DBusMethodInvocation,
@@ -142,15 +162,21 @@ fn handle_new_endpoint(
     ) {
         if let Ok(mut pending) = pending_endpoints.lock() {
             if let Some(sender) = pending.remove(&token) {
-                let _ = sender.send(endpoint);
+                let _ = sender.send(endpoint.clone());
             }
         }
+
+        let _ = app.emit(
+            ENDPOINT_EVENT,
+            LinuxUnifiedPushEndpointEvent { token, endpoint },
+        );
     }
 
     return_empty_response(invocation);
 }
 
 fn handle_unregistered(
+    app: &AppHandle,
     pending_endpoints: &PendingEndpoints,
     args: &glib::VariantDict,
     invocation: gio::DBusMethodInvocation,
@@ -159,6 +185,11 @@ fn handle_unregistered(
         if let Ok(mut pending) = pending_endpoints.lock() {
             pending.remove(&token);
         }
+
+        let _ = app.emit(
+            UNREGISTERED_EVENT,
+            LinuxUnifiedPushUnregisteredEvent { token },
+        );
     }
 
     return_empty_response(invocation);

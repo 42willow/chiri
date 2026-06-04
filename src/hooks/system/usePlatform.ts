@@ -5,7 +5,7 @@ import { isLinuxPlatform } from '$utils/platform';
 export const usePlatform = () => {
   const isLinux = isLinuxPlatform();
 
-  const query = useQuery({
+  const gnomeQuery = useQuery({
     queryKey: ['platform', 'isGnomeDesktop'],
     enabled: isLinux,
     queryFn: async () => {
@@ -21,8 +21,25 @@ export const usePlatform = () => {
     retry: false,
   });
 
+  const kdeQuery = useQuery({
+    queryKey: ['platform', 'isKdeDesktop'],
+    enabled: isLinux,
+    queryFn: async () => {
+      try {
+        return await invoke<boolean>('is_kde_desktop');
+      } catch (error) {
+        console.error('Failed to detect KDE desktop:', error);
+        return false;
+      }
+    },
+    staleTime: Number.POSITIVE_INFINITY,
+    gcTime: Number.POSITIVE_INFINITY,
+    retry: false,
+  });
+
   return {
-    isGNOME: isLinux && (query.data ?? false),
-    isLoading: isLinux && query.isPending,
+    isGNOME: isLinux && (gnomeQuery.data ?? false),
+    isKDE: isLinux && (kdeQuery.data ?? false),
+    isLoading: isLinux && (gnomeQuery.isPending || kdeQuery.isPending),
   };
 };

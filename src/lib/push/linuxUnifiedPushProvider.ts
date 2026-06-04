@@ -20,35 +20,82 @@ interface LinuxUnifiedPushProviderRegistration {
 interface LinuxUnifiedPushProviderMessageEvent {
   token: string;
   message: string;
+  messageBytes: number;
+}
+
+interface LinuxUnifiedPushProviderEndpointEvent {
+  token: string;
+  endpoint: string;
+}
+
+interface LinuxUnifiedPushProviderUnregisteredEvent {
+  token: string;
 }
 
 const calendarIdsByProviderToken = new Map<string, string>();
+const pushResourcesByProviderToken = new Map<string, string>();
 const providerMessageHandlers = new Map<string, PushMessageHandler>();
+const providerInvalidationHandlers = new Map<
+  string,
+  (calendarId: string, reason: string) => void
+>();
 let unlistenMessage: UnlistenFn | null = null;
+let unlistenEndpoint: UnlistenFn | null = null;
+let unlistenUnregistered: UnlistenFn | null = null;
 let listenerPromise: Promise<void> | null = null;
 
-const ensureMessageListener = () => {
+const invalidateProviderSubscription = (token: string, reason: string) => {
+  const calendarId = calendarIdsByProviderToken.get(token);
+  if (!calendarId) return;
+
+  const handler = providerInvalidationHandlers.get(calendarId);
+  stopLinuxUnifiedPushProviderListening(calendarId);
+  handler?.(calendarId, reason);
+};
+
+const ensureProviderEventListeners = () => {
   if (unlistenMessage || listenerPromise) return;
 
-  listenerPromise = listen<LinuxUnifiedPushProviderMessageEvent>(
-    'unifiedpush://message',
-    (event) => {
-      const calendarId = calendarIdsByProviderToken.get(event.payload.token);
+  const setupPromise = Promise.all([
+    listen<LinuxUnifiedPushProviderMessageEvent>('unifiedpush://message', (event) => {
+      const { token, message, messageBytes } = event.payload;
+      const calendarId = calendarIdsByProviderToken.get(token);
       if (!calendarId) return;
 
       const handler = providerMessageHandlers.get(calendarId);
       if (!handler) return;
 
-      handler(calendarId, event.payload.message);
-    },
-  )
-    .then((unlisten) => {
-      unlistenMessage = unlisten;
+      handler(calendarId, message || `Linux UnifiedPush message (${messageBytes} bytes)`);
+    }),
+    listen<LinuxUnifiedPushProviderEndpointEvent>('unifiedpush://endpoint', (event) => {
+      const { token, endpoint } = event.payload;
+      const currentEndpoint = pushResourcesByProviderToken.get(token);
+      if (!currentEndpoint || currentEndpoint === endpoint) return;
+
+      invalidateProviderSubscription(token, 'Linux UnifiedPush endpoint changed');
+    }),
+    listen<LinuxUnifiedPushProviderUnregisteredEvent>('unifiedpush://unregistered', (event) => {
+      invalidateProviderSubscription(event.payload.token, 'Linux UnifiedPush unregistered');
+    }),
+  ])
+    .then(([message, endpoint, unregistered]) => {
+      if (listenerPromise !== setupPromise) {
+        message();
+        endpoint();
+        unregistered();
+        return;
+      }
+
+      unlistenMessage = message;
+      unlistenEndpoint = endpoint;
+      unlistenUnregistered = unregistered;
     })
     .catch((error) => {
       listenerPromise = null;
       log.warn('Failed to listen for Linux UnifiedPush messages:', error);
     });
+
+  listenerPromise = setupPromise;
 };
 
 export const isLinuxUnifiedPushProviderAvailable = async (): Promise<boolean> => {
@@ -124,21 +171,30 @@ export const restoreLinuxUnifiedPushProviderSubscription = async (
 export const startLinuxUnifiedPushProviderListening = (
   subscription: PushSubscription,
   onMessage: PushMessageHandler,
+  onInvalidated?: (calendarId: string, reason: string) => void,
 ): boolean => {
   if (!subscription.providerToken) return false;
 
   calendarIdsByProviderToken.set(subscription.providerToken, subscription.calendarId);
+  pushResourcesByProviderToken.set(subscription.providerToken, subscription.pushResource);
   providerMessageHandlers.set(subscription.calendarId, onMessage);
-  ensureMessageListener();
+  if (onInvalidated) {
+    providerInvalidationHandlers.set(subscription.calendarId, onInvalidated);
+  } else {
+    providerInvalidationHandlers.delete(subscription.calendarId);
+  }
+  ensureProviderEventListeners();
   return true;
 };
 
 export const stopLinuxUnifiedPushProviderListening = (calendarId: string): void => {
   providerMessageHandlers.delete(calendarId);
+  providerInvalidationHandlers.delete(calendarId);
 
   for (const [token, activeCalendarId] of calendarIdsByProviderToken.entries()) {
     if (activeCalendarId === calendarId) {
       calendarIdsByProviderToken.delete(token);
+      pushResourcesByProviderToken.delete(token);
     }
   }
 };
@@ -159,8 +215,14 @@ export const removeLinuxUnifiedPushProviderSubscription = async (
 
 export const stopAllLinuxUnifiedPushProviderListeners = (): void => {
   calendarIdsByProviderToken.clear();
+  pushResourcesByProviderToken.clear();
   providerMessageHandlers.clear();
+  providerInvalidationHandlers.clear();
   unlistenMessage?.();
+  unlistenEndpoint?.();
+  unlistenUnregistered?.();
   unlistenMessage = null;
+  unlistenEndpoint = null;
+  unlistenUnregistered = null;
   listenerPromise = null;
 };

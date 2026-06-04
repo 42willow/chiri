@@ -7,16 +7,56 @@ use tauri::Theme;
 /// Checks XDG_CURRENT_DESKTOP first, then XDG_SESSION_DESKTOP.
 #[cfg(target_os = "linux")]
 fn is_gnome() -> bool {
-    std::env::var("XDG_CURRENT_DESKTOP")
-        .or_else(|_| std::env::var("XDG_SESSION_DESKTOP"))
-        .map(|desktop| desktop.to_lowercase().contains("gnome"))
-        .unwrap_or(false)
+    linux_desktop_session_values()
+        .iter()
+        .any(|desktop| desktop.contains("gnome"))
+}
+
+/// Returns true when running inside a KDE Plasma session.
+#[cfg(target_os = "linux")]
+fn is_kde() -> bool {
+    let kde_full_session = std::env::var("KDE_FULL_SESSION")
+        .map(|value| {
+            let value = value.to_lowercase();
+            value == "1" || value == "true"
+        })
+        .unwrap_or(false);
+
+    kde_full_session
+        || linux_desktop_session_values()
+            .iter()
+            .any(|desktop| desktop.contains("kde") || desktop.contains("plasma"))
+}
+
+#[cfg(target_os = "linux")]
+fn linux_desktop_session_values() -> Vec<String> {
+    [
+        "XDG_CURRENT_DESKTOP",
+        "XDG_SESSION_DESKTOP",
+        "DESKTOP_SESSION",
+    ]
+    .iter()
+    .filter_map(|key| std::env::var(key).ok())
+    .flat_map(|value| {
+        value
+            .split([':', ';'])
+            .map(|part| part.trim().to_lowercase())
+            .filter(|part| !part.is_empty())
+            .collect::<Vec<_>>()
+    })
+    .collect()
 }
 
 /// Returns true when running on Linux/GNOME.
 #[tauri::command]
 pub async fn is_gnome_desktop() -> Result<bool, String> {
     Ok(is_gnome())
+}
+
+/// Returns true when running on Linux/KDE Plasma.
+#[tauri::command]
+pub async fn is_kde_desktop() -> Result<bool, String> {
+    Ok(is_kde())
 }
 
 /// Returns the appropriate tray icon theme for the current Linux desktop.

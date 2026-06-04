@@ -13,7 +13,6 @@ const mocks = vi.hoisted(() => {
   const db = {
     getPushSubscriptionsByCalendar: vi.fn(async () => subscriptions),
     getAllPushSubscriptions: vi.fn(async () => subscriptions),
-    getExpiringSubscriptions: vi.fn(async () => []),
     upsertPushSubscription: vi.fn(async (subscription: PushSubscription) => {
       subscriptions = subscriptions.filter((item) => item.id !== subscription.id);
       subscriptions.push(subscription);
@@ -21,7 +20,6 @@ const mocks = vi.hoisted(() => {
     deletePushSubscription: vi.fn(async (subscriptionId: string) => {
       subscriptions = subscriptions.filter((item) => item.id !== subscriptionId);
     }),
-    deleteExpiredSubscriptions: vi.fn(async () => 0),
   };
 
   return {
@@ -113,7 +111,13 @@ vi.mock('$lib/queryClient', () => ({
 }));
 vi.mock('$utils/misc', () => ({ generateUUID: mocks.nextUuid }));
 
-import { disablePushForCalendar, enablePushForCalendar, initializePushManager } from '$lib/push';
+import {
+  disableAllPushSubscriptions,
+  disablePushForCalendar,
+  enablePushForCalendar,
+  initializePushManager,
+  restorePushListeners,
+} from '$lib/push';
 
 const calendar: Calendar = {
   id: 'calendar-1',
@@ -140,6 +144,14 @@ describe('enablePushForCalendar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.resetState();
+    mocks.isConnected.mockReturnValue(true);
+    mocks.registerPushSubscription.mockResolvedValue({
+      registrationUrl: 'http://localhost:4000/push_subscription/new',
+      expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
+    });
+    mocks.restoreNtfyProviderSubscription.mockResolvedValue(true);
+    mocks.startNtfyProviderListening.mockReturnValue(true);
+    mocks.isNtfyProviderPushResource.mockReturnValue(true);
     initializePushManager(vi.fn());
   });
 
@@ -175,23 +187,43 @@ describe('enablePushForCalendar', () => {
     expect(mocks.getSubscriptions()).toEqual([kept]);
   });
 
-  it('recreates stored subscriptions from a previous app runtime before listening', async () => {
+  it('reuses stored subscriptions from a previous app runtime before listening', async () => {
+    const stored = {
+      ...subscription('stored'),
+      createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([stored]);
+
+    const result = await enablePushForCalendar('account-1', calendar);
+
+    expect(result).toBe(true);
+    expect(mocks.restoreNtfyProviderSubscription).toHaveBeenCalledWith(stored, calendar);
+    expect(mocks.unregisterPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.db.deletePushSubscription).not.toHaveBeenCalled();
+    expect(mocks.registerPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.db.upsertPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.startNtfyProviderListening).toHaveBeenCalledTimes(1);
+    expect(mocks.getSubscriptions()).toEqual([stored]);
+  });
+
+  it('recreates stored subscriptions only after provider restore fails', async () => {
     const stale = {
       ...subscription('stale'),
       createdAt: new Date('2000-01-01T00:00:00.000Z'),
     };
     mocks.setSubscriptions([stale]);
+    mocks.restoreNtfyProviderSubscription.mockResolvedValueOnce(false);
 
     const result = await enablePushForCalendar('account-1', calendar);
 
     expect(result).toBe(true);
+    expect(mocks.removeNtfyProviderSubscription).toHaveBeenCalledWith(stale);
+    expect(mocks.registerPushSubscription).toHaveBeenCalledTimes(1);
     expect(mocks.unregisterPushSubscription).toHaveBeenCalledWith(stale.registrationUrl, {
       username: 'unit-tests',
       password: 'unit-tests',
     });
     expect(mocks.db.deletePushSubscription).toHaveBeenCalledWith(stale.id);
-    expect(mocks.restoreNtfyProviderSubscription).not.toHaveBeenCalled();
-    expect(mocks.registerPushSubscription).toHaveBeenCalledTimes(1);
     expect(mocks.db.upsertPushSubscription).toHaveBeenCalledTimes(1);
     expect(mocks.startNtfyProviderListening).toHaveBeenCalledTimes(1);
     expect(mocks.getSubscriptions()).toHaveLength(1);
@@ -211,6 +243,102 @@ describe('enablePushForCalendar', () => {
       password: 'unit-tests',
     });
     expect(mocks.db.deletePushSubscription).toHaveBeenCalledWith(stored.id);
+    expect(mocks.getSubscriptions()).toEqual([]);
+  });
+
+  it('removes every stored registration when disabling WebDAV Push globally', async () => {
+    const stored = subscription('stored');
+    mocks.setSubscriptions([stored]);
+
+    await disableAllPushSubscriptions();
+
+    expect(mocks.removeNtfyProviderSubscription).toHaveBeenCalledWith(stored);
+    expect(mocks.unregisterPushSubscription).toHaveBeenCalledWith(stored.registrationUrl, {
+      username: 'unit-tests',
+      password: 'unit-tests',
+    });
+    expect(mocks.db.deletePushSubscription).toHaveBeenCalledWith(stored.id);
+    expect(mocks.stopAllNtfyProviderListeners).toHaveBeenCalledTimes(1);
+    expect(mocks.getSubscriptions()).toEqual([]);
+  });
+
+  it('restores previous-runtime subscriptions on startup and reuses them later', async () => {
+    const stored = {
+      ...subscription('stored'),
+      createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([stored]);
+
+    const restored = await restorePushListeners([calendar]);
+    const enabled = await enablePushForCalendar('account-1', calendar);
+
+    expect(restored).toBe(1);
+    expect(enabled).toBe(true);
+    expect(mocks.restoreNtfyProviderSubscription).toHaveBeenCalledWith(stored, calendar);
+    expect(mocks.registerPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.unregisterPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.db.deletePushSubscription).not.toHaveBeenCalled();
+    expect(mocks.getSubscriptions()).toEqual([stored]);
+  });
+
+  it('recreates previous-runtime subscriptions when provider restore fails on startup', async () => {
+    const stored = {
+      ...subscription('stored'),
+      createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([stored]);
+    mocks.restoreNtfyProviderSubscription.mockResolvedValueOnce(false);
+
+    const restored = await restorePushListeners([calendar]);
+
+    expect(restored).toBe(1);
+    expect(mocks.unregisterPushSubscription).toHaveBeenCalledWith(stored.registrationUrl, {
+      username: 'unit-tests',
+      password: 'unit-tests',
+    });
+    expect(mocks.db.deletePushSubscription).toHaveBeenCalledWith(stored.id);
+    expect(mocks.registerPushSubscription).toHaveBeenCalledTimes(1);
+    expect(mocks.db.upsertPushSubscription).toHaveBeenCalledTimes(1);
+    expect(mocks.startNtfyProviderListening).toHaveBeenCalledTimes(1);
+    expect(mocks.getSubscriptions()).toHaveLength(1);
+    expect(mocks.getSubscriptions()[0].id).toBe('uuid-1');
+  });
+
+  it('keeps stored subscriptions when startup recreation cannot connect to the account', async () => {
+    const stale = {
+      ...subscription('stale'),
+      expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+      createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([stale]);
+    mocks.isConnected.mockReturnValue(false);
+
+    const restored = await restorePushListeners([calendar]);
+
+    expect(restored).toBe(0);
+    expect(mocks.removeNtfyProviderSubscription).not.toHaveBeenCalled();
+    expect(mocks.registerPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.unregisterPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.db.deletePushSubscription).not.toHaveBeenCalled();
+    expect(mocks.getSubscriptions()).toEqual([stale]);
+  });
+
+  it('cleans up a newly-created provider endpoint when server registration fails', async () => {
+    mocks.registerPushSubscription.mockResolvedValueOnce(null as never);
+
+    const result = await enablePushForCalendar('account-1', calendar);
+
+    expect(result).toBe(false);
+    expect(mocks.removeNtfyProviderSubscription).toHaveBeenCalledWith(
+      expect.objectContaining({
+        calendarId: calendar.id,
+        accountId: 'account-1',
+        registrationUrl: '',
+        pushResource: 'https://ntfy.sh/up-test-topic',
+      }),
+    );
+    expect(mocks.db.upsertPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.startNtfyProviderListening).not.toHaveBeenCalled();
     expect(mocks.getSubscriptions()).toEqual([]);
   });
 });

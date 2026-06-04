@@ -7,7 +7,7 @@ import { generateUUID } from '$utils/misc';
 
 const log = loggers.dataStore;
 
-export const addCalendar = (accountId: string, calendarData: Partial<Calendar>) => {
+export const addCalendar = async (accountId: string, calendarData: Partial<Calendar>) => {
   const data = dataStore.load();
 
   // Compute sortOrder: use provided value, or place after all existing calendars in this account
@@ -25,8 +25,6 @@ export const addCalendar = (accountId: string, calendarData: Partial<Calendar>) 
   } satisfies Calendar;
 
   log.info(`Adding calendar: ${calendar.displayName} with ID: ${calendar.id}`);
-
-  db.addCalendar(accountId, calendar).catch((e) => log.error('Failed to persist calendar:', e));
 
   // Check if this is the first calendar being added
   const allCalendars = data.accounts.flatMap((acc) => acc.calendars);
@@ -72,6 +70,12 @@ export const addCalendar = (accountId: string, calendarData: Partial<Calendar>) 
     tasks: updatedTasks,
     ui: data.ui,
   });
+
+  try {
+    await db.addCalendar(accountId, calendar);
+  } catch (e) {
+    log.error('Failed to persist calendar:', e);
+  }
 };
 
 export const updateCalendar = (

@@ -11,7 +11,9 @@ use crate::linux;
 #[cfg(target_os = "macos")]
 use crate::macos;
 
-use crate::{http, install, logging, notifications, preferences, schema, tray, utils, window};
+use crate::{
+    http, install, logging, notifications, preferences, push, schema, tray, utils, window,
+};
 
 type AppRuntime = tauri::Wry;
 
@@ -46,7 +48,8 @@ pub fn run() {
                 .add_migrations("sqlite:chiri.db", schema::get_migrations())
                 .build(),
         )
-        .manage(tray::TrayState::default());
+        .manage(tray::TrayState::default())
+        .manage(push::maintenance::PushMaintenanceState::default());
 
     #[cfg(target_os = "linux")]
     let builder = builder.manage(linux::unifiedpush::UnifiedPushState::default());
@@ -59,6 +62,8 @@ pub fn run() {
             install::should_disable_updates,
             #[cfg(target_os = "linux")]
             linux::desktop::is_gnome_desktop,
+            #[cfg(target_os = "linux")]
+            linux::desktop::is_kde_desktop,
             #[cfg(target_os = "linux")]
             linux::unifiedpush::linux_unifiedpush_available,
             #[cfg(target_os = "linux")]
@@ -82,6 +87,8 @@ pub fn run() {
             notifications::permission::check_notification_permission,
             notifications::permission::request_notification_permission,
             preferences::get_system_region_preferences,
+            push::maintenance::start_webdav_push_maintenance,
+            push::maintenance::stop_webdav_push_maintenance,
             tray::commands::get_tray_enabled,
             tray::commands::initialize_tray,
             tray::commands::set_tray_visible,

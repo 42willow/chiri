@@ -368,10 +368,6 @@ class Database {
     return pushOps.getPushSubscriptionsByCalendar(await this.conn(), calendarId);
   }
 
-  async getExpiringSubscriptions(withinHours?: number): Promise<PushSubscription[]> {
-    return pushOps.getExpiringSubscriptions(await this.conn(), withinHours);
-  }
-
   async upsertPushSubscription(subscription: PushSubscription): Promise<void> {
     await pushOps.upsertPushSubscription(await this.conn(), subscription);
     this.notify();
@@ -385,12 +381,6 @@ class Database {
   async deletePushSubscriptionsByCalendar(calendarId: string): Promise<void> {
     await pushOps.deletePushSubscriptionsByCalendar(await this.conn(), calendarId);
     this.notify();
-  }
-
-  async deleteExpiredSubscriptions(): Promise<number> {
-    const count = await pushOps.deleteExpiredSubscriptions(await this.conn());
-    if (count > 0) this.notify();
-    return count;
   }
 
   // Snapshot
