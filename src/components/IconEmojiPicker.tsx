@@ -42,8 +42,8 @@ export const IconEmojiPicker = ({
       gap={PICKER_GAP}
       fallbackWidth={FALLBACK_PICKER_WIDTH}
       fallbackHeight={FALLBACK_PICKER_HEIGHT}
-      backdropClassName="fixed inset-0 z-60"
-      dropdownClassName="z-70 w-88"
+      backdropClassName="fixed inset-0 z-70"
+      dropdownClassName="z-80 w-88"
       dataAttribute="data-icon-emoji-picker-dropdown"
     >
       <div className="flex border-b border-surface-200 dark:border-surface-700">

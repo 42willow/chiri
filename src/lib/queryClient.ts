@@ -40,6 +40,10 @@ export const queryKeys = {
     all: ['pushSubscriptions'] as const,
     byCalendar: (calendarId: string) => ['pushSubscriptions', 'calendar', calendarId] as const,
   },
+  pushDiagnostics: {
+    all: ['pushDiagnostics'] as const,
+    byAccount: (accountId: string) => ['pushDiagnostics', 'account', accountId] as const,
+  },
   pendingDeletions: ['pendingDeletions'] as const,
   ui: {
     activeCalendar: ['ui', 'activeCalendar'] as const,

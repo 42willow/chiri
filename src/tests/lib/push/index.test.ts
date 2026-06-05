@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Calendar } from '$types';
+import type { Account, Calendar } from '$types';
 import {
   NTFY_DIRECT_PROVIDER_ID,
   type PushEndpointSubscription,
+  type PushProviderSubscriptionDiagnostics,
   type PushSubscription,
 } from '$types/push';
 
@@ -59,6 +60,9 @@ const mocks = vi.hoisted(() => {
     removeNtfyProviderSubscription: vi.fn(),
     restoreNtfyProviderSubscription: vi.fn(async () => true),
     startNtfyProviderListening: vi.fn(() => true),
+    getNtfyProviderSubscriptionDiagnostics: vi.fn(
+      (): PushProviderSubscriptionDiagnostics | null => null,
+    ),
     stopAllNtfyProviderListeners: vi.fn(),
     stopNtfyProviderListening: vi.fn(),
     queryClient: {
@@ -83,6 +87,7 @@ vi.mock('$lib/caldav/utils', () => ({
 }));
 vi.mock('$lib/push/linuxUnifiedPushProvider', () => ({
   createLinuxUnifiedPushProviderSubscription: vi.fn(),
+  getLinuxUnifiedPushProviderSubscriptionDiagnostics: vi.fn(() => null),
   isLinuxUnifiedPushProviderAvailable: vi.fn(async () => false),
   removeLinuxUnifiedPushProviderSubscription: vi.fn(),
   restoreLinuxUnifiedPushProviderSubscription: vi.fn(async () => false),
@@ -97,6 +102,7 @@ vi.mock('$lib/push/ntfyProvider', () => ({
   removeNtfyProviderSubscription: mocks.removeNtfyProviderSubscription,
   restoreNtfyProviderSubscription: mocks.restoreNtfyProviderSubscription,
   startNtfyProviderListening: mocks.startNtfyProviderListening,
+  getNtfyProviderSubscriptionDiagnostics: mocks.getNtfyProviderSubscriptionDiagnostics,
   stopAllNtfyProviderListeners: mocks.stopAllNtfyProviderListeners,
   stopNtfyProviderListening: mocks.stopNtfyProviderListening,
 }));
@@ -107,6 +113,10 @@ vi.mock('$lib/queryClient', () => ({
       all: ['push-subscriptions'],
       byCalendar: (calendarId: string) => ['push-subscriptions', calendarId],
     },
+    pushDiagnostics: {
+      all: ['push-diagnostics'],
+      byAccount: (accountId: string) => ['push-diagnostics', accountId],
+    },
   },
 }));
 vi.mock('$utils/misc', () => ({ generateUUID: mocks.nextUuid }));
@@ -115,6 +125,7 @@ import {
   disableAllPushSubscriptions,
   disablePushForCalendar,
   enablePushForCalendar,
+  getWebDAVPushAccountDiagnostics,
   initializePushManager,
   restorePushListeners,
 } from '$lib/push';
@@ -140,6 +151,15 @@ const subscription = (id: string): PushSubscription => ({
   createdAt: new Date(),
 });
 
+const account: Account = {
+  id: 'account-1',
+  name: 'Unit tests',
+  calendars: [calendar],
+  isActive: true,
+  sortOrder: 0,
+  caldav: null,
+};
+
 describe('enablePushForCalendar', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -152,6 +172,7 @@ describe('enablePushForCalendar', () => {
     mocks.restoreNtfyProviderSubscription.mockResolvedValue(true);
     mocks.startNtfyProviderListening.mockReturnValue(true);
     mocks.isNtfyProviderPushResource.mockReturnValue(true);
+    mocks.getNtfyProviderSubscriptionDiagnostics.mockReturnValue(null);
     initializePushManager(vi.fn());
   });
 
@@ -340,5 +361,35 @@ describe('enablePushForCalendar', () => {
     expect(mocks.db.upsertPushSubscription).not.toHaveBeenCalled();
     expect(mocks.startNtfyProviderListening).not.toHaveBeenCalled();
     expect(mocks.getSubscriptions()).toEqual([]);
+  });
+
+  it('summarizes stored registrations and runtime listener diagnostics by account', async () => {
+    const stored = subscription('stored');
+    const lastMessageAt = new Date('2026-06-01T12:00:00.000Z');
+    mocks.setSubscriptions([stored]);
+    mocks.getNtfyProviderSubscriptionDiagnostics.mockReturnValue({
+      calendarId: calendar.id,
+      providerId: NTFY_DIRECT_PROVIDER_ID,
+      listening: true,
+      listenerStartedAt: new Date('2026-06-01T11:00:00.000Z'),
+      lastConnectedAt: new Date('2026-06-01T11:00:01.000Z'),
+      lastMessageAt,
+      receivedMessages: 2,
+      lastError: null,
+      lastErrorAt: null,
+    });
+
+    const diagnostics = await getWebDAVPushAccountDiagnostics(account);
+
+    expect(diagnostics).toMatchObject({
+      accountId: 'account-1',
+      supportedCalendars: 1,
+      registeredCalendars: 1,
+      listeningCalendars: 1,
+      expiringSoonCalendars: 0,
+      lastMessageAt,
+      lastError: null,
+    });
+    expect(diagnostics.lastRenewedAt).toEqual(stored.createdAt);
   });
 });

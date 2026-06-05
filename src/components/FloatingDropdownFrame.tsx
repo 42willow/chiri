@@ -17,6 +17,7 @@ interface FloatingDropdownFrameProps {
   dataAttribute?: string;
   closeOnEscape?: boolean;
   layerType?: Extract<DismissableLayerType, 'dropdown' | 'context-menu'>;
+  resetCursorOnOpen?: boolean;
 }
 
 export const FloatingDropdownFrame = ({
@@ -34,6 +35,7 @@ export const FloatingDropdownFrame = ({
   dataAttribute,
   closeOnEscape,
   layerType,
+  resetCursorOnOpen,
 }: FloatingDropdownFrameProps) => (
   <FloatingLayerFrame
     anchor={{ type: 'element', ref: anchorRef, align, gap }}
@@ -47,6 +49,7 @@ export const FloatingDropdownFrame = ({
     dataAttribute={dataAttribute}
     closeOnEscape={closeOnEscape}
     layerType={layerType}
+    resetCursorOnOpen={resetCursorOnOpen}
   >
     {children}
   </FloatingLayerFrame>

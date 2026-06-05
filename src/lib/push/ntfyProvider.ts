@@ -12,6 +12,7 @@ import {
   type NtfyProviderConfig,
   type PushEndpointSubscription,
   type PushMessageHandler,
+  type PushProviderSubscriptionDiagnostics,
   type PushSubscription,
   type WebPushKeyPair,
 } from '$types/push';
@@ -82,11 +83,36 @@ interface NtfyProviderSubscription {
   keyPair: WebPushKeyPair;
   /** EventSource for receiving messages */
   eventSource?: EventSource;
+  /** When the current listener was started */
+  listenerStartedAt?: Date;
+  /** Last successful SSE connection */
+  lastConnectedAt?: Date;
+  /** Last received WebDAV Push message */
+  lastMessageAt?: Date;
+  /** Number of WebDAV Push messages received in this app runtime */
+  receivedMessages: number;
+  /** Last provider/listener error in this app runtime */
+  lastError?: string;
+  /** When the last provider/listener error happened */
+  lastErrorAt?: Date;
 }
 
 const activeNtfyProviderSubscriptions = new Map<string, NtfyProviderSubscription>();
 let receivedMessageCount = 0;
 let lastMessageAt: Date | null = null;
+
+const formatProviderError = (error: unknown): string => {
+  if (error instanceof Error) return error.message;
+  if (error && typeof error === 'object' && 'type' in error) {
+    return `EventSource ${String((error as { type?: unknown }).type)}`;
+  }
+  return String(error);
+};
+
+const setNtfyProviderError = (subscription: NtfyProviderSubscription, error: unknown): void => {
+  subscription.lastError = formatProviderError(error);
+  subscription.lastErrorAt = new Date();
+};
 
 const generateNtfyProviderTopic = (
   config: NtfyProviderConfig = DEFAULT_NTFY_PROVIDER_CONFIG,
@@ -117,6 +143,7 @@ const createActiveNtfyProviderSubscription = async (
     topic,
     endpoint,
     keyPair,
+    receivedMessages: 0,
   };
 
   activeNtfyProviderSubscriptions.set(calendar.id, subscription);
@@ -163,6 +190,7 @@ export const restoreNtfyProviderSubscription = async (
     topic,
     endpoint: subscription.pushResource,
     keyPair,
+    receivedMessages: 0,
   };
 
   activeNtfyProviderSubscriptions.set(subscription.calendarId, ntfySubscription);
@@ -196,8 +224,12 @@ export const startNtfyProviderListening = (
 
   const sseUrl = getNtfyProviderSseUrl(ntfySubscription.endpoint);
   const eventSource = new EventSource(sseUrl);
+  ntfySubscription.listenerStartedAt = new Date();
 
   eventSource.onopen = () => {
+    ntfySubscription.lastConnectedAt = new Date();
+    ntfySubscription.lastError = undefined;
+    ntfySubscription.lastErrorAt = undefined;
     log.info(`Connected to ntfy SSE for topic ${ntfySubscription.topic}`);
   };
 
@@ -212,6 +244,10 @@ export const startNtfyProviderListening = (
       if (data.event === 'message') {
         receivedMessageCount++;
         lastMessageAt = new Date();
+        ntfySubscription.receivedMessages++;
+        ntfySubscription.lastMessageAt = lastMessageAt;
+        ntfySubscription.lastError = undefined;
+        ntfySubscription.lastErrorAt = undefined;
         log.info(`Received push message for calendar ${subscription.calendarId}`);
 
         const messageContent =
@@ -219,11 +255,13 @@ export const startNtfyProviderListening = (
         onMessage(subscription.calendarId, messageContent);
       }
     } catch (error) {
+      setNtfyProviderError(ntfySubscription, error);
       log.warn('Failed to parse ntfy message:', error);
     }
   };
 
   eventSource.onerror = (error) => {
+    setNtfyProviderError(ntfySubscription, error);
     log.error(`ntfy SSE error for topic ${ntfySubscription.topic}:`, error);
   };
 
@@ -236,6 +274,7 @@ export const stopNtfyProviderListening = (calendarId: string): void => {
   if (subscription?.eventSource) {
     subscription.eventSource.close();
     subscription.eventSource = undefined;
+    subscription.listenerStartedAt = undefined;
     log.info(`Stopped listening for calendar ${calendarId}`);
   }
 };
@@ -294,6 +333,25 @@ export const getNtfyProviderDiagnostics = (): NtfyProviderDiagnostics => {
     activeSubscriptions: activeNtfyProviderSubscriptions.size,
     receivedMessages: receivedMessageCount,
     lastMessageAt,
+  };
+};
+
+export const getNtfyProviderSubscriptionDiagnostics = (
+  calendarId: string,
+): PushProviderSubscriptionDiagnostics | null => {
+  const subscription = activeNtfyProviderSubscriptions.get(calendarId);
+  if (!subscription) return null;
+
+  return {
+    calendarId,
+    providerId: NTFY_DIRECT_PROVIDER_ID,
+    listening: !!subscription.eventSource,
+    listenerStartedAt: subscription.listenerStartedAt ?? null,
+    lastConnectedAt: subscription.lastConnectedAt ?? null,
+    lastMessageAt: subscription.lastMessageAt ?? null,
+    receivedMessages: subscription.receivedMessages,
+    lastError: subscription.lastError ?? null,
+    lastErrorAt: subscription.lastErrorAt ?? null,
   };
 };
 

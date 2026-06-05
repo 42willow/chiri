@@ -40,6 +40,7 @@ interface FloatingLayerFrameProps {
   closeOnEscape?: boolean;
   layerType?: Extract<DismissableLayerType, 'dropdown' | 'context-menu'>;
   pointerCloseCursorBehavior?: PointerCloseCursorBehavior;
+  resetCursorOnOpen?: boolean;
   onPointerClose?: MouseEventHandler<HTMLDivElement>;
 }
 
@@ -77,6 +78,7 @@ export const FloatingLayerFrame = ({
   closeOnEscape = true,
   layerType = 'dropdown',
   pointerCloseCursorBehavior,
+  resetCursorOnOpen = true,
   onPointerClose,
 }: FloatingLayerFrameProps) => {
   const layerRef = useRef<HTMLDivElement>(null);
@@ -121,7 +123,7 @@ export const FloatingLayerFrame = ({
 
   // WebKit can keep showing the clicked trigger's cursor after a portal/backdrop
   // appears under a stationary pointer.
-  useResetStaleCursorOnLayerOpen(true);
+  useResetStaleCursorOnLayerOpen(resetCursorOnOpen);
 
   const updatePosition = useCallback(() => {
     const layer = layerRef.current;

@@ -15,6 +15,7 @@ import { log } from '$lib/caldav/utils';
 import { db } from '$lib/database';
 import {
   createLinuxUnifiedPushProviderSubscription,
+  getLinuxUnifiedPushProviderSubscriptionDiagnostics,
   isLinuxUnifiedPushProviderAvailable,
   removeLinuxUnifiedPushProviderSubscription,
   restoreLinuxUnifiedPushProviderSubscription,
@@ -24,6 +25,7 @@ import {
 } from '$lib/push/linuxUnifiedPushProvider';
 import {
   createNtfyProviderSubscription,
+  getNtfyProviderSubscriptionDiagnostics,
   isNtfyProviderAvailable,
   isNtfyProviderPushResource,
   removeNtfyProviderSubscription,
@@ -33,16 +35,18 @@ import {
   stopNtfyProviderListening,
 } from '$lib/push/ntfyProvider';
 import { queryClient, queryKeys } from '$lib/queryClient';
-import type { Calendar } from '$types';
+import type { Account, Calendar } from '$types';
 import {
   LINUX_UNIFIED_PUSH_PROVIDER_ID,
   NTFY_DIRECT_PROVIDER_ID,
   type PushEndpointSubscription,
   type PushMessageHandler,
   type PushProviderConfig,
+  type PushProviderSubscriptionDiagnostics,
   type PushRegistration,
   type PushSubscription,
   type PushTrigger,
+  type WebDAVPushAccountDiagnostics,
 } from '$types/push';
 import { generateUUID } from '$utils/misc';
 
@@ -95,6 +99,7 @@ const getFreshAllSubscriptions = async () => {
  */
 const invalidatePushCaches = (calendarId?: string) => {
   queryClient.invalidateQueries({ queryKey: queryKeys.pushSubscriptions.all });
+  queryClient.invalidateQueries({ queryKey: queryKeys.pushDiagnostics.all });
   if (calendarId) {
     queryClient.invalidateQueries({ queryKey: queryKeys.pushSubscriptions.byCalendar(calendarId) });
   }
@@ -170,6 +175,88 @@ const isActiveProviderSubscription = (
   providerConfig: PushProviderConfig,
 ): boolean =>
   subscription.expiresAt > new Date() && subscriptionMatchesProvider(subscription, providerConfig);
+
+const isExpiringSoon = (subscription: PushSubscription): boolean =>
+  subscription.expiresAt <= new Date(Date.now() + RENEWAL_THRESHOLD_HOURS * 60 * 60 * 1000);
+
+const newerDate = (a: Date | null, b: Date | null): Date | null => {
+  if (!a) return b;
+  if (!b) return a;
+  return a > b ? a : b;
+};
+
+const getProviderSubscriptionDiagnostics = (
+  calendarId: string,
+  providerConfig: PushProviderConfig,
+): PushProviderSubscriptionDiagnostics | null => {
+  if (providerConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID) {
+    return getLinuxUnifiedPushProviderSubscriptionDiagnostics(calendarId);
+  }
+
+  return getNtfyProviderSubscriptionDiagnostics(calendarId);
+};
+
+export const getWebDAVPushAccountDiagnostics = async (
+  account: Account,
+  providerConfig: PushProviderConfig = DEFAULT_PUSH_PROVIDER_CONFIG,
+): Promise<WebDAVPushAccountDiagnostics> => {
+  const subscriptions = await getFreshAllSubscriptions();
+  const supportedCalendars = account.calendars.filter((calendar) => calendar.pushSupported);
+  const diagnostics: WebDAVPushAccountDiagnostics = {
+    accountId: account.id,
+    supportedCalendars: supportedCalendars.length,
+    registeredCalendars: 0,
+    listeningCalendars: 0,
+    expiringSoonCalendars: 0,
+    lastRenewedAt: null,
+    lastMessageAt: null,
+    lastError: null,
+    lastErrorAt: null,
+  };
+
+  for (const calendar of supportedCalendars) {
+    const activeSubscriptions = subscriptions.filter(
+      (subscription) =>
+        subscription.accountId === account.id &&
+        subscription.calendarId === calendar.id &&
+        isActiveProviderSubscription(subscription, providerConfig),
+    );
+    const providerDiagnostics = getProviderSubscriptionDiagnostics(calendar.id, providerConfig);
+
+    if (activeSubscriptions.length > 0) {
+      diagnostics.registeredCalendars++;
+      diagnostics.lastRenewedAt = activeSubscriptions.reduce(
+        (latest, subscription) => newerDate(latest, subscription.createdAt),
+        diagnostics.lastRenewedAt,
+      );
+
+      if (activeSubscriptions.some(isExpiringSoon)) {
+        diagnostics.expiringSoonCalendars++;
+      }
+    }
+
+    if (providerDiagnostics?.listening) {
+      diagnostics.listeningCalendars++;
+    }
+
+    diagnostics.lastMessageAt = newerDate(
+      diagnostics.lastMessageAt,
+      providerDiagnostics?.lastMessageAt ?? null,
+    );
+
+    if (
+      providerDiagnostics?.lastError &&
+      (!diagnostics.lastErrorAt ||
+        (providerDiagnostics.lastErrorAt &&
+          providerDiagnostics.lastErrorAt > diagnostics.lastErrorAt))
+    ) {
+      diagnostics.lastError = providerDiagnostics.lastError;
+      diagnostics.lastErrorAt = providerDiagnostics.lastErrorAt;
+    }
+  }
+
+  return diagnostics;
+};
 
 const unregisterStoredSubscription = async (
   accountId: string,
