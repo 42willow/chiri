@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { relaunch } from '@tauri-apps/plugin-process';
 import AlertTriangle from 'lucide-react/icons/alert-triangle';
+import Loader2 from 'lucide-react/icons/loader-2';
 import { AppSelect } from '$components/AppSelect';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAutostart } from '$hooks/system/useAutostart';
@@ -52,6 +53,17 @@ export const SystemSettings = () => {
   ];
   const restartRequired = restartReasons.length > 0;
   const restartRequiredMessage = `Restart to apply ${formatRestartReasons(restartReasons)} changes`;
+  const launchAtLoginLoading = autostart.enabled === null;
+  const launchAtLoginBusy = launchAtLoginLoading || autostart.pending;
+  const launchAtLoginDescription = launchAtLoginLoading
+    ? 'Checking login item status...'
+    : autostart.pending
+      ? 'Updating login item...'
+      : 'Start Chiri automatically when you sign in';
+  const launchAtLoginSpinnerClass =
+    autostart.pending && autostart.enabled === true
+      ? 'text-primary-500 dark:text-primary-400'
+      : 'text-surface-500 dark:text-surface-400';
   const startQuietlyAtLoginDisabled = autostart.enabled !== true || !enableSystemTray;
 
   const handleSystemTrayChange = (checked: boolean) => {
@@ -105,19 +117,24 @@ export const SystemSettings = () => {
     <div className="space-y-4">
       <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">System</h3>
       <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
-        <label className="flex items-center justify-between p-4">
+        <label
+          className={`flex items-center justify-between p-4 ${launchAtLoginBusy ? 'cursor-wait' : ''}`}
+        >
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Launch at login</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
-              Start Chiri automatically when you sign in
+            <p className="flex items-center gap-1.5 text-xs text-surface-500 dark:text-surface-400">
+              {launchAtLoginBusy && (
+                <Loader2 className={`size-3 shrink-0 animate-spin ${launchAtLoginSpinnerClass}`} />
+              )}
+              {launchAtLoginDescription}
             </p>
           </div>
           <input
             type="checkbox"
             checked={autostart.enabled ?? false}
-            disabled={autostart.enabled === null || autostart.pending}
+            disabled={launchAtLoginBusy}
             onChange={(e) => autostart.setEnabled(e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50"
+            className={`rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50 disabled:cursor-not-allowed ${launchAtLoginBusy ? 'checkbox-busy' : ''}`}
           />
         </label>
 

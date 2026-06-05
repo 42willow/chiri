@@ -41,6 +41,10 @@ input[type="checkbox"] {
     cursor: not-allowed;
   }
 
+  &.checkbox-busy:disabled {
+    cursor: wait;
+  }
+
   &:disabled:not(:checked):hover {
     background-color: transparent;
   }
