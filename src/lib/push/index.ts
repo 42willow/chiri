@@ -185,6 +185,9 @@ const newerDate = (a: Date | null, b: Date | null): Date | null => {
   return a > b ? a : b;
 };
 
+const newestSubscriptionFirst = (a: PushSubscription, b: PushSubscription): number =>
+  b.expiresAt.getTime() - a.expiresAt.getTime() || b.createdAt.getTime() - a.createdAt.getTime();
+
 const getProviderSubscriptionDiagnostics = (
   calendarId: string,
   providerConfig: PushProviderConfig,
@@ -781,6 +784,76 @@ export const disableAllPushSubscriptions = async (): Promise<void> => {
   }
 };
 
+const restoreCalendarPushListener = async (
+  calendar: Calendar,
+  subscriptions: PushSubscription[],
+  providerConfig: PushProviderConfig,
+): Promise<boolean> => {
+  const renewableSubscriptions = subscriptions
+    .filter((subscription) => isRenewablyValidSubscription(subscription, providerConfig))
+    .sort(newestSubscriptionFirst);
+  const subscription =
+    renewableSubscriptions[0] ?? [...subscriptions].sort(newestSubscriptionFirst)[0];
+
+  if (!subscription) return false;
+
+  const recreateSubscription = async (
+    reason: string,
+    supersededSubscriptions: PushSubscription[] = subscriptions,
+  ) => {
+    const replacement = await recreateCalendarPushSubscription(
+      subscription.accountId,
+      calendar,
+      supersededSubscriptions,
+      providerConfig,
+      reason,
+    );
+    if (!replacement) {
+      return false;
+    }
+
+    return startPushListeningForSubscription(replacement, providerConfig, calendar);
+  };
+
+  if (!renewableSubscriptions.length) {
+    return await recreateSubscription(
+      'stored subscription is expired, nearing expiration, or from a previous provider',
+    );
+  }
+
+  const removed = await removeDuplicateProviderSubscriptions(
+    subscription.accountId,
+    subscription,
+    subscriptions,
+    providerConfig,
+  );
+  if (removed > 0) {
+    log.info(`Removed ${removed} duplicate push subscription(s) for ${calendar.displayName}`);
+  }
+
+  try {
+    const restoredProvider = await restoreProviderSubscription(
+      subscription,
+      calendar,
+      providerConfig,
+    );
+    if (!restoredProvider) {
+      log.warn(`Failed to restore push provider subscription for ${calendar.displayName}`);
+      return await recreateSubscription('provider restore failed', [subscription]);
+    }
+
+    if (startPushListeningForSubscription(subscription, providerConfig, calendar)) {
+      log.info(`Restored push listener for ${calendar.displayName}`);
+      return true;
+    }
+
+    return await recreateSubscription('provider listener failed to start', [subscription]);
+  } catch (error) {
+    log.error(`Failed to restore push listener for ${calendar.displayName}:`, error);
+    return await recreateSubscription('provider restore threw', [subscription]);
+  }
+};
+
 /**
  * Restore push listening for all active subscriptions
  *
@@ -798,65 +871,28 @@ export const restorePushListeners = async (
 
   let restored = 0;
   const allSubscriptions = await getFreshAllSubscriptions();
+  const subscriptionsByCalendar = new Map<string, PushSubscription[]>();
 
   for (const subscription of allSubscriptions) {
+    const subscriptions = subscriptionsByCalendar.get(subscription.calendarId) ?? [];
+    subscriptions.push(subscription);
+    subscriptionsByCalendar.set(subscription.calendarId, subscriptions);
+  }
+
+  for (const [calendarId, subscriptions] of subscriptionsByCalendar) {
     // Find the calendar
-    const calendar = calendars.find((c) => c.id === subscription.calendarId);
+    const calendar = calendars.find((c) => c.id === calendarId);
     if (!calendar) {
-      log.warn(`Calendar ${subscription.calendarId} not found for push subscription`);
-      await unregisterStoredSubscription(subscription.accountId, subscription);
-      await removeStoredSubscription(subscription);
-      continue;
-    }
-
-    const recreateSubscription = async (reason: string) => {
-      const replacement = await recreateCalendarPushSubscription(
-        subscription.accountId,
-        calendar,
-        [subscription],
-        providerConfig,
-        reason,
-      );
-      if (!replacement) {
-        return false;
-      }
-
-      return startPushListeningForSubscription(replacement, providerConfig, calendar);
-    };
-
-    if (!isRenewablyValidSubscription(subscription, providerConfig)) {
-      if (await recreateSubscription('stored subscription is expired or nearing expiration')) {
-        restored++;
+      log.warn(`Calendar ${calendarId} not found for push subscription`);
+      for (const subscription of subscriptions) {
+        await unregisterStoredSubscription(subscription.accountId, subscription);
+        await removeStoredSubscription(subscription);
       }
       continue;
     }
 
-    // Restore the provider subscription using the existing push resource URL.
-    try {
-      const restoredProvider = await restoreProviderSubscription(
-        subscription,
-        calendar,
-        providerConfig,
-      );
-      if (!restoredProvider) {
-        log.warn(`Failed to restore push provider subscription for ${calendar.displayName}`);
-        if (await recreateSubscription('provider restore failed')) {
-          restored++;
-        }
-        continue;
-      }
-
-      if (startPushListeningForSubscription(subscription, providerConfig, calendar)) {
-        restored++;
-        log.info(`Restored push listener for ${calendar.displayName}`);
-      } else if (await recreateSubscription('provider listener failed to start')) {
-        restored++;
-      }
-    } catch (error) {
-      log.error(`Failed to restore push listener for ${calendar.displayName}:`, error);
-      if (await recreateSubscription('provider restore threw')) {
-        restored++;
-      }
+    if (await restoreCalendarPushListener(calendar, subscriptions, providerConfig)) {
+      restored++;
     }
   }
 

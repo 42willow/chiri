@@ -302,6 +302,34 @@ describe('enablePushForCalendar', () => {
     expect(mocks.getSubscriptions()).toEqual([stored]);
   });
 
+  it('removes duplicate active subscriptions before restoring startup listeners', async () => {
+    const older = {
+      ...subscription('older'),
+      expiresAt: new Date(Date.now() + 70 * 60 * 60 * 1000),
+      createdAt: new Date('2026-06-01T00:00:00.000Z'),
+    };
+    const newer = {
+      ...subscription('newer'),
+      expiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000),
+      createdAt: new Date('2026-06-02T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([older, newer]);
+
+    const restored = await restorePushListeners([calendar]);
+
+    expect(restored).toBe(1);
+    expect(mocks.restoreNtfyProviderSubscription).toHaveBeenCalledTimes(1);
+    expect(mocks.restoreNtfyProviderSubscription).toHaveBeenCalledWith(newer, calendar);
+    expect(mocks.startNtfyProviderListening).toHaveBeenCalledTimes(1);
+    expect(mocks.startNtfyProviderListening).toHaveBeenCalledWith(newer, expect.any(Function));
+    expect(mocks.unregisterPushSubscription).toHaveBeenCalledWith(older.registrationUrl, {
+      username: 'unit-tests',
+      password: 'unit-tests',
+    });
+    expect(mocks.db.deletePushSubscription).toHaveBeenCalledWith(older.id);
+    expect(mocks.getSubscriptions()).toEqual([newer]);
+  });
+
   it('recreates previous-runtime subscriptions when provider restore fails on startup', async () => {
     const stored = {
       ...subscription('stored'),
