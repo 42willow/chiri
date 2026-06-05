@@ -75,7 +75,7 @@ const subscribeToPushEnabledCalendars = async (
     try {
       const success = await enablePushForCalendar(accountId, calendar, providerConfig);
       if (success) {
-        log.info(`Push enabled for calendar: ${calendar.displayName}`);
+        log.debug(`Push enabled for calendar: ${calendar.displayName}`);
       }
     } catch (error) {
       log.error(`Failed to enable push for ${calendar.displayName}:`, error);

@@ -6,7 +6,7 @@
 use tauri_plugin_log::{Target, TargetKind, TimezoneStrategy};
 
 // List of crates to exclude from logs to reduce noise
-const LOGGING_TARGET_IGNORE_LIST: [&str; 7] = [
+const LOGGING_TARGET_IGNORE_LIST: [&str; 8] = [
     "tauri",
     "sqlx",
     "hyper",
@@ -14,6 +14,7 @@ const LOGGING_TARGET_IGNORE_LIST: [&str; 7] = [
     "tower",
     "cookie_store",
     "reqwest",
+    "zbus",
 ];
 
 #[cfg(target_os = "macos")]
