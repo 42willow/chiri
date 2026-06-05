@@ -675,6 +675,12 @@ const enablePushForCalendarInner = async (
       log.info(`Removed ${removed} duplicate push subscription(s) for ${calendar.displayName}`);
     }
 
+    const diagnostics = getProviderSubscriptionDiagnostics(calendar.id, providerConfig);
+    if (diagnostics?.listening) {
+      log.debug(`Push listener already active for ${calendar.displayName}`);
+      return true;
+    }
+
     const restored = await restoreProviderSubscription(validSubscription, calendar, providerConfig);
     if (restored) {
       const listening = startPushListeningForSubscription(

@@ -227,6 +227,35 @@ describe('enablePushForCalendar', () => {
     expect(mocks.getSubscriptions()).toEqual([stored]);
   });
 
+  it('leaves valid subscriptions alone when the provider listener is already active', async () => {
+    const stored = {
+      ...subscription('stored'),
+      createdAt: new Date('2000-01-01T00:00:00.000Z'),
+    };
+    mocks.setSubscriptions([stored]);
+    mocks.getNtfyProviderSubscriptionDiagnostics.mockReturnValue({
+      calendarId: calendar.id,
+      providerId: NTFY_DIRECT_PROVIDER_ID,
+      listening: true,
+      listenerStartedAt: new Date('2026-06-01T11:00:00.000Z'),
+      lastConnectedAt: new Date('2026-06-01T11:00:01.000Z'),
+      lastMessageAt: null,
+      receivedMessages: 0,
+      lastError: null,
+      lastErrorAt: null,
+    });
+
+    const result = await enablePushForCalendar('account-1', calendar);
+
+    expect(result).toBe(true);
+    expect(mocks.restoreNtfyProviderSubscription).not.toHaveBeenCalled();
+    expect(mocks.startNtfyProviderListening).not.toHaveBeenCalled();
+    expect(mocks.registerPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.unregisterPushSubscription).not.toHaveBeenCalled();
+    expect(mocks.db.deletePushSubscription).not.toHaveBeenCalled();
+    expect(mocks.getSubscriptions()).toEqual([stored]);
+  });
+
   it('recreates stored subscriptions only after provider restore fails', async () => {
     const stale = {
       ...subscription('stale'),
