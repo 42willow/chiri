@@ -133,6 +133,12 @@ fn handle_message(
             .unwrap_or(0);
         let message = format!("KUnifiedPush message ({message_len} bytes)");
 
+        log::info!(
+            "[KUnifiedPush] Message received for token {} ({} bytes)",
+            token,
+            message_len
+        );
+
         let _ = app.emit(
             MESSAGE_EVENT,
             KUnifiedPushMessageEvent {

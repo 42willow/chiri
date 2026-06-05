@@ -17,6 +17,19 @@ const LOGGING_TARGET_IGNORE_LIST: [&str; 8] = [
     "zbus",
 ];
 
+const LOGGING_MESSAGE_PREFIX_IGNORE_LIST: [&str; 4] = [
+    "read_command",
+    "read_commands",
+    "write_command",
+    "write_commands",
+];
+
+fn should_ignore_message(message: &str) -> bool {
+    LOGGING_MESSAGE_PREFIX_IGNORE_LIST
+        .iter()
+        .any(|ignored| message.starts_with(ignored))
+}
+
 #[cfg(target_os = "macos")]
 pub fn scoped_message(scope: &str, message: &str) -> String {
     format!("[{scope}] {message}")
@@ -55,6 +68,11 @@ pub fn build_logging_plugin() -> tauri_plugin_log::Builder {
                 now.day()
             );
             let time = format!("{:02}:{:02}:{:02}", now.hour(), now.minute(), now.second());
+            let message = message.to_string();
+
+            if should_ignore_message(&message) {
+                return;
+            }
 
             out.finish(format_args!(
                 "[{date}:{time}] [{}] {}",

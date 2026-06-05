@@ -46,6 +46,9 @@ let unlistenEndpoint: UnlistenFn | null = null;
 let unlistenUnregistered: UnlistenFn | null = null;
 let listenerPromise: Promise<void> | null = null;
 
+const describeProviderTarget = (registration: KUnifiedPushProviderRegistration): string =>
+  `${registration.endpoint} via ${registration.distributor}`;
+
 const getOrCreateDiagnostics = (calendarId: string): PushProviderSubscriptionDiagnostics => {
   const existing = providerDiagnosticsByCalendar.get(calendarId);
   if (existing) return existing;
@@ -89,10 +92,19 @@ const ensureProviderEventListeners = () => {
     listen<KUnifiedPushProviderMessageEvent>('unifiedpush://message', (event) => {
       const { token, message, messageBytes } = event.payload;
       const calendarId = calendarIdsByProviderToken.get(token);
-      if (!calendarId) return;
+      if (!calendarId) {
+        log.warn(
+          `KUnifiedPush message received for unknown token ${token} (${messageBytes} bytes)`,
+        );
+        return;
+      }
 
       const handler = providerMessageHandlers.get(calendarId);
-      if (!handler) return;
+      if (!handler) {
+        markProviderError(calendarId, 'KUnifiedPush message received but no handler is registered');
+        log.warn(`KUnifiedPush message received for ${calendarId}, but no handler is registered`);
+        return;
+      }
 
       const diagnostics = getOrCreateDiagnostics(calendarId);
       diagnostics.lastConnectedAt ??= new Date();
@@ -153,6 +165,9 @@ export const createKUnifiedPushProviderSubscription = async (
       description: `Chiri: ${calendar.displayName}`,
     });
     const keyPair = await generateWebPushKeyPair();
+    log.info(
+      `Created KUnifiedPush provider endpoint for ${calendar.displayName}: ${describeProviderTarget(registration)}`,
+    );
 
     return {
       providerId: KUNIFIED_PUSH_PROVIDER_ID,
@@ -188,6 +203,9 @@ export const restoreKUnifiedPushProviderSubscription = async (
       return false;
     }
 
+    log.info(
+      `Restored KUnifiedPush provider endpoint for ${calendar.displayName}: ${describeProviderTarget(registration)}`,
+    );
     return true;
   } catch (error) {
     log.warn(`Failed to restore KUnifiedPush subscription for ${calendar.displayName}:`, error);
