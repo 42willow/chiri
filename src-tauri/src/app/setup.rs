@@ -51,7 +51,7 @@ pub(super) fn setup_app(
 
     #[cfg(target_os = "linux")]
     {
-        let state = app.state::<crate::linux::unifiedpush::UnifiedPushState>();
+        let state = app.state::<crate::push::kunifiedpush::UnifiedPushState>();
         if let Err(error) = state.ensure_connector(app.handle()) {
             log::warn!(
                 "[UnifiedPush] Failed to register connector during setup: {}",

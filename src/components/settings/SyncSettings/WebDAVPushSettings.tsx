@@ -43,7 +43,7 @@ export const WebDAVPushSettings = () => {
       ? 'text-semantic-success'
       : 'text-semantic-warning';
   const providerName =
-    pushProviderConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID ? 'Linux UnifiedPush' : 'ntfy';
+    pushProviderConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID ? 'KUnifiedPush' : 'ntfy';
   const providerDescription =
     pushProviderConfig.providerId === LINUX_UNIFIED_PUSH_PROVIDER_ID
       ? 'Uses your system UnifiedPush distributor'
@@ -94,7 +94,7 @@ export const WebDAVPushSettings = () => {
                   >
                     <option value={NTFY_DIRECT_PROVIDER_ID}>ntfy</option>
                     {showLinuxUnifiedPushOption && (
-                      <option value={LINUX_UNIFIED_PUSH_PROVIDER_ID}>Linux UnifiedPush</option>
+                      <option value={LINUX_UNIFIED_PUSH_PROVIDER_ID}>KUnifiedPush</option>
                     )}
                   </AppSelect>
                 </div>

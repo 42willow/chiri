@@ -53,7 +53,7 @@ pub fn run() {
         .manage(push::ntfy::NtfySseState::default());
 
     #[cfg(target_os = "linux")]
-    let builder = builder.manage(linux::unifiedpush::UnifiedPushState::default());
+    let builder = builder.manage(push::kunifiedpush::UnifiedPushState::default());
 
     builder
         .invoke_handler(tauri::generate_handler![
@@ -66,11 +66,11 @@ pub fn run() {
             #[cfg(target_os = "linux")]
             linux::desktop::is_kde_desktop,
             #[cfg(target_os = "linux")]
-            linux::unifiedpush::linux_unifiedpush_available,
+            push::kunifiedpush::kunifiedpush_available,
             #[cfg(target_os = "linux")]
-            linux::unifiedpush::linux_unifiedpush_register,
+            push::kunifiedpush::kunifiedpush_register,
             #[cfg(target_os = "linux")]
-            linux::unifiedpush::linux_unifiedpush_unregister,
+            push::kunifiedpush::kunifiedpush_unregister,
             #[cfg(target_os = "linux")]
             linux::decorations::set_window_decorations,
             #[cfg(target_os = "macos")]

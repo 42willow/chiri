@@ -598,7 +598,7 @@ export const startPushListeningForSubscription = (
       globalMessageHandler,
       calendar
         ? (_calendarId, reason) => {
-            log.warn(`Linux UnifiedPush invalidated for ${calendar.displayName}: ${reason}`);
+            log.warn(`KUnifiedPush invalidated for ${calendar.displayName}: ${reason}`);
             void recreateCalendarPushSubscription(
               subscription.accountId,
               calendar,
@@ -613,7 +613,7 @@ export const startPushListeningForSubscription = (
 
               globalMessageHandler?.(
                 calendar.id,
-                `Linux UnifiedPush invalidated and recreation failed: ${reason}`,
+                `KUnifiedPush invalidated and recreation failed: ${reason}`,
               );
             });
           }

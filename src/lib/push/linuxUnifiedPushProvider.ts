@@ -101,17 +101,17 @@ const ensureProviderEventListeners = () => {
       diagnostics.lastError = null;
       diagnostics.lastErrorAt = null;
 
-      handler(calendarId, message || `Linux UnifiedPush message (${messageBytes} bytes)`);
+      handler(calendarId, message || `KUnifiedPush message (${messageBytes} bytes)`);
     }),
     listen<LinuxUnifiedPushProviderEndpointEvent>('unifiedpush://endpoint', (event) => {
       const { token, endpoint } = event.payload;
       const currentEndpoint = pushResourcesByProviderToken.get(token);
       if (!currentEndpoint || currentEndpoint === endpoint) return;
 
-      invalidateProviderSubscription(token, 'Linux UnifiedPush endpoint changed');
+      invalidateProviderSubscription(token, 'KUnifiedPush endpoint changed');
     }),
     listen<LinuxUnifiedPushProviderUnregisteredEvent>('unifiedpush://unregistered', (event) => {
-      invalidateProviderSubscription(event.payload.token, 'Linux UnifiedPush unregistered');
+      invalidateProviderSubscription(event.payload.token, 'KUnifiedPush unregistered');
     }),
   ])
     .then(([message, endpoint, unregistered]) => {
@@ -128,7 +128,7 @@ const ensureProviderEventListeners = () => {
     })
     .catch((error) => {
       listenerPromise = null;
-      log.warn('Failed to listen for Linux UnifiedPush messages:', error);
+      log.warn('Failed to listen for KUnifiedPush messages:', error);
     });
 
   listenerPromise = setupPromise;
@@ -136,7 +136,7 @@ const ensureProviderEventListeners = () => {
 
 export const isLinuxUnifiedPushProviderAvailable = async (): Promise<boolean> => {
   try {
-    return await invoke<boolean>('linux_unifiedpush_available');
+    return await invoke<boolean>('kunifiedpush_available');
   } catch {
     return false;
   }
@@ -148,7 +148,7 @@ export const createLinuxUnifiedPushProviderSubscription = async (
   try {
     const token = generateUUID();
     const registration = await invoke<LinuxUnifiedPushProviderRegistration>(
-      'linux_unifiedpush_register',
+      'kunifiedpush_register',
       {
         token,
         vapidPublicKey: calendar.pushVapidKey ?? null,
@@ -166,7 +166,7 @@ export const createLinuxUnifiedPushProviderSubscription = async (
       contentEncoding: 'aes128gcm',
     };
   } catch (error) {
-    log.warn(`Failed to create Linux UnifiedPush subscription for ${calendar.displayName}:`, error);
+    log.warn(`Failed to create KUnifiedPush subscription for ${calendar.displayName}:`, error);
     return null;
   }
 };
@@ -179,7 +179,7 @@ export const restoreLinuxUnifiedPushProviderSubscription = async (
 
   try {
     const registration = await invoke<LinuxUnifiedPushProviderRegistration>(
-      'linux_unifiedpush_register',
+      'kunifiedpush_register',
       {
         token: subscription.providerToken,
         vapidPublicKey: calendar.pushVapidKey ?? null,
@@ -189,17 +189,14 @@ export const restoreLinuxUnifiedPushProviderSubscription = async (
 
     if (registration.endpoint !== subscription.pushResource) {
       log.warn(
-        `Linux UnifiedPush endpoint changed for ${calendar.displayName}; push subscription needs renewal`,
+        `KUnifiedPush endpoint changed for ${calendar.displayName}; push subscription needs renewal`,
       );
       return false;
     }
 
     return true;
   } catch (error) {
-    log.warn(
-      `Failed to restore Linux UnifiedPush subscription for ${calendar.displayName}:`,
-      error,
-    );
+    log.warn(`Failed to restore KUnifiedPush subscription for ${calendar.displayName}:`, error);
     return false;
   }
 };
@@ -255,9 +252,9 @@ export const removeLinuxUnifiedPushProviderSubscription = async (
   if (!subscription.providerToken) return;
 
   try {
-    await invoke('linux_unifiedpush_unregister', { token: subscription.providerToken });
+    await invoke('kunifiedpush_unregister', { token: subscription.providerToken });
   } catch (error) {
-    log.warn('Failed to unregister Linux UnifiedPush subscription:', error);
+    log.warn('Failed to unregister KUnifiedPush subscription:', error);
   }
 };
 

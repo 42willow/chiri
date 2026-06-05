@@ -23,14 +23,14 @@ const DISTRIBUTOR_INTERFACE: &str = "org.unifiedpush.Distributor2";
 const REGISTRATION_TIMEOUT_SECONDS: u64 = 10;
 
 #[derive(Debug, Clone, Serialize)]
-pub struct LinuxUnifiedPushRegistration {
+pub struct KUnifiedPushRegistration {
     pub endpoint: String,
     pub token: String,
     pub distributor: String,
 }
 
 #[tauri::command]
-pub async fn linux_unifiedpush_available() -> Result<bool, String> {
+pub async fn kunifiedpush_available() -> Result<bool, String> {
     let Ok(connection) = Connection::session().await else {
         return Ok(false);
     };
@@ -38,13 +38,13 @@ pub async fn linux_unifiedpush_available() -> Result<bool, String> {
 }
 
 #[tauri::command]
-pub async fn linux_unifiedpush_register(
+pub async fn kunifiedpush_register(
     app: AppHandle,
     state: State<'_, UnifiedPushState>,
     token: String,
     vapid_public_key: Option<String>,
     description: Option<String>,
-) -> Result<LinuxUnifiedPushRegistration, String> {
+) -> Result<KUnifiedPushRegistration, String> {
     let runtime = ensure_runtime(&app, &state).await?;
     let distributor = choose_distributor(&runtime.connection).await?;
     let proxy = Proxy::new(
@@ -88,7 +88,7 @@ pub async fn linux_unifiedpush_register(
             })?
             .map_err(|_| "UnifiedPush endpoint channel closed".to_string())?;
 
-    Ok(LinuxUnifiedPushRegistration {
+    Ok(KUnifiedPushRegistration {
         endpoint,
         token,
         distributor,
@@ -96,7 +96,7 @@ pub async fn linux_unifiedpush_register(
 }
 
 #[tauri::command]
-pub async fn linux_unifiedpush_unregister(
+pub async fn kunifiedpush_unregister(
     app: AppHandle,
     state: State<'_, UnifiedPushState>,
     token: String,

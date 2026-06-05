@@ -30,20 +30,20 @@ const CONNECTOR_INTROSPECTION_XML: &str = r#"
 
 #[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
-struct LinuxUnifiedPushMessageEvent {
+struct KUnifiedPushMessageEvent {
     token: String,
     message: String,
     message_bytes: usize,
 }
 
 #[derive(Debug, Clone, Serialize)]
-struct LinuxUnifiedPushEndpointEvent {
+struct KUnifiedPushEndpointEvent {
     token: String,
     endpoint: String,
 }
 
 #[derive(Debug, Clone, Serialize)]
-struct LinuxUnifiedPushUnregisteredEvent {
+struct KUnifiedPushUnregisteredEvent {
     token: String,
 }
 
@@ -131,11 +131,11 @@ fn handle_message(
             .lookup_value("message", None)
             .and_then(|value| value.fixed_array::<u8>().ok().map(|bytes| bytes.len()))
             .unwrap_or(0);
-        let message = format!("Linux UnifiedPush message ({message_len} bytes)");
+        let message = format!("KUnifiedPush message ({message_len} bytes)");
 
         let _ = app.emit(
             MESSAGE_EVENT,
-            LinuxUnifiedPushMessageEvent {
+            KUnifiedPushMessageEvent {
                 token,
                 message,
                 message_bytes: message_len,
@@ -168,7 +168,7 @@ fn handle_new_endpoint(
 
         let _ = app.emit(
             ENDPOINT_EVENT,
-            LinuxUnifiedPushEndpointEvent { token, endpoint },
+            KUnifiedPushEndpointEvent { token, endpoint },
         );
     }
 
@@ -186,10 +186,7 @@ fn handle_unregistered(
             pending.remove(&token);
         }
 
-        let _ = app.emit(
-            UNREGISTERED_EVENT,
-            LinuxUnifiedPushUnregisteredEvent { token },
-        );
+        let _ = app.emit(UNREGISTERED_EVENT, KUnifiedPushUnregisteredEvent { token });
     }
 
     return_empty_response(invocation);
