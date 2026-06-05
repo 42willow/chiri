@@ -52,6 +52,7 @@ export const SystemSettings = () => {
   ];
   const restartRequired = restartReasons.length > 0;
   const restartRequiredMessage = `Restart to apply ${formatRestartReasons(restartReasons)} changes`;
+  const startQuietlyAtLoginDisabled = autostart.enabled !== true || !enableSystemTray;
 
   const handleSystemTrayChange = (checked: boolean) => {
     setEnableSystemTray(checked);
@@ -124,7 +125,9 @@ export const SystemSettings = () => {
           <>
             <div className="px-4 pb-4">
               <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
-                <label className="flex items-center justify-between">
+                <label
+                  className={`flex items-center justify-between ${startQuietlyAtLoginDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
                   <div>
                     <p className="text-sm text-surface-700 dark:text-surface-300">
                       Start quietly in tray at login
@@ -136,9 +139,9 @@ export const SystemSettings = () => {
                   <input
                     type="checkbox"
                     checked={!showWindowOnLoginLaunch}
-                    disabled={autostart.enabled !== true || !enableSystemTray}
+                    disabled={startQuietlyAtLoginDisabled}
                     onChange={(e) => setShowWindowOnLoginLaunch(!e.target.checked)}
-                    className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50"
+                    className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   />
                 </label>
               </div>

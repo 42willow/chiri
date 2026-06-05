@@ -37,6 +37,14 @@ input[type="checkbox"] {
     background-color: rgb(var(--primary-rgb-50, 239 246 255));
   }
 
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:disabled:not(:checked):hover {
+    background-color: transparent;
+  }
+
   &:checked {
     background-color: rgb(var(--primary-rgb-600, 37 99 235));
     border-color: rgb(var(--primary-rgb-600, 37 99 235));
@@ -113,6 +121,10 @@ input[type="range"] {
 
   &:hover {
     background-color: rgb(var(--primary-rgb-900, 30 58 138) / 0.3);
+  }
+
+  &:disabled:not(:checked):hover {
+    background-color: transparent;
   }
 
   &:checked {
