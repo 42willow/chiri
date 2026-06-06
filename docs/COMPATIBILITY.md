@@ -6,7 +6,7 @@ Compatibility tables for Chiri. Includes data for CalDAV clients, servers, and l
 ## Clients
 Other CalDAV clients tested alongside Chiri.
 
-If a client is missing or you've found something incorrect, please [open an issue](https://github.com/SapphoSys/chiri/issues).
+If a client is missing or you've found something incorrect, please [open an issue](https://github.com/chiriapp/chiri/issues).
 
 ### Legend
 | Symbol | Meaning |
@@ -28,7 +28,7 @@ If a client is missing or you've found something incorrect, please [open an issu
 ## Libraries
 CalDAV libraries tested alongside Chiri.
 
-If a library is missing or you've found something incorrect, please [open an issue](https://github.com/SapphoSys/chiri/issues).
+If a library is missing or you've found something incorrect, please [open an issue](https://github.com/chiriapp/chiri/issues).
 
 ### Legend
 | Symbol | Meaning |
