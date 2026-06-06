@@ -29,61 +29,61 @@ const FIELDS: FieldConfig[] = [
     key: 'status',
     label: 'Status & progress',
     description: 'Status buttons and progress slider',
-    icon: <Activity className="w-4 h-4" />,
+    icon: <Activity className="h-4 w-4" />,
   },
   {
     key: 'description',
     label: 'Description',
     description: 'Free-text notes for the task',
-    icon: <AlignLeft className="w-4 h-4" />,
+    icon: <AlignLeft className="h-4 w-4" />,
   },
   {
     key: 'url',
     label: 'URL',
     description: 'Link associated with the task',
-    icon: <Link className="w-4 h-4" />,
+    icon: <Link className="h-4 w-4" />,
   },
   {
     key: 'dates',
     label: 'Dates',
     description: 'Start date and due date pickers',
-    icon: <CalendarClock className="w-4 h-4" />,
+    icon: <CalendarClock className="h-4 w-4" />,
   },
   {
     key: 'repeat',
     label: 'Repeat',
     description: 'Recurrence options for the task',
-    icon: <RefreshCw className="w-4 h-4" />,
+    icon: <RefreshCw className="h-4 w-4" />,
   },
   {
     key: 'priority',
     label: 'Priority',
     description: 'Low, medium, high, or none',
-    icon: <Flag className="w-4 h-4" />,
+    icon: <Flag className="h-4 w-4" />,
   },
   {
     key: 'calendar',
     label: 'Calendar',
     description: 'Which calendar the task belongs to',
-    icon: <FolderSync className="w-4 h-4" />,
+    icon: <FolderSync className="h-4 w-4" />,
   },
   {
     key: 'tags',
     label: 'Tags',
     description: 'Labels attached to the task',
-    icon: <Tag className="w-4 h-4" />,
+    icon: <Tag className="h-4 w-4" />,
   },
   {
     key: 'reminders',
     label: 'Reminders',
     description: 'Scheduled notifications for the task',
-    icon: <Bell className="w-4 h-4" />,
+    icon: <Bell className="h-4 w-4" />,
   },
   {
     key: 'subtasks',
     label: 'Subtasks',
     description: 'Nested child tasks',
-    icon: <CheckCircle2 className="w-4 h-4" />,
+    icon: <CheckCircle2 className="h-4 w-4" />,
   },
 ];
 
@@ -111,8 +111,8 @@ export const EditorSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">Editor</h3>
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Editor</h3>
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={editorFieldOrder} strategy={verticalListSortingStrategy}>
             {orderedFields.map((field, index) => (

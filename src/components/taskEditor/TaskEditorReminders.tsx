@@ -33,9 +33,9 @@ export const TaskEditorReminders = ({
     <div>
       <div
         id="reminders-label"
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <Bell className="w-4 h-4" />
+        <Bell className="h-4 w-4" />
         Reminders {(task.reminders?.length ?? 0) > 0 && `(${task.reminders?.length})`}
       </div>
       {/* biome-ignore lint/a11y/useSemanticElements: fieldset would change semantic structure; div with role="group" is appropriate here */}
@@ -57,13 +57,13 @@ export const TaskEditorReminders = ({
                     }
                   },
                 })}
-            className={`flex items-center gap-2 px-3 py-2 bg-surface-50 dark:bg-surface-800 rounded-lg transition-colors group outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`group flex items-center gap-2 rounded-lg bg-surface-50 px-3 py-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-800 ${
               readOnly
                 ? 'cursor-not-allowed'
-                : 'hover:bg-surface-100 dark:hover:bg-surface-700 cursor-pointer'
+                : 'cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-700'
             }`}
           >
-            <BellRing className="w-4 h-4 text-surface-400 shrink-0" />
+            <BellRing className="h-4 w-4 shrink-0 text-surface-400" />
             <span className="flex-1 text-sm text-surface-700 dark:text-surface-300">
               {formatDate(new Date(reminder.trigger), true)}{' '}
               {formatTime(new Date(reminder.trigger), timeFormat)}
@@ -75,10 +75,10 @@ export const TaskEditorReminders = ({
                   e.stopPropagation();
                   onRemoveReminder(reminder.id);
                 }}
-                className="p-1 text-surface-400 hover:text-semantic-error hover:bg-surface-100 dark:hover:bg-surface-800 rounded-full invisible group-hover:visible focus-visible:visible outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="invisible rounded-full p-1 text-surface-400 outline-hidden hover:bg-surface-100 hover:text-semantic-error focus-visible:visible focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset group-hover:visible dark:hover:bg-surface-800"
                 title="Remove reminder"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             )}
           </div>
@@ -92,13 +92,13 @@ export const TaskEditorReminders = ({
           <button
             type="button"
             onClick={onOpenReminderPicker}
-            className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 py-1 text-surface-500 text-xs outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
           >
-            <Plus className="w-3 h-3" />
+            <Plus className="h-3 w-3" />
             Add reminder
           </button>
         ) : !readOnly ? (
-          <div className="flex items-center justify-between gap-2 text-xs text-surface-700 dark:text-surface-300 border border-semantic-warning/30 bg-surface-100 dark:bg-surface-800 rounded-md p-2">
+          <div className="flex items-center justify-between gap-2 rounded-md border border-semantic-warning/30 bg-surface-100 p-2 text-surface-700 text-xs dark:bg-surface-800 dark:text-surface-300">
             <span>
               {isMacPlatform()
                 ? 'Grant notification permission to add reminders.'
@@ -108,9 +108,9 @@ export const TaskEditorReminders = ({
               <button
                 type="button"
                 onClick={onOpenNotificationSettings}
-                className="flex items-center gap-1 shrink-0 font-medium text-semantic-warning hover:opacity-80 transition-colors outline-hidden focus-visible:underline"
+                className="flex shrink-0 items-center gap-1 font-medium text-semantic-warning outline-hidden transition-colors hover:opacity-80 focus-visible:underline"
               >
-                <Settings className="w-3 h-3" />
+                <Settings className="h-3 w-3" />
                 Settings
               </button>
             )}

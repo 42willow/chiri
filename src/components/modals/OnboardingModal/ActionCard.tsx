@@ -26,7 +26,7 @@ export const ActionCard = ({
       type="button"
       onClick={onClick}
       aria-pressed={selected}
-      className={`group flex min-h-36 flex-col rounded-lg border p-3 text-left transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+      className={`group flex min-h-36 flex-col rounded-lg border p-3 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
         isPrimary
           ? 'border-primary-500/60 bg-primary-500/10 hover:bg-primary-500/15'
           : 'border-surface-200 bg-white hover:bg-surface-50 dark:border-surface-700 dark:bg-surface-800 dark:hover:bg-surface-700'
@@ -42,15 +42,15 @@ export const ActionCard = ({
         {icon}
       </div>
 
-      <span className="text-base font-semibold text-surface-900 dark:text-surface-100">
+      <span className="font-semibold text-base text-surface-900 dark:text-surface-100">
         {title}
       </span>
-      <span className="mt-2 text-sm leading-5 text-surface-600 dark:text-surface-400">
+      <span className="mt-2 text-sm text-surface-600 leading-5 dark:text-surface-400">
         {description}
       </span>
       {actionLabel && (
         <span
-          className={`mt-auto pt-4 text-sm font-medium ${
+          className={`mt-auto pt-4 font-medium text-sm ${
             isPrimary
               ? 'text-primary-700 dark:text-primary-300'
               : 'text-surface-700 dark:text-surface-300'

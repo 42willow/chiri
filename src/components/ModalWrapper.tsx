@@ -106,7 +106,7 @@ export const ModalWrapper = ({
 
   return createPortal(
     <ModalBackdrop
-      className="p-4 cursor-default"
+      className="cursor-default p-4"
       backdropClassName={backdropClassName}
       zIndex={zIndex}
       {...backdropProps}
@@ -116,18 +116,18 @@ export const ModalWrapper = ({
         role="dialog"
         aria-modal="true"
         tabIndex={initialFocus === 'dialog' ? -1 : undefined}
-        className={`relative bg-white dark:bg-surface-800 rounded-xl shadow-xl w-full max-h-[90vh] flex flex-col overflow-hidden animate-scale-in outline-hidden ${className || MODAL_SIZE_CLASSES[size]}`}
+        className={`relative flex max-h-[90vh] w-full animate-scale-in flex-col overflow-hidden rounded-xl bg-white shadow-xl outline-hidden dark:bg-surface-800 ${className || MODAL_SIZE_CLASSES[size]}`}
       >
         {title && (
-          <div className="bg-white dark:bg-surface-800 border-b border-surface-200 dark:border-surface-700 p-4 shrink-0 flex items-center justify-between rounded-t-xl">
+          <div className="flex shrink-0 items-center justify-between rounded-t-xl border-surface-200 border-b bg-white p-4 dark:border-surface-700 dark:bg-surface-800">
             <div className="flex min-w-0 items-center gap-3">
               {headerLeft}
               <div className="min-w-0">
-                <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-100">
+                <h2 className="font-semibold text-lg text-surface-900 dark:text-surface-100">
                   {title}
                 </h2>
                 {description && (
-                  <p className="text-sm text-surface-600 dark:text-surface-400 mt-1">
+                  <p className="mt-1 text-sm text-surface-600 dark:text-surface-400">
                     {description}
                   </p>
                 )}
@@ -137,24 +137,24 @@ export const ModalWrapper = ({
               <button
                 type="button"
                 onClick={handleClose}
-                className="shrink-0 p-2 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="shrink-0 rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 dark:hover:text-surface-300"
                 aria-label="Close"
               >
-                <X className="w-5 h-5" />
+                <X className="h-5 w-5" />
               </button>
             )}
           </div>
         )}
 
         <div
-          className={`${contentPadding ? 'p-4 space-y-4' : ''} ${contentOverflow === 'auto' ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'} flex-1 min-h-0 ${!title ? 'rounded-t-xl' : ''}`}
+          className={`${contentPadding ? 'space-y-4 p-4' : ''} ${contentOverflow === 'auto' ? 'overflow-y-auto overscroll-contain' : 'overflow-hidden'} min-h-0 flex-1 ${!title ? 'rounded-t-xl' : ''}`}
         >
           {children}
         </div>
 
         {(footer || footerLeft) && (
           <div
-            className={`border-t border-surface-200 dark:border-surface-700 p-4 flex items-center ${footerLeft ? 'justify-between' : 'justify-end'} gap-3 shrink-0 bg-white dark:bg-surface-800 rounded-b-xl`}
+            className={`flex items-center border-surface-200 border-t p-4 dark:border-surface-700 ${footerLeft ? 'justify-between' : 'justify-end'} shrink-0 gap-3 rounded-b-xl bg-white dark:bg-surface-800`}
           >
             {footerLeft && <div className="flex items-center gap-3">{footerLeft}</div>}
             {footer && <div className="flex items-center gap-3">{footer}</div>}

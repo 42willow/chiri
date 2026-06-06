@@ -161,25 +161,25 @@ export const HistoryEntry = ({ entry, timeFormat, isLast }: HistoryEntryProps) =
 
   return (
     <div className="flex gap-3">
-      <div className="flex flex-col items-center pt-1 shrink-0">
-        <div className="w-2 h-2 rounded-full bg-surface-300 dark:bg-surface-600" />
-        {!isLast && <div className="w-px flex-1 bg-surface-200 dark:bg-surface-700 mt-1" />}
+      <div className="flex shrink-0 flex-col items-center pt-1">
+        <div className="h-2 w-2 rounded-full bg-surface-300 dark:bg-surface-600" />
+        {!isLast && <div className="mt-1 w-px flex-1 bg-surface-200 dark:bg-surface-700" />}
       </div>
-      <div className={`flex-1 min-w-0 ${!isLast ? 'pb-4' : ''}`}>
-        <div className="flex items-center gap-1.5 text-sm font-medium text-surface-700 dark:text-surface-300">
-          <Icon className="w-3.5 h-3.5 shrink-0 text-surface-400 dark:text-surface-500" />
+      <div className={`min-w-0 flex-1 ${!isLast ? 'pb-4' : ''}`}>
+        <div className="flex items-center gap-1.5 font-medium text-sm text-surface-700 dark:text-surface-300">
+          <Icon className="h-3.5 w-3.5 shrink-0 text-surface-400 dark:text-surface-500" />
           <span>{label}</span>
           <span className="text-surface-300 dark:text-surface-600">&middot;</span>
-          <span className="text-xs font-normal text-surface-400 dark:text-surface-500">
+          <span className="font-normal text-surface-400 text-xs dark:text-surface-500">
             {formatDate(entry.changedAt, true)}
           </span>
           <span className="text-surface-300 dark:text-surface-600">&middot;</span>
-          <span className="text-xs font-normal text-surface-400 dark:text-surface-500">
+          <span className="font-normal text-surface-400 text-xs dark:text-surface-500">
             {formatTime(entry.changedAt, timeFormat)}
           </span>
         </div>
         {!isCreated && (
-          <div className="text-xs text-surface-500 dark:text-surface-400 mt-0.5 pl-5">
+          <div className="mt-0.5 pl-5 text-surface-500 text-xs dark:text-surface-400">
             {entry.oldValue !== null && entry.oldValue !== '' && (
               <>
                 <span className="line-through">

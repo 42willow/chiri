@@ -51,7 +51,7 @@ const getTitleClassName = (task: Task, isInteractive: boolean) => {
 };
 
 const SubtaskTitleContent = ({ task }: { task: Task }) =>
-  task.title || <span className="text-surface-400 dark:text-surface-500 italic">Untitled</span>;
+  task.title || <span className="text-surface-400 italic dark:text-surface-500">Untitled</span>;
 
 interface TaskEditorSubtaskItemProps {
   task: Task;
@@ -161,15 +161,15 @@ export const TaskEditorSubtaskItem = ({
           <button
             type="button"
             onClick={toggleExpanded}
-            className="cursor-pointer shrink-0 w-4 h-4 flex items-center justify-center rounded-sm text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
+            className="flex h-4 w-4 shrink-0 cursor-pointer items-center justify-center rounded-sm text-surface-400 outline-hidden transition-colors hover:bg-surface-200 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
             aria-label={isExpanded ? 'Collapse subtasks' : 'Expand subtasks'}
           >
             <ChevronRight
-              className={`w-3 h-3 transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
+              className={`h-3 w-3 transition-transform duration-150 ${isExpanded ? 'rotate-90' : ''}`}
             />
           </button>
         ) : depth > 0 ? (
-          <div className="shrink-0 w-4 h-4" aria-hidden="true" />
+          <div className="h-4 w-4 shrink-0" aria-hidden="true" />
         ) : null}
 
         <button
@@ -188,7 +188,7 @@ export const TaskEditorSubtaskItem = ({
         >
           {task.completed && (
             <Check
-              className={`w-2.5 h-2.5 ${!useAccentColorForCheckboxes ? 'text-surface-900' : ''}`}
+              className={`h-2.5 w-2.5 ${!useAccentColorForCheckboxes ? 'text-surface-900' : ''}`}
               style={useAccentColorForCheckboxes ? { color: checkmarkColor } : undefined}
               strokeWidth={3}
             />
@@ -203,7 +203,7 @@ export const TaskEditorSubtaskItem = ({
             onChange={(e) => setEditValue(e.target.value)}
             onKeyDown={handleEditKeyDown}
             onBlur={handleCommitEdit}
-            className="flex-1 pl-0.5 text-sm bg-transparent outline-hidden text-surface-700 dark:text-surface-300 min-w-0"
+            className="min-w-0 flex-1 bg-transparent pl-0.5 text-sm text-surface-700 outline-hidden dark:text-surface-300"
           />
         ) : readOnly ? (
           <span className={`${getTitleClassName(task, false)} cursor-not-allowed`}>
@@ -213,7 +213,7 @@ export const TaskEditorSubtaskItem = ({
           <button
             type="button"
             onClick={handleStartEdit}
-            className={`${getTitleClassName(task, true)} outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:rounded-sm`}
+            className={`${getTitleClassName(task, true)} outline-hidden focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-primary-500`}
           >
             <SubtaskTitleContent task={task} />
           </button>
@@ -225,9 +225,9 @@ export const TaskEditorSubtaskItem = ({
             onClick={async () => {
               await moveTaskToRecentlyDeleted(task.id);
             }}
-            className="cursor-pointer opacity-0 group-hover/row:opacity-100 p-0.5 shrink-0 rounded-sm text-surface-400 hover:text-semantic-error hover:bg-semantic-error/10 transition-all outline-hidden focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-semantic-error"
+            className="shrink-0 cursor-pointer rounded-sm p-0.5 text-surface-400 opacity-0 outline-hidden transition-all hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-semantic-error group-hover/row:opacity-100"
           >
-            <X className="w-3.5 h-3.5" />
+            <X className="h-3.5 w-3.5" />
           </button>
         )}
       </div>

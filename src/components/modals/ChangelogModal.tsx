@@ -26,7 +26,7 @@ export const ChangelogModal = ({ version, changelog, onClose }: ChangelogModalPr
       onClose={onClose}
       title={`What's new in ${version}`}
       zIndex="z-60"
-      className="max-w-2xl max-h-[80vh]"
+      className="max-h-[80vh] max-w-2xl"
       footerLeft={
         <ModalButton
           variant="ghost"
@@ -34,7 +34,7 @@ export const ChangelogModal = ({ version, changelog, onClose }: ChangelogModalPr
             openUrl(`https://github.com/chiriapp/chiri/releases/tag/app-v${version}`);
           }}
         >
-          <ExternalLink className="w-4 h-4" />
+          <ExternalLink className="h-4 w-4" />
           View on GitHub
         </ModalButton>
       }
@@ -42,19 +42,12 @@ export const ChangelogModal = ({ version, changelog, onClose }: ChangelogModalPr
     >
       {hasContent ? (
         <div
-          className="prose prose-sm dark:prose-invert max-w-none
-            [&_h2]:text-base [&_h2]:font-semibold [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2:first-child]:mt-0
-            [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-surface-700 dark:[&_h3]:text-surface-300 [&_h3]:mt-3 [&_h3]:mb-2
-            [&_p]:text-sm [&_p]:text-surface-700 dark:[&_p]:text-surface-300 [&_p]:my-2
-            [&_ul]:list-disc [&_ul]:list-outside [&_ul]:space-y-1 [&_ul]:my-2 [&_ul]:text-surface-700 dark:[&_ul]:text-surface-300 [&_ul]:ml-4
-            [&_strong]:font-semibold
-            [&_a]:text-primary-600 dark:[&_a]:text-primary-400 hover:[&_a]:underline
-            [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:bg-surface-100 dark:[&_code]:bg-surface-800 [&_code]:rounded-sm [&_code]:text-xs [&_code]:font-mono"
+          className="prose prose-sm dark:prose-invert max-w-none [&_a]:text-primary-600 hover:[&_a]:underline dark:[&_a]:text-primary-400 [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800 [&_h2:first-child]:mt-0 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-semibold [&_h2]:text-base [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h3]:mt-3 [&_h3]:mb-2 [&_h3]:font-semibold [&_h3]:text-sm [&_h3]:text-surface-700 dark:[&_h3]:text-surface-300 [&_p]:my-2 [&_p]:text-sm [&_p]:text-surface-700 dark:[&_p]:text-surface-300 [&_strong]:font-semibold [&_ul]:my-2 [&_ul]:ml-4 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-700 dark:[&_ul]:text-surface-300"
           // biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown is rendered from trusted changelog content
           dangerouslySetInnerHTML={{ __html: renderedHtml }}
         />
       ) : (
-        <p className="text-sm text-surface-500 dark:text-surface-400 italic text-center py-8">
+        <p className="py-8 text-center text-sm text-surface-500 italic dark:text-surface-400">
           No changelog available for this release.
         </p>
       )}

@@ -67,19 +67,19 @@ export const MoveToCalendarModal = ({
     >
       <div className="p-4 pb-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             ref={searchInputRef}
             placeholder="Search calendars..."
-            className="w-full pl-9 pr-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+            className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-3 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
         </div>
       </div>
 
-      <div className="px-2 pt-1 pb-4 max-h-72 overflow-y-auto">
+      <div className="max-h-72 overflow-y-auto px-2 pt-1 pb-4">
         {filteredCalendars.length === 0 ? (
           <div className="p-4 text-center text-sm text-surface-500 dark:text-surface-400">
             {searchQuery.trim()

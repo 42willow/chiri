@@ -30,13 +30,13 @@ export const CalendarOption = ({ cal, onMove, onClose }: CalendarOptionProps) =>
         {cal.emoji ? (
           <span className="text-base leading-none">{cal.emoji}</span>
         ) : (
-          <CalIcon className="w-4 h-4 shrink-0" style={{ color: calendarColor }} />
+          <CalIcon className="h-4 w-4 shrink-0" style={{ color: calendarColor }} />
         )}
-        <div className="flex-1 text-left min-w-0">
+        <div className="min-w-0 flex-1 text-left">
           <div className="truncate font-medium text-surface-700 dark:text-surface-300">
             {cal.displayName || 'Calendar'}
           </div>
-          <div className="text-xs text-surface-400 dark:text-surface-500 truncate">
+          <div className="truncate text-surface-400 text-xs dark:text-surface-500">
             {cal.accountName}
           </div>
         </div>

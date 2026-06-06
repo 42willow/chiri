@@ -75,24 +75,24 @@ export const MacNotificationPermissionCard = ({
   };
 
   return (
-    <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+    <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
       <div className={`flex items-center justify-between ${isCompact ? 'p-3' : 'p-4'}`}>
         <div>
           <p className="text-sm text-surface-700 dark:text-surface-300">
             macOS notification permission
           </p>
           {permissionDescription && (
-            <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+            <p className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
               {permissionDescription}
             </p>
           )}
         </div>
-        <span className={`text-xs px-2 py-1 rounded-lg shrink-0 ${permissionBadgeClass}`}>
+        <span className={`shrink-0 rounded-lg px-2 py-1 text-xs ${permissionBadgeClass}`}>
           {permissionLabel}
         </span>
       </div>
 
-      <div className="border-t border-surface-200 dark:border-surface-700" />
+      <div className="border-surface-200 border-t dark:border-surface-700" />
 
       <div className={`flex gap-2 ${isCompact ? 'px-3 pt-2 pb-3' : 'px-4 py-3'}`}>
         {permissionStatus === 'default' && (
@@ -100,7 +100,7 @@ export const MacNotificationPermissionCard = ({
             type="button"
             onClick={handleRequestPermission}
             disabled={isCheckingPermission}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-primary-500 hover:bg-primary-600 text-primary-contrast rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 rounded-lg bg-primary-500 px-3 py-1.5 text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isCheckingPermission ? 'Waiting for permission...' : 'Request permission'}
           </button>
@@ -109,7 +109,7 @@ export const MacNotificationPermissionCard = ({
         <button
           type="button"
           onClick={handleOpenSystemSettings}
-          className="flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="flex items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
         >
           Open macOS Settings
         </button>

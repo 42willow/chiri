@@ -205,7 +205,7 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
       return (
         <div className="py-8 text-center">
           <Loader2 className={`mx-auto mb-3 h-10 w-10 animate-spin ${config.spinnerColor}`} />
-          <h3 className="mb-1 text-base font-medium text-surface-800 dark:text-surface-200">
+          <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
             Waiting for authentication...
           </h3>
           <p className="text-sm text-surface-500 dark:text-surface-400">
@@ -219,7 +219,7 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
       return (
         <div className="py-8 text-center">
           <Loader2 className={`mx-auto mb-3 h-10 w-10 animate-spin ${config.spinnerColor}`} />
-          <h3 className="mb-1 text-base font-medium text-surface-800 dark:text-surface-200">
+          <h3 className="mb-1 font-medium text-base text-surface-800 dark:text-surface-200">
             Setting up your account...
           </h3>
           <p className="text-sm text-surface-500 dark:text-surface-400">Importing calendars</p>
@@ -228,11 +228,11 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
     }
 
     return (
-      <div className="p-4 space-y-4">
+      <div className="space-y-4 p-4">
         <div>
           <label
             htmlFor="quick-connect-url"
-            className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+            className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
           >
             {config.urlLabel}
           </label>
@@ -247,15 +247,15 @@ export const QuickConnectFlow = forwardRef<QuickConnectFlowHandle, QuickConnectF
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !isLoading && serverUrl.trim()) handleConnect();
             }}
-            className="w-full px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+            className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
-          <p className="mt-1.5 text-xs text-surface-500 dark:text-surface-400">
+          <p className="mt-1.5 text-surface-500 text-xs dark:text-surface-400">
             Your browser will open for authentication
           </p>
         </div>
 
         {error && (
-          <div className="p-3 text-sm text-semantic-error bg-semantic-error/10 border border-semantic-error/30 rounded-lg">
+          <div className="rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3 text-semantic-error text-sm">
             {error}
           </div>
         )}

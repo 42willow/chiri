@@ -109,7 +109,7 @@ export const OnboardingAppearanceSettings = () => {
       <section className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
         <div className="mb-3 flex items-center gap-2">
           <SunMoon className="h-4 w-4 text-primary-500" />
-          <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">Theme</h3>
+          <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">Theme</h3>
         </div>
         <div className="flex gap-2">
           <ThemeOption
@@ -139,12 +139,12 @@ export const OnboardingAppearanceSettings = () => {
       <section className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
         <div className="mb-3 flex items-center gap-2">
           <Palette className="h-4 w-4 text-primary-500" />
-          <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">Colors</h3>
+          <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">Colors</h3>
         </div>
 
         <div className="grid gap-3">
           <div>
-            <p className="mb-2 text-xs font-medium text-surface-500 dark:text-surface-400">
+            <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
               Color scheme
             </p>
             <ColorSchemeSelect
@@ -157,7 +157,7 @@ export const OnboardingAppearanceSettings = () => {
 
           {availableFlavors.length > 1 && (
             <div>
-              <p className="mb-2 text-xs font-medium text-surface-500 dark:text-surface-400">
+              <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
                 Flavor
               </p>
               <ColorSchemeSelect
@@ -170,8 +170,8 @@ export const OnboardingAppearanceSettings = () => {
           )}
         </div>
 
-        <div className="mt-3 border-t border-surface-200 pt-3 dark:border-surface-700">
-          <p className="mb-2 text-xs font-medium text-surface-500 dark:text-surface-400">
+        <div className="mt-3 border-surface-200 border-t pt-3 dark:border-surface-700">
+          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Accent color
           </p>
           <div className="flex flex-wrap gap-2">
@@ -187,7 +187,7 @@ export const OnboardingAppearanceSettings = () => {
                   onClick={() => setAccentColor(color.name)}
                   title={color.name}
                   aria-label={`Use ${color.name} accent color`}
-                  className={`h-8 w-8 rounded-full border-2 transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+                  className={`h-8 w-8 rounded-full border-2 outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
                     isSelected
                       ? 'scale-110 border-surface-800 dark:border-white'
                       : 'border-transparent hover:scale-105'

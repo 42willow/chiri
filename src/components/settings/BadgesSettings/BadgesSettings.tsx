@@ -27,49 +27,49 @@ const BADGES: BadgeConfig[] = [
     key: 'startDate',
     label: 'Start date',
     description: 'Shown when a task has a future start date',
-    icon: <CalendarClock className="w-4 h-4" />,
+    icon: <CalendarClock className="h-4 w-4" />,
   },
   {
     key: 'dueDate',
     label: 'Due date',
     description: 'When the task is due',
-    icon: <Clock className="w-4 h-4" />,
+    icon: <Clock className="h-4 w-4" />,
   },
   {
     key: 'tags',
     label: 'Tags',
     description: 'Labels attached to the task',
-    icon: <Tag className="w-4 h-4" />,
+    icon: <Tag className="h-4 w-4" />,
   },
   {
     key: 'calendar',
     label: 'Calendar',
     description: 'Which calendar the task belongs to',
-    icon: <FolderSync className="w-4 h-4" />,
+    icon: <FolderSync className="h-4 w-4" />,
   },
   {
     key: 'url',
     label: 'URL',
     description: 'Link associated with the task',
-    icon: <Link className="w-4 h-4" />,
+    icon: <Link className="h-4 w-4" />,
   },
   {
     key: 'status',
     label: 'Status',
     description: 'In-progress status indicators with percent complete',
-    icon: <Loader className="w-4 h-4" />,
+    icon: <Loader className="h-4 w-4" />,
   },
   {
     key: 'repeat',
     label: 'Repeat',
     description: 'Shown when a task has a recurrence rule',
-    icon: <RefreshCw className="w-4 h-4" />,
+    icon: <RefreshCw className="h-4 w-4" />,
   },
   {
     key: 'subtasks',
     label: 'Subtasks',
     description: 'Subtask progress count and collapse toggle',
-    icon: <CheckCircle2 className="w-4 h-4" />,
+    icon: <CheckCircle2 className="h-4 w-4" />,
   },
 ];
 
@@ -97,8 +97,8 @@ export const BadgesSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">Badges</h3>
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Badges</h3>
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={taskBadgeOrder} strategy={verticalListSortingStrategy}>
             {orderedBadges.map((badge, index) => (

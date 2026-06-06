@@ -92,7 +92,7 @@ export const ColorSwatchPicker = ({
             title={option.label}
             aria-label={`Use ${option.label} color`}
             aria-pressed={selected}
-            className={`size-8 shrink-0 rounded-full border-2 transition-all outline-hidden ${focusClass} ${
+            className={`size-8 shrink-0 rounded-full border-2 outline-hidden transition-all ${focusClass} ${
               selected ? selectedClass : inactiveClass
             }`}
             style={{ backgroundColor: option.value }}
@@ -113,7 +113,7 @@ export const ColorSwatchPicker = ({
           />
           <span
             aria-hidden="true"
-            className={`pointer-events-none block size-8 rounded-full transition-all outline-hidden ${customFocusClass} ${customStateClass}`}
+            className={`pointer-events-none block size-8 rounded-full outline-hidden transition-all ${customFocusClass} ${customStateClass}`}
             style={{ background: customSwatchBackground }}
           />
         </label>

@@ -70,7 +70,7 @@ export const ShortcutsSettings = ({
     <>
       <div className="space-y-4">
         <div className="flex flex-row items-center justify-between">
-          <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+          <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
             Keyboard shortcuts
           </h3>
           <Tooltip content={resetTitle} position="bottom" allowInModal>
@@ -79,9 +79,9 @@ export const ShortcutsSettings = ({
               onClick={resetShortcuts}
               disabled={!hasCustomShortcuts}
               aria-label={resetTitle}
-              className="flex items-center gap-1.5 px-2 py-1 text-xs bg-surface-100 dark:bg-surface-700 enabled:hover:bg-surface-200 dark:enabled:hover:bg-surface-600 text-surface-700 dark:text-surface-300 disabled:opacity-50 disabled:cursor-not-allowed rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset enabled:hover:bg-surface-200 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-300 dark:enabled:hover:bg-surface-600"
             >
-              <RotateCcw className="w-3 h-3" />
+              <RotateCcw className="h-3 w-3" />
               Reset to defaults
             </button>
           </Tooltip>
@@ -95,15 +95,15 @@ export const ShortcutsSettings = ({
             if (shortcuts.length === 0) return null;
             return (
               <div key={group.label}>
-                <p className="text-xs font-medium text-surface-400 dark:text-surface-500 uppercase tracking-wider mb-1.5 px-0.5">
+                <p className="mb-1.5 px-0.5 font-medium text-surface-400 text-xs uppercase tracking-wider dark:text-surface-500">
                   {group.label}
                 </p>
-                <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden">
+                <div className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700">
                   {shortcuts.map((shortcut) => {
                     return (
                       <div
                         key={shortcut.id}
-                        className="flex items-center justify-between gap-3 py-2.5 px-3 bg-white dark:bg-surface-800 border-b border-surface-100 dark:border-surface-700 last:border-0"
+                        className="flex items-center justify-between gap-3 border-surface-100 border-b bg-white px-3 py-2.5 last:border-0 dark:border-surface-700 dark:bg-surface-800"
                       >
                         <span className="min-w-0 text-sm text-surface-600 dark:text-surface-400">
                           {shortcut.description}
@@ -117,11 +117,11 @@ export const ShortcutsSettings = ({
                                   .split(' + ')
                                   .map((key, keyIndex, arr) => (
                                     <span key={key} className="flex items-center gap-1.5">
-                                      <kbd className="inline-flex items-center px-2 py-1 bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 rounded-sm text-xs font-mono leading-none text-surface-700 dark:text-surface-300">
+                                      <kbd className="inline-flex items-center rounded-sm border border-surface-200 bg-surface-100 px-2 py-1 font-mono text-surface-700 text-xs leading-none dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300">
                                         {key}
                                       </kbd>
                                       {keyIndex < arr.length - 1 && !isMacPlatform() && (
-                                        <span className="text-xs text-surface-400">+</span>
+                                        <span className="text-surface-400 text-xs">+</span>
                                       )}
                                     </span>
                                   ))}
@@ -131,9 +131,9 @@ export const ShortcutsSettings = ({
                                   type="button"
                                   onClick={() => handleOpenEdit(shortcut)}
                                   aria-label={`Edit shortcut for ${shortcut.description}`}
-                                  className="p-1.5 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                                  className="rounded-sm p-1.5 text-surface-400 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 dark:hover:text-surface-300"
                                 >
-                                  <Pencil className="w-3.5 h-3.5" />
+                                  <Pencil className="h-3.5 w-3.5" />
                                 </button>
                               </Tooltip>
                             </>
@@ -141,9 +141,9 @@ export const ShortcutsSettings = ({
                             <button
                               type="button"
                               onClick={() => handleOpenEdit(shortcut)}
-                              className="inline-flex items-center gap-1.5 px-2 py-1 text-xs font-medium text-surface-500 hover:text-surface-700 dark:text-surface-400 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                              className="inline-flex items-center gap-1.5 rounded-sm px-2 py-1 font-medium text-surface-500 text-xs outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-200"
                             >
-                              <PencilLine className="w-3.5 h-3.5" />
+                              <PencilLine className="h-3.5 w-3.5" />
                               Set shortcut
                             </button>
                           )}

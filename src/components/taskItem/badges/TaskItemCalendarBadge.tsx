@@ -20,7 +20,7 @@ export const TaskItemCalendarBadge = ({
           {calendar.emoji}
         </span>
       ) : (
-        <CalendarIcon className="w-3 h-3" style={{ color: calendarColor }} />
+        <CalendarIcon className="h-3 w-3" style={{ color: calendarColor }} />
       )}
       {calendar.displayName || 'Calendar'}
     </>
@@ -28,7 +28,7 @@ export const TaskItemCalendarBadge = ({
 
   if (readOnly) {
     return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border border-surface-200 dark:border-surface-600 bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 cursor-not-allowed">
+      <span className="inline-flex cursor-not-allowed items-center gap-1 rounded-sm border border-surface-200 bg-surface-100 px-2 py-0.5 font-medium text-surface-700 text-xs dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300">
         {content}
       </span>
     );
@@ -41,7 +41,7 @@ export const TaskItemCalendarBadge = ({
         e.stopPropagation();
         onCalendarClick(calendar.id, e);
       }}
-      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border border-surface-200 dark:border-surface-600 bg-surface-100 dark:bg-surface-700 text-surface-700 dark:text-surface-300 hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+      className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-100 px-2 py-0.5 font-medium text-surface-700 text-xs outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
     >
       {content}
     </button>

@@ -45,14 +45,14 @@ export const RegionAndTimeSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Region & time
       </h3>
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Date format</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               How dates appear throughout the app
             </p>
           </div>
@@ -69,16 +69,16 @@ export const RegionAndTimeSettings = () => {
           </AppSelect>
         </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
+        <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Time format</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               12-hour (AM/PM) or 24-hour clock
             </p>
           </div>
-          <div className="flex gap-2 shrink-0">
+          <div className="flex shrink-0 gap-2">
             {(
               [
                 ['12', '12-hour'],
@@ -89,10 +89,10 @@ export const RegionAndTimeSettings = () => {
                 key={value}
                 type="button"
                 onClick={() => setTimeFormat(value)}
-                className={`flex items-center px-3 py-1.5 rounded-lg border text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex items-center rounded-lg border px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   timeFormat === value
-                    ? 'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-                    : 'border-transparent bg-surface-100 dark:bg-surface-700/50 text-surface-500 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 hover:text-surface-700 dark:hover:text-surface-300'
+                    ? 'border-surface-300 bg-surface-200 text-surface-900 dark:border-surface-500 dark:bg-surface-700 dark:text-surface-100'
+                    : 'border-transparent bg-surface-100 text-surface-500 hover:bg-surface-100 hover:text-surface-700 dark:bg-surface-700/50 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-surface-300'
                 }`}
               >
                 {label}
@@ -101,12 +101,12 @@ export const RegionAndTimeSettings = () => {
           </div>
         </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
+        <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Week starts on</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               First day of the week in date pickers
             </p>
           </div>
@@ -124,12 +124,12 @@ export const RegionAndTimeSettings = () => {
         </div>
       </div>
 
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Quick time presets
       </h3>
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
-          <p className="text-xs text-surface-500 dark:text-surface-400 mb-3">
+          <p className="mb-3 text-surface-500 text-xs dark:text-surface-400">
             Shortcuts shown when picking a time in date and reminder pickers
           </p>
           <div className="space-y-2">
@@ -141,15 +141,15 @@ export const RegionAndTimeSettings = () => {
                   type="button"
                   key={id}
                   onClick={() => setEditingCategory(id)}
-                  className="w-full flex items-center justify-between gap-4 px-3 py-2.5 rounded-lg bg-surface-50 dark:bg-surface-700/50 hover:bg-surface-100 dark:hover:bg-surface-700 border border-transparent hover:border-surface-200 dark:hover:border-surface-600 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                  className="flex w-full items-center justify-between gap-4 rounded-lg border border-transparent bg-surface-50 px-3 py-2.5 outline-hidden transition-colors hover:border-surface-200 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700/50 dark:hover:border-surface-600 dark:hover:bg-surface-700"
                 >
                   <div className="flex items-center gap-2.5">
-                    <Icon className="w-4 h-4 text-surface-500 dark:text-surface-400 shrink-0" />
-                    <span className="text-sm font-medium text-surface-700 dark:text-surface-300">
+                    <Icon className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
+                    <span className="font-medium text-sm text-surface-700 dark:text-surface-300">
                       {label}
                     </span>
                   </div>
-                  <span className="text-sm font-semibold tabular-nums text-surface-700 dark:text-surface-300">
+                  <span className="font-semibold text-sm text-surface-700 tabular-nums dark:text-surface-300">
                     {minutesToTimeLabel(presetMinutes)}
                   </span>
                 </button>

@@ -19,13 +19,13 @@ export const SidebarAccountsContextMenu = ({
         onExpandAll();
         onClose();
       }}
-      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-t-md outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+      className="flex w-full items-center gap-2 rounded-t-md px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
     >
-      <ChevronDown className="w-4 h-4" />
+      <ChevronDown className="h-4 w-4" />
       Expand All
     </button>
 
-    <div className="border-t border-surface-200 dark:border-surface-700" />
+    <div className="border-surface-200 border-t dark:border-surface-700" />
 
     <button
       type="button"
@@ -33,9 +33,9 @@ export const SidebarAccountsContextMenu = ({
         onCollapseAll();
         onClose();
       }}
-      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+      className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
     >
-      <ChevronRight className="w-4 h-4" />
+      <ChevronRight className="h-4 w-4" />
       Collapse All
     </button>
   </>

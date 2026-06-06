@@ -38,7 +38,7 @@ export const TaskListDensityPreview = ({ density }: TaskListDensityPreviewProps)
         <div className="min-w-0 flex-1">
           {isCompact ? (
             <div className="flex min-w-0 items-center gap-2 overflow-hidden">
-              <span className="min-w-0 shrink truncate text-sm font-medium text-surface-800 dark:text-surface-200">
+              <span className="min-w-0 shrink truncate font-medium text-sm text-surface-800 dark:text-surface-200">
                 Plan weekend errands
               </span>
               <span className="flex shrink-0 items-center gap-2 overflow-hidden">
@@ -47,10 +47,10 @@ export const TaskListDensityPreview = ({ density }: TaskListDensityPreviewProps)
             </div>
           ) : (
             <>
-              <div className="truncate text-sm font-medium leading-5 text-surface-800 dark:text-surface-200">
+              <div className="truncate font-medium text-sm text-surface-800 leading-5 dark:text-surface-200">
                 Plan weekend errands
               </div>
-              <div className="mt-1 truncate text-xs text-surface-500 dark:text-surface-400">
+              <div className="mt-1 truncate text-surface-500 text-xs dark:text-surface-400">
                 Groceries, pharmacy, and library pickup
               </div>
               <div className="mt-2 flex flex-wrap items-center gap-2">{renderPreviewBadges()}</div>

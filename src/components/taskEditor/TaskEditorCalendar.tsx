@@ -41,12 +41,12 @@ export const TaskEditorCalendar = ({
       <div>
         <div
           id="task-calendar-label"
-          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+          className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
         >
-          <FolderSync className="w-4 h-4" />
+          <FolderSync className="h-4 w-4" />
           Calendar
         </div>
-        <div className="w-full px-3 py-2 text-sm border border-transparent bg-surface-100 dark:bg-surface-800 text-surface-700 dark:text-surface-300 rounded-lg cursor-not-allowed">
+        <div className="w-full cursor-not-allowed rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-700 dark:bg-surface-800 dark:text-surface-300">
           {accountLabel || calendarLabel
             ? [accountLabel, calendarLabel].filter(Boolean).join(' / ')
             : 'No calendar'}
@@ -59,9 +59,9 @@ export const TaskEditorCalendar = ({
     <div>
       <label
         htmlFor="task-calendar"
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <FolderSync className="w-4 h-4" />
+        <FolderSync className="h-4 w-4" />
         Calendar
       </label>
       {allCalendars.length > 0 ? (
@@ -70,18 +70,18 @@ export const TaskEditorCalendar = ({
             id="task-calendar"
             type="button"
             onClick={onOpenMoveCalendar}
-            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 hover:border-surface-300 dark:hover:border-surface-500 transition-colors"
+            className="flex w-full items-center gap-3 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:focus:bg-surface-800 dark:hover:border-surface-500"
           >
             {currentCalendar?.emoji ? (
               <span
-                className="text-lg leading-none shrink-0"
+                className="shrink-0 text-lg leading-none"
                 style={{ color: currentCalendarColor }}
               >
                 {currentCalendar.emoji}
               </span>
             ) : (
               <CurrentCalendarIcon
-                className="w-5 h-5 shrink-0"
+                className="h-5 w-5 shrink-0"
                 style={{ color: currentCalendarColor }}
               />
             )}
@@ -90,21 +90,21 @@ export const TaskEditorCalendar = ({
                 {calendarLabel || 'Select a calendar...'}
               </span>
               {accountLabel && (
-                <span className="block truncate text-xs text-surface-500 dark:text-surface-400">
+                <span className="block truncate text-surface-500 text-xs dark:text-surface-400">
                   {accountLabel}
                 </span>
               )}
             </span>
           </button>
           {task.parentUid && (
-            <p className="mt-3 text-xs text-surface-700 dark:text-surface-200 border border-semantic-warning/30 bg-semantic-warning/10 rounded-md p-2">
+            <p className="mt-3 rounded-md border border-semantic-warning/30 bg-semantic-warning/10 p-2 text-surface-700 text-xs dark:text-surface-200">
               Changing the calendar will convert this subtask to a regular task.
             </p>
           )}
         </>
       ) : (
         <div
-          className="w-full px-3 py-2 text-sm border border-surface-200 dark:border-surface-700 bg-surface-100 dark:bg-surface-900 text-surface-400 dark:text-surface-500 rounded-lg cursor-not-allowed"
+          className="w-full cursor-not-allowed rounded-lg border border-surface-200 bg-surface-100 px-3 py-2 text-sm text-surface-400 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-500"
           title="Add a CalDAV account to assign tasks to calendars"
         >
           No calendars available

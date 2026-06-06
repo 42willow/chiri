@@ -77,11 +77,11 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
         </>
       }
     >
-      <form id="tag-form" onSubmit={handleSubmit} className="p-4 space-y-4">
+      <form id="tag-form" onSubmit={handleSubmit} className="space-y-4 p-4">
         <div>
           <label
             htmlFor="tag-name"
-            className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+            className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
           >
             Tag Name
           </label>
@@ -101,13 +101,13 @@ export const TagModal = ({ tagId, initialName, onClose, onSave }: TagModalProps)
               onChange={setName}
               placeholder="Tag name"
               required
-              className="flex-1 px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+              className="flex-1 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
           </div>
         </div>
 
         <div>
-          <p className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          <p className="mb-2 block font-medium text-sm text-surface-700 dark:text-surface-300">
             Color
           </p>
           <ColorSwatchPicker

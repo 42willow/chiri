@@ -559,7 +559,7 @@ export function AccountModal({
                 : handleBackToTypePicker // connect-method goes back to pick-type
         }
       >
-        <ArrowLeft className="w-4 h-4" />
+        <ArrowLeft className="h-4 w-4" />
         Back
       </ModalButton>
     ) : undefined;
@@ -598,7 +598,7 @@ export function AccountModal({
               }
               loading={isTesting}
             >
-              {testSuccess && <CheckCircle className="w-4 h-4 text-semantic-success" />}
+              {testSuccess && <CheckCircle className="h-4 w-4 text-semantic-success" />}
               {testSuccess ? 'Success' : isTesting ? 'Testing...' : 'Test connection'}
             </ModalButton>
             <ModalButton
@@ -622,25 +622,25 @@ export function AccountModal({
         {step === 'pick-type' && <ServerTypePicker onSelect={handleSelectServerType} />}
 
         {step === 'connect-method' && (
-          <div className="p-4 space-y-3">
+          <div className="space-y-3 p-4">
             <button
               type="button"
               onClick={() => {
                 setNavDirection('forward');
                 setStep(OAUTH_SERVER_TYPES.has(serverType) ? 'fastmail-oauth' : 'quick-connect');
               }}
-              className="group w-full flex items-center gap-4 px-4 py-4 text-left rounded-xl border border-surface-200 dark:border-surface-600 bg-surface-50 dark:bg-surface-700/50 hover:border-surface-300 dark:hover:border-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="group flex w-full items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 px-4 py-4 text-left outline-none transition-colors hover:border-surface-300 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700/50 dark:hover:border-surface-500 dark:hover:bg-surface-700"
             >
-              <div className="size-9 rounded-lg bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300 flex items-center justify-center shrink-0">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-200 text-surface-600 dark:bg-surface-600 dark:text-surface-300">
                 <Cloud className="size-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-semibold text-surface-800 dark:text-surface-200">
+                <div className="font-semibold text-sm text-surface-800 dark:text-surface-200">
                   {OAUTH_SERVER_TYPES.has(serverType)
                     ? 'Log in with OAuth'
                     : 'Login via server URL'}
                 </div>
-                <div className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+                <div className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
                   Authenticate through your browser
                 </div>
               </div>
@@ -652,16 +652,16 @@ export function AccountModal({
                 setNavDirection('forward');
                 setStep('credentials');
               }}
-              className="group w-full flex items-center gap-4 px-4 py-4 text-left rounded-xl border border-surface-200 dark:border-surface-600 bg-surface-50 dark:bg-surface-700/50 hover:border-surface-300 dark:hover:border-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="group flex w-full items-center gap-4 rounded-xl border border-surface-200 bg-surface-50 px-4 py-4 text-left outline-none transition-colors hover:border-surface-300 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700/50 dark:hover:border-surface-500 dark:hover:bg-surface-700"
             >
-              <div className="size-9 rounded-lg bg-surface-200 dark:bg-surface-600 text-surface-600 dark:text-surface-300 flex items-center justify-center shrink-0">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-surface-200 text-surface-600 dark:bg-surface-600 dark:text-surface-300">
                 <KeyRound className="size-5" />
               </div>
               <div className="min-w-0">
-                <div className="text-sm font-semibold text-surface-800 dark:text-surface-200">
+                <div className="font-semibold text-sm text-surface-800 dark:text-surface-200">
                   Manually add credentials
                 </div>
-                <div className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+                <div className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
                   {OAUTH_SERVER_TYPES.has(serverType)
                     ? 'Enter your username and app password'
                     : 'Enter your username and password'}

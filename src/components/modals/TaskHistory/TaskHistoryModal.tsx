@@ -28,7 +28,7 @@ export const TaskHistoryModal = ({
       title="History"
       description={taskTitle}
       zIndex="z-60"
-      className="max-w-md max-h-[80vh]"
+      className="max-h-[80vh] max-w-md"
     >
       {isLoading ? (
         <p className="text-sm text-surface-400 dark:text-surface-500">Loading...</p>

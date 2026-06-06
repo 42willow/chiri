@@ -60,12 +60,12 @@ export const TaskActionsModal = ({ isOpen, onClose, taskId }: TaskActionsModalPr
           type="button"
           onClick={handleComplete}
           disabled={task.completed}
-          className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3 text-left text-sm font-medium text-surface-900 transition-colors hover:bg-surface-100 disabled:opacity-50 disabled:cursor-not-allowed dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3 text-left font-medium text-sm text-surface-900 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-50 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100 dark:hover:bg-surface-700"
         >
           <CheckSquare className="h-5 w-5 text-semantic-success" />
           <div className="flex-1">
             <div className="font-semibold">Complete Task</div>
-            <div className="text-xs text-surface-500 dark:text-surface-400">
+            <div className="text-surface-500 text-xs dark:text-surface-400">
               Mark this task as done
             </div>
           </div>
@@ -74,12 +74,12 @@ export const TaskActionsModal = ({ isOpen, onClose, taskId }: TaskActionsModalPr
         <button
           type="button"
           onClick={handleEdit}
-          className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3 text-left text-sm font-medium text-surface-900 transition-colors hover:bg-surface-100 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3 text-left font-medium text-sm text-surface-900 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100 dark:hover:bg-surface-700"
         >
           <Edit className="h-5 w-5 text-semantic-info" />
           <div className="flex-1">
             <div className="font-semibold">Edit Task</div>
-            <div className="text-xs text-surface-500 dark:text-surface-400">
+            <div className="text-surface-500 text-xs dark:text-surface-400">
               Open the task editor
             </div>
           </div>
@@ -88,12 +88,12 @@ export const TaskActionsModal = ({ isOpen, onClose, taskId }: TaskActionsModalPr
         <button
           type="button"
           onClick={handleSnooze}
-          className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3 text-left text-sm font-medium text-surface-900 transition-colors hover:bg-surface-100 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="flex items-center gap-3 rounded-lg border border-surface-200 bg-surface-50 px-4 py-3 text-left font-medium text-sm text-surface-900 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-700 dark:bg-surface-900 dark:text-surface-100 dark:hover:bg-surface-700"
         >
           <SnoozeIcon className="h-5 w-5 text-semantic-warning" />
           <div className="flex-1">
             <div className="font-semibold">Snooze</div>
-            <div className="text-xs text-surface-500 dark:text-surface-400">
+            <div className="text-surface-500 text-xs dark:text-surface-400">
               Remind me again later
             </div>
           </div>

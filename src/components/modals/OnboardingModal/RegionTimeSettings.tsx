@@ -77,11 +77,11 @@ export const RegionTimeSettings = () => {
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Globe className="h-4 w-4 text-primary-500" />
-          <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">
+          <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">
             Region & time
           </h3>
         </div>
-        <div className="max-w-64 truncate text-xs text-surface-500 dark:text-surface-400">
+        <div className="max-w-64 truncate text-surface-500 text-xs dark:text-surface-400">
           {systemLabel}
         </div>
       </div>
@@ -92,7 +92,7 @@ export const RegionTimeSettings = () => {
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-surface-700 dark:bg-surface-700 dark:text-surface-200">
               <CalendarDays className="h-4 w-4" />
             </span>
-            <span className="min-w-0 text-sm font-medium text-surface-900 dark:text-surface-100">
+            <span className="min-w-0 font-medium text-sm text-surface-900 dark:text-surface-100">
               Date format
             </span>
           </div>
@@ -114,7 +114,7 @@ export const RegionTimeSettings = () => {
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-surface-700 dark:bg-surface-700 dark:text-surface-200">
               <Clock className="h-4 w-4" />
             </span>
-            <span className="min-w-0 text-sm font-medium text-surface-900 dark:text-surface-100">
+            <span className="min-w-0 font-medium text-sm text-surface-900 dark:text-surface-100">
               Time format
             </span>
           </div>
@@ -129,7 +129,7 @@ export const RegionTimeSettings = () => {
                 key={value}
                 type="button"
                 onClick={() => handleTimeFormatChange(value)}
-                className={`rounded-lg border px-3 py-1.5 text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`rounded-lg border px-3 py-1.5 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   timeFormat === value
                     ? 'border-primary-500/60 bg-primary-500/10 text-surface-950 dark:text-surface-50'
                     : 'border-surface-200 bg-surface-50 text-surface-600 hover:bg-surface-100 dark:border-surface-700 dark:bg-surface-800 dark:text-surface-400 dark:hover:bg-surface-700'
@@ -146,7 +146,7 @@ export const RegionTimeSettings = () => {
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-surface-100 text-surface-700 dark:bg-surface-700 dark:text-surface-200">
               <CalendarDays className="h-4 w-4" />
             </span>
-            <span className="min-w-0 text-sm font-medium text-surface-900 dark:text-surface-100">
+            <span className="min-w-0 font-medium text-sm text-surface-900 dark:text-surface-100">
               Week starts on
             </span>
           </div>

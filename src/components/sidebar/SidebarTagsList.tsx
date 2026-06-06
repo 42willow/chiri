@@ -128,12 +128,12 @@ export const SidebarTagsList = ({
             type="button"
             onClick={onToggleTagsSection}
             aria-expanded={!tagsSectionCollapsed}
-            className="flex h-9 min-w-0 flex-1 items-center gap-1.5 px-2.5 rounded-lg text-left cursor-pointer hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-left outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700"
           >
             <ChevronDown
-              className={`w-4 h-4 text-surface-400 motion-safe:transition-transform motion-safe:duration-200 ${tagsSectionCollapsed ? '-rotate-90' : 'rotate-0'}`}
+              className={`h-4 w-4 text-surface-400 motion-safe:transition-transform motion-safe:duration-200 ${tagsSectionCollapsed ? '-rotate-90' : 'rotate-0'}`}
             />
-            <span className="text-sm font-semibold text-surface-500 dark:text-surface-400">
+            <span className="font-semibold text-sm text-surface-500 dark:text-surface-400">
               Tags
             </span>
           </button>
@@ -146,13 +146,13 @@ export const SidebarTagsList = ({
                 onClick={() => {
                   setShowSortMenu((v) => !v);
                 }}
-                className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   showSortMenu
-                    ? 'bg-surface-300 dark:bg-surface-600 text-surface-700 dark:text-surface-200'
-                    : `text-surface-500 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''}`
+                    ? 'bg-surface-300 text-surface-700 dark:bg-surface-600 dark:text-surface-200'
+                    : `text-surface-500 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-300 hover:text-surface-700 dark:hover:bg-surface-600 dark:hover:text-surface-300' : ''}`
                 }`}
               >
-                <ArrowUpDown className="w-4 h-4" />
+                <ArrowUpDown className="h-4 w-4" />
               </button>
             </Tooltip>
 
@@ -162,9 +162,9 @@ export const SidebarTagsList = ({
                 onClick={() => {
                   onAddTag();
                 }}
-                className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-700 dark:hover:text-surface-300' : ''} text-surface-500 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+                className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg ${!isAnyModalOpen ? 'hover:bg-surface-300 hover:text-surface-700 dark:hover:bg-surface-600 dark:hover:text-surface-300' : ''} text-surface-500 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400`}
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="h-4 w-4" />
               </button>
             </Tooltip>
           </div>

@@ -65,9 +65,9 @@ const ActionCard = ({ title, description, children }: ActionCardProps) => {
         : [description];
 
   return (
-    <section className={`${cardClasses} p-5 space-y-3`}>
+    <section className={`${cardClasses} space-y-3 p-5`}>
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-surface-900 dark:text-surface-50">{title}</h2>
+        <h2 className="font-semibold text-surface-900 text-xl dark:text-surface-50">{title}</h2>
         {descriptionLines.map((line) => (
           <p key={line} className="text-sm text-surface-600 dark:text-surface-400">
             {line}
@@ -135,9 +135,9 @@ export const BootstrapErrorScreen = ({ error, onResetDatabase }: BootstrapErrorS
   return (
     <div className="min-h-screen overflow-y-auto bg-white p-6 dark:bg-surface-900">
       <main className="mx-auto flex min-h-[calc(100vh-3rem)] w-full max-w-2xl flex-col justify-center gap-6 py-10">
-        <section className={`${cardClasses} p-6 space-y-6`}>
+        <section className={`${cardClasses} space-y-6 p-6`}>
           <div className="space-y-2">
-            <h1 className="text-3xl font-bold text-surface-900 dark:text-surface-50">
+            <h1 className="font-bold text-3xl text-surface-900 dark:text-surface-50">
               Something went wrong :(
             </h1>
             <p className="text-surface-600 dark:text-surface-400">
@@ -146,7 +146,7 @@ export const BootstrapErrorScreen = ({ error, onResetDatabase }: BootstrapErrorS
           </div>
 
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold text-surface-900 dark:text-surface-50">
+            <h2 className="font-semibold text-lg text-surface-900 dark:text-surface-50">
               Error details:
             </h2>
             <div className="max-h-48 overflow-auto rounded-md border border-surface-200 bg-surface-100 p-4 font-mono text-sm dark:border-surface-700 dark:bg-surface-900">
@@ -169,13 +169,13 @@ export const BootstrapErrorScreen = ({ error, onResetDatabase }: BootstrapErrorS
           <div className="divide-y divide-surface-200 dark:divide-surface-700">
             <section className="space-y-3 pb-5">
               <div className="space-y-1.5">
-                <h3 className="text-base font-semibold text-surface-900 dark:text-surface-50">
+                <h3 className="font-semibold text-base text-surface-900 dark:text-surface-50">
                   Reset Preferences
                 </h3>
                 <p
                   className={
                     confirmResetPrefs
-                      ? 'text-sm font-semibold text-semantic-warning'
+                      ? 'font-semibold text-semantic-warning text-sm'
                       : 'text-sm text-surface-600 dark:text-surface-400'
                   }
                 >
@@ -219,13 +219,13 @@ export const BootstrapErrorScreen = ({ error, onResetDatabase }: BootstrapErrorS
 
             <section className="space-y-3 pt-5">
               <div className="space-y-1.5">
-                <h3 className="text-base font-semibold text-surface-900 dark:text-surface-50">
+                <h3 className="font-semibold text-base text-surface-900 dark:text-surface-50">
                   Reset Database
                 </h3>
                 <p
                   className={
                     confirmResetDatabase
-                      ? 'text-sm font-semibold text-semantic-error'
+                      ? 'font-semibold text-semantic-error text-sm'
                       : 'text-sm text-surface-600 dark:text-surface-400'
                   }
                 >
@@ -249,7 +249,7 @@ export const BootstrapErrorScreen = ({ error, onResetDatabase }: BootstrapErrorS
               ) : (
                 <div className="space-y-3">
                   {resetDatabaseError && (
-                    <p className="selectable text-sm text-semantic-error">{resetDatabaseError}</p>
+                    <p className="selectable text-semantic-error text-sm">{resetDatabaseError}</p>
                   )}
                   <div className="flex flex-wrap gap-3">
                     <button

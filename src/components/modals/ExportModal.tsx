@@ -164,28 +164,28 @@ export const ExportModal = ({
             onClick={handleCopyToClipboard}
             disabled={tasks.length === 0}
           >
-            <Copy className="w-4 h-4" />
+            <Copy className="h-4 w-4" />
             {copied ? 'Copied!' : 'Copy'}
           </ModalButton>
           <ModalButton onClick={handleExportToFile} disabled={exporting || tasks.length === 0}>
-            <Download className="w-4 h-4" />
+            <Download className="h-4 w-4" />
             {exporting ? 'Exporting...' : 'Download'}
           </ModalButton>
         </>
       }
     >
       <div className="space-y-2">
-        <p className="block text-sm font-medium text-surface-700 dark:text-surface-300">Format</p>
+        <p className="block font-medium text-sm text-surface-700 dark:text-surface-300">Format</p>
         <div className="grid grid-cols-1 gap-2">
           {EXPORT_FORMATS.map((format) => (
             <button
               type="button"
               key={format.id}
               onClick={() => setSelectedFormat(format.id)}
-              className={`flex items-start gap-3 p-3 rounded-lg border transition-colors text-left outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              className={`flex items-start gap-3 rounded-lg border p-3 text-left outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                 selectedFormat === format.id
                   ? 'border-primary-500 bg-primary-500/10'
-                  : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600'
+                  : 'border-surface-200 hover:border-surface-300 dark:border-surface-700 dark:hover:border-surface-600'
               }`}
             >
               <div className="flex-1">
@@ -198,13 +198,13 @@ export const ExportModal = ({
                 >
                   {format.label}
                 </div>
-                <div className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+                <div className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">
                   {format.description}
                 </div>
               </div>
               {selectedFormat === format.id && (
-                <div className="text-primary-500 dark:text-primary-400 shrink-0">
-                  <CheckCircle2 className="w-5 h-5" />
+                <div className="shrink-0 text-primary-500 dark:text-primary-400">
+                  <CheckCircle2 className="h-5 w-5" />
                 </div>
               )}
             </button>
@@ -213,16 +213,16 @@ export const ExportModal = ({
       </div>
 
       {tasks.length === 0 && (
-        <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-xs text-surface-700 dark:text-surface-300">
+        <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
           <Info className="mt-px size-3.5 shrink-0 text-semantic-info" />
           <span>There are no tasks to export.</span>
         </div>
       )}
 
       {error && (
-        <div className="flex items-start gap-2 p-3 rounded-lg bg-semantic-error/10 border border-semantic-error/30">
-          <AlertCircle className="w-4 h-4 text-semantic-error shrink-0 mt-0.5" />
-          <p className="text-sm text-semantic-error">{error}</p>
+        <div className="flex items-start gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-error" />
+          <p className="text-semantic-error text-sm">{error}</p>
         </div>
       )}
     </ModalWrapper>

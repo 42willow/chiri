@@ -73,9 +73,9 @@ export const UpdateModal = ({
             <ModalButton onClick={onDownload} disabled={isDownloading} loading={isDownloading}>
               {!isDownloading &&
                 (error?.kind === 'download' ? (
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="h-4 w-4" />
                 ) : (
-                  <Download className="w-4 h-4" />
+                  <Download className="h-4 w-4" />
                 ))}
               {isDownloading ? 'Downloading...' : primaryLabel}
             </ModalButton>
@@ -89,13 +89,13 @@ export const UpdateModal = ({
                 v{updateInfo.currentVersion}
               </span>
               <ArrowRight className="h-3.5 w-3.5 shrink-0 text-surface-400 dark:text-surface-500" />
-              <span className="font-mono text-sm font-semibold text-surface-900 dark:text-surface-100">
+              <span className="font-mono font-semibold text-sm text-surface-900 dark:text-surface-100">
                 v{updateInfo.version}
               </span>
             </div>
 
             {releaseDate && (
-              <p className="text-xs text-surface-500 dark:text-surface-400">
+              <p className="text-surface-500 text-xs dark:text-surface-400">
                 Released {releaseDate}
               </p>
             )}
@@ -106,19 +106,19 @@ export const UpdateModal = ({
           </section>
 
           {error && (
-            <div role="alert" className="border-l-2 border-semantic-error py-0.5 pl-3">
-              <p className="text-sm font-semibold text-semantic-error">{error.title}</p>
-              <p className="mt-1 text-xs text-semantic-error/90">{error.description}</p>
+            <div role="alert" className="border-semantic-error border-l-2 py-0.5 pl-3">
+              <p className="font-semibold text-semantic-error text-sm">{error.title}</p>
+              <p className="mt-1 text-semantic-error/90 text-xs">{error.description}</p>
             </div>
           )}
 
           {isDownloading && (
-            <section className="space-y-2 border-t border-surface-200 pt-4 dark:border-surface-700">
+            <section className="space-y-2 border-surface-200 border-t pt-4 dark:border-surface-700">
               <div className="flex items-center justify-between gap-3 text-xs" aria-live="polite">
                 <span className="font-medium text-surface-700 dark:text-surface-300">
                   Downloading update
                 </span>
-                <span className="font-medium tabular-nums text-surface-700 dark:text-surface-300">
+                <span className="font-medium text-surface-700 tabular-nums dark:text-surface-300">
                   {Math.round(boundedProgress)}%
                 </span>
               </div>
@@ -132,8 +132,8 @@ export const UpdateModal = ({
           )}
 
           {!isDownloading && (
-            <section className="border-t border-surface-200 pt-4 dark:border-surface-700">
-              <h3 className="mb-3 text-base font-semibold text-surface-800 dark:text-surface-200">
+            <section className="border-surface-200 border-t pt-4 dark:border-surface-700">
+              <h3 className="mb-3 font-semibold text-base text-surface-800 dark:text-surface-200">
                 What's new
               </h3>
 
@@ -141,14 +141,7 @@ export const UpdateModal = ({
                 <>
                   <div className="relative max-h-44 overflow-hidden">
                     <div
-                      className="prose prose-sm max-w-none text-sm dark:prose-invert
-                    [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-sm [&_h2]:font-semibold [&_h2]:text-surface-800 [&_h2:first-child]:mt-0 dark:[&_h2]:text-surface-200
-                    [&_h3]:mb-1.5 [&_h3]:mt-3 [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:text-surface-700 dark:[&_h3]:text-surface-300
-                    [&_p]:my-1.5 [&_p]:text-surface-600 dark:[&_p]:text-surface-400
-                    [&_ul]:mb-0 [&_ul]:mt-1.5 [&_ul]:ml-4 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-600 dark:[&_ul]:text-surface-400
-                    [&_strong]:font-semibold
-                    [&_a]:text-primary-600 hover:[&_a]:underline dark:[&_a]:text-primary-400
-                    [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800"
+                      className="prose prose-sm dark:prose-invert max-w-none text-sm [&_a]:text-primary-600 hover:[&_a]:underline dark:[&_a]:text-primary-400 [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800 [&_h2:first-child]:mt-0 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-semibold [&_h2]:text-sm [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h3]:mt-3 [&_h3]:mb-1.5 [&_h3]:font-semibold [&_h3]:text-surface-700 [&_h3]:text-xs dark:[&_h3]:text-surface-300 [&_p]:my-1.5 [&_p]:text-surface-600 dark:[&_p]:text-surface-400 [&_strong]:font-semibold [&_ul]:mt-1.5 [&_ul]:mb-0 [&_ul]:ml-4 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-600 dark:[&_ul]:text-surface-400"
                       // biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown is rendered from trusted changelog content
                       dangerouslySetInnerHTML={{ __html: changelogHtml }}
                     />
@@ -157,7 +150,7 @@ export const UpdateModal = ({
                   <button
                     type="button"
                     onClick={() => setShowChangelogModal(true)}
-                    className="text-xs font-medium text-primary-600 outline-hidden hover:underline focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-primary-400"
+                    className="font-medium text-primary-600 text-xs outline-hidden hover:underline focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-primary-400"
                   >
                     Show all
                   </button>

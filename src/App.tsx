@@ -271,7 +271,7 @@ const App = () => {
   return (
     <div
       role="application"
-      className="flex h-screen bg-surface-50 dark:bg-surface-900 overflow-hidden"
+      className="flex h-screen overflow-hidden bg-surface-50 dark:bg-surface-900"
       onContextMenu={handleContextMenu}
       {...rootFileDropProps}
     >
@@ -290,7 +290,7 @@ const App = () => {
         onUpdateClick={() => setShowUpdateModal(true)}
       />
 
-      <main className="flex-1 flex flex-col min-w-0">
+      <main className="flex min-w-0 flex-1 flex-col">
         <Header
           isSyncing={isSyncInProgress}
           syncingCalendarId={syncingCalendarId}
@@ -304,22 +304,22 @@ const App = () => {
 
         <OfflineBanner isOffline={isOffline} syncOnReconnect={syncOnReconnect} />
 
-        <div className="flex-1 flex min-h-0 overflow-hidden">
+        <div className="flex min-h-0 flex-1 overflow-hidden">
           <div
-            className={`flex-1 flex flex-col min-w-0 min-h-0 ${isTaskEditorVisible ? 'hidden lg:flex' : ''}`}
+            className={`flex min-h-0 min-w-0 flex-1 flex-col ${isTaskEditorVisible ? 'hidden lg:flex' : ''}`}
           >
             <TaskList />
           </div>
 
           {visibleTask && (
             <div
-              className="relative flex-1 lg:flex-none lg:border-l border-surface-200 dark:border-surface-700 bg-white dark:bg-surface-800 overflow-hidden"
+              className="relative flex-1 overflow-hidden border-surface-200 bg-white lg:flex-none lg:border-l dark:border-surface-700 dark:bg-surface-800"
               style={{ width: taskEditorWidth }}
             >
               {/* biome-ignore lint/a11y/noStaticElementInteractions: Resize handle requires mouse events for drag functionality */}
               <div
                 onMouseDown={handleEditorResizeStart}
-                className="absolute top-0 left-0 w-1 h-full cursor-col-resize hover:bg-primary-400 dark:hover:bg-primary-600 transition-colors z-10"
+                className="absolute top-0 left-0 z-10 h-full w-1 cursor-col-resize transition-colors hover:bg-primary-400 dark:hover:bg-primary-600"
               />
               <TaskEditor
                 task={visibleTask}

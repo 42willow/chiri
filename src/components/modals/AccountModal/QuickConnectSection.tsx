@@ -32,21 +32,21 @@ export const QuickConnectSection = ({ serverType, onClick }: QuickConnectSection
   if (!config) return null;
 
   return (
-    <div className="pt-3 border-surface-200 dark:border-surface-700">
-      <div className="flex items-center gap-2 mb-3">
-        <div className="flex-1 border-t border-surface-200 dark:border-surface-700" />
-        <span className="text-xs text-surface-400 dark:text-surface-500">Quick connect</span>
-        <div className="flex-1 border-t border-surface-200 dark:border-surface-700" />
+    <div className="border-surface-200 pt-3 dark:border-surface-700">
+      <div className="mb-3 flex items-center gap-2">
+        <div className="flex-1 border-surface-200 border-t dark:border-surface-700" />
+        <span className="text-surface-400 text-xs dark:text-surface-500">Quick connect</span>
+        <div className="flex-1 border-surface-200 border-t dark:border-surface-700" />
       </div>
       <button
         type="button"
         onClick={onClick}
-        className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${config.buttonClassName}`}
+        className={`flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${config.buttonClassName}`}
       >
-        <Cloud className="w-4 h-4" />
+        <Cloud className="h-4 w-4" />
         {config.label}
       </button>
-      <p className="mt-2 text-xs text-center text-surface-500 dark:text-surface-400">
+      <p className="mt-2 text-center text-surface-500 text-xs dark:text-surface-400">
         {config.description}
       </p>
     </div>

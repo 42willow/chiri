@@ -34,13 +34,13 @@ export const TaskEditorDescription = ({ task, readOnly = false }: DescriptionPro
     <div>
       <label
         htmlFor={readOnly ? undefined : 'task-description'}
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <AlignLeft className="w-4 h-4" />
+        <AlignLeft className="h-4 w-4" />
         Description
       </label>
       {readOnly ? (
-        <div className="w-full min-h-24 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap cursor-not-allowed selectable">
+        <div className="selectable min-h-24 w-full cursor-not-allowed whitespace-pre-wrap rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-700 dark:bg-surface-800 dark:text-surface-300">
           {description || (
             <span className="text-surface-400 dark:text-surface-500">No description</span>
           )}
@@ -53,7 +53,7 @@ export const TaskEditorDescription = ({ task, readOnly = false }: DescriptionPro
           onChange={handleDescriptionChange}
           placeholder="Add a description..."
           rows={4}
-          className="w-full px-3 py-2 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors resize-none"
+          className="w-full resize-none rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-700 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-800"
         />
       )}
     </div>

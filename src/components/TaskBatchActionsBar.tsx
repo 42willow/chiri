@@ -238,13 +238,13 @@ export const TaskBatchActionsBar = ({
 
   return (
     <>
-      <div ref={toolbarRef} className="flex-1 min-w-0 flex items-center gap-2 overflow-hidden">
+      <div ref={toolbarRef} className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
         <div className="flex shrink-0 items-center gap-2">
-          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-sm bg-primary-500 px-2 text-xs font-semibold text-primary-contrast">
+          <span className="inline-flex h-6 min-w-6 items-center justify-center rounded-sm bg-primary-500 px-2 font-semibold text-primary-contrast text-xs">
             {selectedCount}
           </span>
           <span
-            className={`text-sm font-medium text-surface-800 dark:text-surface-100 ${
+            className={`font-medium text-sm text-surface-800 dark:text-surface-100 ${
               isTight ? 'sr-only' : ''
             }`}
           >
@@ -261,7 +261,7 @@ export const TaskBatchActionsBar = ({
                 className={getActionButtonClass({ isCompact })}
                 title="Restore selected tasks"
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="h-4 w-4" />
                 <span className={compactLabelClass(isCompact)}>Restore</span>
               </button>
 
@@ -271,7 +271,7 @@ export const TaskBatchActionsBar = ({
                 className={destructiveButtonClass}
                 title="Delete selected tasks permanently"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 {isCompact ? 'Delete' : 'Delete permanently'}
               </button>
             </>
@@ -283,7 +283,7 @@ export const TaskBatchActionsBar = ({
                 className={getActionButtonClass({ isCompact })}
                 title="Edit tags"
               >
-                <Tag className="w-4 h-4" />
+                <Tag className="h-4 w-4" />
                 <span className={compactLabelClass(isCompact)}>Tags</span>
               </button>
 
@@ -294,7 +294,7 @@ export const TaskBatchActionsBar = ({
                 disabled={allCalendars.length === 0}
                 title="Move to calendar"
               >
-                <CalendarMove className="w-4 h-4" />
+                <CalendarMove className="h-4 w-4" />
                 <span className={compactLabelClass(isCompact)}>Move</span>
               </button>
 
@@ -311,7 +311,7 @@ export const TaskBatchActionsBar = ({
                 aria-expanded={openMenu === 'status'}
                 title="Set status"
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="h-4 w-4" />
                 <span className={compactLabelClass(isCompact)}>Status</span>
                 <ChevronDown className={getDisclosureChevronClass(openMenu === 'status')} />
               </button>
@@ -331,7 +331,7 @@ export const TaskBatchActionsBar = ({
                 aria-expanded={openMenu === 'priority'}
                 title="Change priority"
               >
-                <Flag className="w-4 h-4" />
+                <Flag className="h-4 w-4" />
                 <span className={compactLabelClass(isCompact)}>Priority</span>
                 <ChevronDown className={getDisclosureChevronClass(openMenu === 'priority')} />
               </button>
@@ -342,7 +342,7 @@ export const TaskBatchActionsBar = ({
                 className={getActionButtonClass({ isCompact })}
                 title="Export selected tasks"
               >
-                <Share2 className="w-4 h-4" />
+                <Share2 className="h-4 w-4" />
                 <span className={compactLabelClass(isCompact)}>Export</span>
               </button>
 
@@ -352,7 +352,7 @@ export const TaskBatchActionsBar = ({
                 className={destructiveButtonClass}
                 title="Delete selected tasks"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 Delete
               </button>
             </>
@@ -362,9 +362,9 @@ export const TaskBatchActionsBar = ({
             type="button"
             onClick={onClearSelection}
             aria-label="Clear selection"
-            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-500 hover:text-surface-800 dark:hover:text-surface-200 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-800 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 dark:hover:text-surface-200"
           >
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
           </button>
         </div>
       </div>
@@ -384,10 +384,10 @@ export const TaskBatchActionsBar = ({
               onClick={() => handleStatusChange(value)}
               className={getMenuItemClass(index, STATUS_OPTIONS.length)}
             >
-              <Icon className="w-4 h-4 shrink-0" />
+              <Icon className="h-4 w-4 shrink-0" />
               <span className="flex-1 text-left">{label}</span>
               {selectedTasks.every((task) => task.status === value) && (
-                <Check className="w-3.5 h-3.5 text-primary-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 shrink-0 text-primary-500" />
               )}
             </button>
           ))}
@@ -411,7 +411,7 @@ export const TaskBatchActionsBar = ({
             >
               <span className={`flex-1 text-left ${priority.color}`}>{priority.label}</span>
               {selectedTasks.every((task) => task.priority === priority.value) && (
-                <Check className="w-3.5 h-3.5 text-primary-500 shrink-0" />
+                <Check className="h-3.5 w-3.5 shrink-0 text-primary-500" />
               )}
             </button>
           ))}

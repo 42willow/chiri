@@ -19,8 +19,8 @@ export const TaskEditorHeader = ({
   onDeletePermanently,
 }: TaskEditorHeaderProps) => {
   return (
-    <div className="flex items-center justify-between p-4 border-b border-surface-200 dark:border-surface-700">
-      <h2 className="text-lg font-semibold text-surface-800 dark:text-surface-200">
+    <div className="flex items-center justify-between border-surface-200 border-b p-4 dark:border-surface-700">
+      <h2 className="font-semibold text-lg text-surface-800 dark:text-surface-200">
         {isDeleted ? 'Recently deleted' : 'Edit task'}
       </h2>
       <div className="flex items-center gap-2">
@@ -30,10 +30,10 @@ export const TaskEditorHeader = ({
               <button
                 type="button"
                 onClick={onRestore}
-                className="p-2 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
                 aria-label="Restore task"
               >
-                <RotateCcw className="w-5 h-5" />
+                <RotateCcw className="h-5 w-5" />
               </button>
             </Tooltip>
 
@@ -41,10 +41,10 @@ export const TaskEditorHeader = ({
               <button
                 type="button"
                 onClick={onDeletePermanently}
-                className="p-2 text-surface-500 hover:text-semantic-error hover:bg-semantic-error/10 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
                 aria-label="Delete task permanently"
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="h-5 w-5" />
               </button>
             </Tooltip>
           </>
@@ -53,10 +53,10 @@ export const TaskEditorHeader = ({
             <button
               type="button"
               onClick={onDelete}
-              className="p-2 text-surface-500 hover:text-semantic-error hover:bg-semantic-error/10 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-semantic-error/10 hover:text-semantic-error focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
               aria-label="Delete task"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="h-5 w-5" />
             </button>
           </Tooltip>
         )}
@@ -65,10 +65,10 @@ export const TaskEditorHeader = ({
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-800 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-800 dark:hover:text-surface-300"
             aria-label="Close editor"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </Tooltip>
       </div>

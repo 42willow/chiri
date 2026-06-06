@@ -368,10 +368,10 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
           <button
             type="button"
             onClick={handleBack}
-            className="p-1.5 text-surface-500 hover:text-surface-700 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="rounded-lg p-1.5 text-surface-500 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 dark:hover:text-surface-300"
             aria-label="Go back"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="h-5 w-5" />
           </button>
         ) : undefined
       }
@@ -403,17 +403,17 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
             >
               {importSuccess ? (
                 <>
-                  <Check className="w-4 h-4" />
+                  <Check className="h-4 w-4" />
                   Imported!
                 </>
               ) : isImporting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                   Importing...
                 </>
               ) : (
                 <>
-                  <Upload className="w-4 h-4" />
+                  <Upload className="h-4 w-4" />
                   Import {parsedTasks.length} {pluralize(parsedTasks.length, 'Task')}
                 </>
               )}
@@ -424,7 +424,7 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
     >
       <div className="flex h-full min-h-0 flex-col">
         {/* Step Indicator */}
-        <div className="px-4 py-3 border-b border-surface-100 dark:border-surface-700/50 shrink-0">
+        <div className="shrink-0 border-surface-100 border-b px-4 py-3 dark:border-surface-700/50">
           <StepIndicator
             currentStep={step}
             hasFile={parsedTasks.length > 0}
@@ -433,7 +433,7 @@ export const ImportModal = ({ isOpen, onClose, preloadedFile, onFileDrop }: Impo
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-4 overflow-y-auto flex-1">
+        <div className="flex-1 space-y-4 overflow-y-auto p-4">
           {step === 'upload' && (
             <FileUploadStep
               fileName={fileName}

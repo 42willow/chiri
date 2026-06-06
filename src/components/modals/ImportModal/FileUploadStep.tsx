@@ -65,7 +65,7 @@ export const FileUploadStep = ({
   const getFileIcon = () => {
     if (!fileName) return null;
     // Could extend with different icons per file type based on extension
-    return <FileText className="w-5 h-5" />;
+    return <FileText className="h-5 w-5" />;
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
@@ -95,52 +95,52 @@ export const FileUploadStep = ({
         }}
         onDragEnter={onDragEnter}
         onDragLeave={handleDragLeave}
-        className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
+        className={`relative cursor-pointer rounded-xl border-2 border-dashed p-6 text-center outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
           isDraggingOver
-            ? 'border-primary-500 bg-primary-500/10 scale-[1.02]'
+            ? 'scale-[1.02] border-primary-500 bg-primary-500/10'
             : fileName
               ? 'border-primary-500 bg-primary-500/5'
-              : 'border-surface-300 dark:border-surface-600 hover:border-primary-400 dark:hover:border-primary-500 hover:bg-surface-50 dark:hover:bg-surface-700/50'
+              : 'border-surface-300 hover:border-primary-400 hover:bg-surface-50 dark:border-surface-600 dark:hover:border-primary-500 dark:hover:bg-surface-700/50'
         }`}
       >
         {isProcessing ? (
-          <div className="flex flex-col items-center gap-2 pointer-events-none">
-            <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin" />
+          <div className="pointer-events-none flex flex-col items-center gap-2">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary-500 border-t-transparent" />
             <p className="text-sm text-surface-600 dark:text-surface-400">Reading file...</p>
           </div>
         ) : fileName ? (
-          <div className="flex items-center justify-center gap-3 pointer-events-none">
-            <div className="flex items-center gap-2 px-3 py-2 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-600 rounded-lg shadow-xs">
+          <div className="pointer-events-none flex items-center justify-center gap-3">
+            <div className="flex items-center gap-2 rounded-lg border border-surface-200 bg-white px-3 py-2 shadow-xs dark:border-surface-600 dark:bg-surface-800">
               <span className="text-primary-500">{getFileIcon()}</span>
-              <span className="text-sm font-medium text-surface-700 dark:text-surface-300 max-w-50 truncate">
+              <span className="max-w-50 truncate font-medium text-sm text-surface-700 dark:text-surface-300">
                 {fileName}
               </span>
               <button
                 type="button"
                 onClick={handleRemoveFile}
-                className="p-1 text-surface-400 hover:text-surface-600 dark:hover:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-sm transition-colors pointer-events-auto outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="pointer-events-auto rounded-sm p-1 text-surface-400 outline-hidden transition-colors hover:bg-surface-100 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:hover:bg-surface-700 dark:hover:text-surface-300"
                 aria-label="Remove file"
               >
-                <X className="w-4 h-4" />
+                <X className="h-4 w-4" />
               </button>
             </div>
           </div>
         ) : (
           <>
             <div
-              className={`w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center transition-colors pointer-events-none ${
+              className={`pointer-events-none mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full transition-colors ${
                 isDraggingOver
                   ? 'bg-primary-500/15 text-primary-500'
-                  : 'bg-surface-100 dark:bg-surface-700 text-surface-400'
+                  : 'bg-surface-100 text-surface-400 dark:bg-surface-700'
               }`}
             >
-              <Upload className="w-6 h-6" />
+              <Upload className="h-6 w-6" />
             </div>
-            <div className="space-y-1 pointer-events-none">
-              <p className="text-sm font-medium text-surface-700 dark:text-surface-300">
+            <div className="pointer-events-none space-y-1">
+              <p className="font-medium text-sm text-surface-700 dark:text-surface-300">
                 {isDraggingOver ? 'Drop file here' : 'Drop a file here, or click to browse'}
               </p>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
+              <p className="text-surface-500 text-xs dark:text-surface-400">
                 Supports .ics, .ical, .json, and Tasks.org backup files
               </p>
             </div>
@@ -158,20 +158,20 @@ export const FileUploadStep = ({
 
       {/* Error Display */}
       {error && (
-        <div className="flex items-start gap-2 p-3 text-sm text-surface-700 dark:text-surface-300 bg-semantic-error/10 border border-semantic-error/30 rounded-lg">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-semantic-error" />
+        <div className="flex items-start gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3 text-sm text-surface-700 dark:text-surface-300">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-error" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Parse Warnings */}
       {parseErrors.length > 0 && (
-        <div className="p-3 text-sm text-surface-700 dark:text-surface-300 bg-semantic-warning/10 border border-semantic-warning/30 rounded-lg">
+        <div className="rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 p-3 text-sm text-surface-700 dark:text-surface-300">
           <div className="flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-semantic-warning" />
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-warning" />
             <div className="space-y-1">
               <p className="font-medium">Some items couldn't be parsed:</p>
-              <ul className="text-xs space-y-0.5 opacity-80">
+              <ul className="space-y-0.5 text-xs opacity-80">
                 {parseErrors.slice(0, 3).map((err) => (
                   <li key={err}>• {err}</li>
                 ))}

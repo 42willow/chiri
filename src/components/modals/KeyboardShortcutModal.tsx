@@ -119,7 +119,7 @@ export const KeyboardShortcutModal = ({
       footerLeft={
         canClear ? (
           <ModalButton variant="ghost" onClick={handleClear}>
-            <X className="w-4 h-4" />
+            <X className="h-4 w-4" />
             Clear shortcut
           </ModalButton>
         ) : undefined
@@ -145,16 +145,16 @@ export const KeyboardShortcutModal = ({
           onFocus={() => setIsRecording(true)}
           onBlur={() => setIsRecording(false)}
           onKeyDown={handleKeyCapture}
-          className={`relative w-full h-20 flex items-center justify-center bg-surface-50 dark:bg-surface-900 border rounded-lg shadow-inner hover:bg-white dark:hover:bg-surface-800 focus:outline-hidden focus:bg-white dark:focus:bg-surface-800 focus:ring-2 focus:ring-primary-500 focus:ring-inset transition-colors cursor-pointer ${
+          className={`relative flex h-20 w-full cursor-pointer items-center justify-center rounded-lg border bg-surface-50 shadow-inner transition-colors hover:bg-white focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-inset dark:bg-surface-900 dark:focus:bg-surface-800 dark:hover:bg-surface-800 ${
             conflictingShortcut
               ? 'border-semantic-error focus:border-semantic-error focus:ring-semantic-error'
-              : 'border-surface-200 dark:border-surface-700 hover:border-surface-300 dark:hover:border-surface-600 focus:border-primary-500'
+              : 'border-surface-200 hover:border-surface-300 focus:border-primary-500 dark:border-surface-700 dark:hover:border-surface-600'
           }`}
           aria-label="Press keys to set shortcut"
         >
           {isRecording && (
             <span
-              className="absolute right-3 top-2 inline-flex items-center gap-1.5 text-[11px] font-medium text-primary-600 dark:text-primary-400"
+              className="absolute top-2 right-3 inline-flex items-center gap-1.5 font-medium text-[11px] text-primary-600 dark:text-primary-400"
               aria-live="polite"
             >
               <span className="h-1.5 w-1.5 rounded-full bg-primary-500" />
@@ -168,27 +168,27 @@ export const KeyboardShortcutModal = ({
                 .map((key, idx, arr) => (
                   <span key={`key-${key}`} className="flex items-center">
                     <kbd
-                      className={`px-3 py-2 rounded-lg text-sm font-mono shadow-xs ${
+                      className={`rounded-lg px-3 py-2 font-mono text-sm shadow-xs ${
                         pendingShortcut
-                          ? 'bg-surface-200 dark:bg-surface-700 border-2 border-primary-500 text-surface-900 dark:text-surface-100'
-                          : 'bg-surface-100 dark:bg-surface-700 border border-surface-300 dark:border-surface-600 text-surface-700 dark:text-surface-300'
+                          ? 'border-2 border-primary-500 bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
+                          : 'border border-surface-300 bg-surface-100 text-surface-700 dark:border-surface-600 dark:bg-surface-700 dark:text-surface-300'
                       }`}
                     >
                       {key}
                     </kbd>
                     {idx < arr.length - 1 && (
-                      <span className="text-surface-400 mx-1 text-lg">+</span>
+                      <span className="mx-1 text-lg text-surface-400">+</span>
                     )}
                   </span>
                 ))}
             </div>
           ) : (
-            <span className="text-surface-400 dark:text-surface-500 text-sm">No shortcut set</span>
+            <span className="text-sm text-surface-400 dark:text-surface-500">No shortcut set</span>
           )}
         </div>
 
         {conflictingShortcut && (
-          <p className="text-center text-xs text-semantic-error">
+          <p className="text-center text-semantic-error text-xs">
             Already used by {conflictingShortcut.description}.
           </p>
         )}

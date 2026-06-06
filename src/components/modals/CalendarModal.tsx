@@ -215,11 +215,11 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
         </>
       }
     >
-      <form id="calendar-form" onSubmit={handleSubmit} className="p-4 space-y-4">
+      <form id="calendar-form" onSubmit={handleSubmit} className="space-y-4 p-4">
         <div>
           <label
             htmlFor="calendar-name"
-            className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+            className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
           >
             Calendar Name
           </label>
@@ -239,13 +239,13 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
               onChange={setDisplayName}
               placeholder="My Calendar"
               required
-              className="flex-1 px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+              className="flex-1 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
           </div>
         </div>
 
         <div>
-          <p className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-2">
+          <p className="mb-2 block font-medium text-sm text-surface-700 dark:text-surface-300">
             Color
           </p>
           <ColorSwatchPicker
@@ -263,13 +263,13 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
         </div>
 
         {warning && (
-          <div className="p-3 text-sm text-surface-700 dark:text-surface-300 bg-semantic-warning/10 border border-semantic-warning/30 rounded-lg">
+          <div className="rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 p-3 text-sm text-surface-700 dark:text-surface-300">
             {warning}
           </div>
         )}
 
         {isVikunja && calendar && (
-          <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-xs text-surface-700 dark:text-surface-300">
+          <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
             <AlertTriangle className="mt-px size-3.5 shrink-0 text-semantic-info" />
             <span>
               Vikunja doesn't support editing projects via CalDAV.{' '}
@@ -289,7 +289,7 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
         )}
 
         {isVikunja && !calendar && (
-          <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-xs text-surface-700 dark:text-surface-300">
+          <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
             <AlertTriangle className="mt-px size-3.5 shrink-0 text-semantic-info" />
             <span>
               Vikunja doesn't support creating projects via CalDAV.{' '}
@@ -309,7 +309,7 @@ export const CalendarModal = ({ calendar, accountId, onClose }: CalendarModalPro
         )}
 
         {error && !isVikunja && (
-          <div className="p-3 text-sm text-semantic-error bg-semantic-error/10 border border-semantic-error/30 rounded-lg">
+          <div className="rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3 text-semantic-error text-sm">
             {error}
           </div>
         )}

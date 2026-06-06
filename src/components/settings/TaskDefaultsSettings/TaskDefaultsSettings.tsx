@@ -152,15 +152,15 @@ export const TaskDefaultsSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">Defaults</h3>
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Defaults</h3>
 
       <div className="space-y-2">
-        <h4 className="text-sm font-semibold text-surface-700 dark:text-surface-300">
+        <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">
           Task values
         </h4>
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="p-4">
-            <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+            <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
               Status
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -204,14 +204,14 @@ export const TaskDefaultsSettings = () => {
                   key={value}
                   type="button"
                   onClick={() => setDefaultStatus(value as TaskStatus)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                     defaultStatus === value
                       ? activeClass
-                      : 'border-surface-200 dark:border-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400'
+                      : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
                   }`}
                 >
                   <Icon
-                    className={`w-4 h-4 shrink-0 ${defaultStatus === value ? iconClass : ''}`}
+                    className={`h-4 w-4 shrink-0 ${defaultStatus === value ? iconClass : ''}`}
                   />
                   {label}
                 </button>
@@ -219,12 +219,12 @@ export const TaskDefaultsSettings = () => {
             </div>
           </div>
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <div className="p-4">
-            <div className="flex items-center justify-between mb-1">
-              <p className="text-xs font-medium text-surface-500 dark:text-surface-400">Progress</p>
-              <span className="text-xs font-medium text-surface-600 dark:text-surface-400">
+            <div className="mb-1 flex items-center justify-between">
+              <p className="font-medium text-surface-500 text-xs dark:text-surface-400">Progress</p>
+              <span className="font-medium text-surface-600 text-xs dark:text-surface-400">
                 {defaultPercentComplete}%
               </span>
             </div>
@@ -238,16 +238,16 @@ export const TaskDefaultsSettings = () => {
               onChange={(e) => setDefaultPercentComplete(Number(e.target.value))}
               className="w-full"
             />
-            <div className="flex justify-between mt-1">
-              <span className="text-xs text-surface-400">0%</span>
-              <span className="text-xs text-surface-400">100%</span>
+            <div className="mt-1 flex justify-between">
+              <span className="text-surface-400 text-xs">0%</span>
+              <span className="text-surface-400 text-xs">100%</span>
             </div>
           </div>
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <div className="p-4">
-            <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+            <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
               Priority
             </p>
             <div className="flex gap-2">
@@ -256,10 +256,10 @@ export const TaskDefaultsSettings = () => {
                   type="button"
                   key={p.value}
                   onClick={() => setDefaultPriority(p.value)}
-                  className={`flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${
+                  className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                     defaultPriority === p.value
-                      ? `${p.borderColor} bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100`
-                      : 'border-surface-200 dark:border-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400'
+                      ? `${p.borderColor} bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100`
+                      : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-600 dark:text-surface-400 dark:hover:bg-surface-700'
                   }`}
                 >
                   <span className={p.color}>{p.label}</span>
@@ -271,12 +271,12 @@ export const TaskDefaultsSettings = () => {
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-sm font-semibold text-surface-700 dark:text-surface-300">New tasks</h4>
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+        <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">New tasks</h4>
+        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-center justify-between gap-4 p-4">
             <div>
               <p className="text-sm text-surface-700 dark:text-surface-300">Default calendar</p>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
+              <p className="text-surface-500 text-xs dark:text-surface-400">
                 Applied when creating a new task
               </p>
             </div>
@@ -286,7 +286,7 @@ export const TaskDefaultsSettings = () => {
               disabled={
                 accounts.length === 0 || !accounts.some((account) => account.calendars.length > 0)
               }
-              className="max-w-50 text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="max-w-50 shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-hidden transition-colors focus:border-primary-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-50 dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             >
               {accounts.length === 0 ||
               !accounts.some((account) => account.calendars.length > 0) ? (
@@ -310,11 +310,11 @@ export const TaskDefaultsSettings = () => {
 
           {!defaultCalendarId && (
             <div className="px-4 pb-4">
-              <div className="pl-4 border-l-2 border-surface-200 dark:border-surface-600">
-                <label className="flex items-center justify-between gap-4 cursor-pointer">
+              <div className="border-surface-200 border-l-2 pl-4 dark:border-surface-600">
+                <label className="flex cursor-pointer items-center justify-between gap-4">
                   <div>
                     <p className="text-sm text-surface-700 dark:text-surface-300">Prefer CalDAV</p>
-                    <p className="text-xs text-surface-500 dark:text-surface-400">
+                    <p className="text-surface-500 text-xs dark:text-surface-400">
                       When added, prefer using a remote calendar instead of local
                     </p>
                   </div>
@@ -322,17 +322,17 @@ export const TaskDefaultsSettings = () => {
                     type="checkbox"
                     checked={preferCalDAVCalendarForNewTasks}
                     onChange={(e) => setPreferCalDAVCalendarForNewTasks(e.target.checked)}
-                    className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+                    className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
                   />
                 </label>
               </div>
             </div>
           )}
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <div className="p-4">
-            <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+            <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
               Default tags
             </p>
             <div className="flex flex-wrap items-center gap-2">
@@ -342,7 +342,7 @@ export const TaskDefaultsSettings = () => {
                 return (
                   <span
                     key={tag.id}
-                    className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 rounded-sm border text-xs font-medium leading-none group"
+                    className="group inline-flex items-center gap-1.5 rounded-sm border py-1 pr-1 pl-2 font-medium text-xs leading-none"
                     style={{
                       borderColor: tag.color,
                       backgroundColor: `${tag.color}15`,
@@ -352,15 +352,15 @@ export const TaskDefaultsSettings = () => {
                     {tag.emoji ? (
                       <span className="text-sm">{tag.emoji}</span>
                     ) : (
-                      <TagIcon className="w-3 h-3" />
+                      <TagIcon className="h-3 w-3" />
                     )}
                     {tag.name}
                     <button
                       type="button"
                       onClick={() => handleRemoveTag(tag.id)}
-                      className="p-0.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500"
+                      className="rounded-full p-0.5 outline-hidden transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-white/10"
                     >
-                      <X className="w-3 h-3" />
+                      <X className="h-3 w-3" />
                     </button>
                   </span>
                 );
@@ -368,9 +368,9 @@ export const TaskDefaultsSettings = () => {
               <button
                 type="button"
                 onClick={() => setShowTagsModal(true)}
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs leading-none bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-surface-500 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="h-3 w-3" />
                 Add tag
               </button>
             </div>
@@ -379,10 +379,10 @@ export const TaskDefaultsSettings = () => {
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-sm font-semibold text-surface-700 dark:text-surface-300">
+        <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">
           Dates & recurrence
         </h4>
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-center justify-between gap-4 p-4">
             <p className="text-sm text-surface-700 dark:text-surface-300">Start date</p>
             <AppSelect
@@ -403,7 +403,7 @@ export const TaskDefaultsSettings = () => {
             </AppSelect>
           </div>
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <div className="flex items-center justify-between gap-4 p-4">
             <p className="text-sm text-surface-700 dark:text-surface-300">Due date</p>
@@ -420,18 +420,18 @@ export const TaskDefaultsSettings = () => {
             </AppSelect>
           </div>
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <div className="p-4">
-            <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+            <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
               Repeat
             </p>
             <button
               type="button"
               onClick={() => setShowRepeatModal(true)}
-              className="flex items-center gap-2 px-3 py-2 w-full bg-surface-100 dark:bg-surface-700 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="flex w-full items-center gap-2 rounded-lg bg-surface-100 px-3 py-2 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:hover:bg-surface-600"
             >
-              <Repeat className="w-4 h-4 text-surface-400 shrink-0" />
+              <Repeat className="h-4 w-4 shrink-0 text-surface-400" />
               <span className="flex-1 text-left text-sm text-surface-700 dark:text-surface-300">
                 {defaultRrule
                   ? rruleToText(defaultRrule, defaultRepeatFrom, dateFormat)
@@ -440,10 +440,10 @@ export const TaskDefaultsSettings = () => {
             </button>
           </div>
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <div className="p-4">
-            <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+            <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
               Reminders
             </p>
             <div className="space-y-1.5">
@@ -460,9 +460,9 @@ export const TaskDefaultsSettings = () => {
                       handleEditReminder(offset);
                     }
                   }}
-                  className="flex items-center gap-2 px-3 py-2 bg-surface-100 dark:bg-surface-700 rounded-lg hover:bg-surface-200 dark:hover:bg-surface-600 transition-colors cursor-pointer group outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                  className="group flex cursor-pointer items-center gap-2 rounded-lg bg-surface-100 px-3 py-2 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:hover:bg-surface-600"
                 >
-                  <BellRing className="w-4 h-4 text-surface-400 shrink-0" />
+                  <BellRing className="h-4 w-4 shrink-0 text-surface-400" />
                   <span className="flex-1 text-sm text-surface-700 dark:text-surface-300">
                     {REMINDER_LABELS[offset]}
                   </span>
@@ -472,10 +472,10 @@ export const TaskDefaultsSettings = () => {
                       e.stopPropagation();
                       handleRemoveReminder(offset);
                     }}
-                    className="p-1 text-surface-400 hover:text-semantic-error hover:bg-surface-100 dark:hover:bg-surface-800 rounded-full invisible group-hover:visible focus-visible:visible outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                    className="invisible rounded-full p-1 text-surface-400 outline-hidden hover:bg-surface-100 hover:text-semantic-error focus-visible:visible focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset group-hover:visible dark:hover:bg-surface-800"
                     title="Remove reminder"
                   >
-                    <X className="w-4 h-4" />
+                    <X className="h-4 w-4" />
                   </button>
                 </div>
               ))}
@@ -483,13 +483,13 @@ export const TaskDefaultsSettings = () => {
             {availableReminderOptions.length > 0 && (
               <button
                 type="button"
-                className={`inline-flex items-center gap-1 px-2.5 py-1.5 text-xs leading-none bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${defaultReminders.length > 0 ? 'mt-3' : ''}`}
+                className={`inline-flex items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2.5 py-1.5 text-surface-500 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500 ${defaultReminders.length > 0 ? 'mt-3' : ''}`}
                 onClick={() => {
                   setEditingReminderOffset(null);
                   setShowReminderPicker(true);
                 }}
               >
-                <Plus className="w-3 h-3" />
+                <Plus className="h-3 w-3" />
                 Add reminder
               </button>
             )}
@@ -498,10 +498,10 @@ export const TaskDefaultsSettings = () => {
       </div>
 
       <div className="space-y-2">
-        <h4 className="text-sm font-semibold text-surface-700 dark:text-surface-300">
+        <h4 className="font-semibold text-sm text-surface-700 dark:text-surface-300">
           New item colors
         </h4>
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
           <TaskDefaultsColorPicker
             label="Default tag color"
             value={defaultTagColor}
@@ -510,7 +510,7 @@ export const TaskDefaultsSettings = () => {
             accentColor={resolvedAccentColor}
           />
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
 
           <TaskDefaultsColorPicker
             label="Default calendar color"

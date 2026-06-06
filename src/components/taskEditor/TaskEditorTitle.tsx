@@ -91,9 +91,9 @@ export const TaskEditorTitle = ({
     <div>
       <label
         htmlFor={readOnly ? undefined : 'task-title'}
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <Type className="w-4 h-4" />
+        <Type className="h-4 w-4" />
         Title
       </label>
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Wrapper div focuses child textarea for better UX */}
@@ -109,10 +109,10 @@ export const TaskEditorTitle = ({
             titleRef.current.focus();
           }
         }}
-        className={`flex items-start gap-3 px-3 py-3 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg transition-colors ${
+        className={`flex items-start gap-3 rounded-lg border border-transparent bg-surface-100 px-3 py-3 transition-colors dark:bg-surface-800 ${
           readOnly
             ? 'cursor-not-allowed'
-            : 'focus-within:border-primary-500 focus-within:bg-white dark:focus-within:bg-surface-800 cursor-text'
+            : 'cursor-text focus-within:border-primary-500 focus-within:bg-white dark:focus-within:bg-surface-800'
         }`}
       >
         <button
@@ -120,27 +120,25 @@ export const TaskEditorTitle = ({
           onClick={handleCheckboxClick}
           disabled={readOnly}
           aria-label={getCheckboxAriaLabel(task, readOnly)}
-          className={`
-            shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed
-            ${checkboxStateClass}
+          className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border-2 outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed ${checkboxStateClass}
           `}
         >
           {task.status === 'completed' && (
             <Check
-              className={`w-4 h-4 ${!useAccentColorForCheckboxes ? 'text-surface-900' : ''}`}
+              className={`h-4 w-4 ${!useAccentColorForCheckboxes ? 'text-surface-900' : ''}`}
               style={useAccentColorForCheckboxes ? { color: checkmarkColor } : undefined}
               strokeWidth={3}
             />
           )}
           {task.status === 'cancelled' && (
-            <X className="w-4 h-4 text-primary-contrast" strokeWidth={3} />
+            <X className="h-4 w-4 text-primary-contrast" strokeWidth={3} />
           )}
           {task.status === 'in-process' && (
-            <Loader className="w-4 h-4 dark:text-primary-contrast" />
+            <Loader className="h-4 w-4 dark:text-primary-contrast" />
           )}
         </button>
         {readOnly ? (
-          <div className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 whitespace-pre-wrap cursor-not-allowed selectable">
+          <div className="selectable flex-1 cursor-not-allowed whitespace-pre-wrap font-medium text-sm text-surface-700 dark:text-surface-300">
             {pendingTitle || (
               <span className="text-surface-400 dark:text-surface-500">Untitled task</span>
             )}
@@ -153,7 +151,7 @@ export const TaskEditorTitle = ({
             onChange={handleTitleChange}
             placeholder="Task title..."
             rows={1}
-            className="flex-1 text-sm font-medium text-surface-700 dark:text-surface-300 bg-transparent border-0 focus:outline-hidden focus:ring-0 p-0 overflow-hidden resize-none w-full"
+            className="w-full flex-1 resize-none overflow-hidden border-0 bg-transparent p-0 font-medium text-sm text-surface-700 focus:outline-hidden focus:ring-0 dark:text-surface-300"
           />
         )}
       </div>

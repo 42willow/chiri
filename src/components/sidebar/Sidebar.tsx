@@ -366,7 +366,7 @@ export const Sidebar = ({
       {/* biome-ignore lint/a11y/noStaticElementInteractions: Container onClick for closing context menu on outside click */}
       {/* biome-ignore lint/a11y/useKeyWithClickEvents: Container onClick for closing context menu on outside click */}
       <div
-        className={`bg-surface-100 dark:bg-surface-900 border-r border-surface-200 dark:border-surface-700 flex flex-col h-full relative overflow-hidden ${!isResizing ? 'motion-safe:transition-[width] motion-safe:duration-200 motion-safe:ease-in-out' : ''}`}
+        className={`relative flex h-full flex-col overflow-hidden border-surface-200 border-r bg-surface-100 dark:border-surface-700 dark:bg-surface-900 ${!isResizing ? 'motion-safe:transition-[width] motion-safe:duration-200 motion-safe:ease-in-out' : ''}`}
         style={{ width: isCollapsed ? 48 : width }}
         onClick={handleCloseContextMenu}
       >
@@ -375,7 +375,7 @@ export const Sidebar = ({
           <div
             ref={resizeHandleRef}
             onMouseDown={handleResizeStart}
-            className={`absolute top-0 right-0 w-1 h-full cursor-col-resize transition-colors z-10 ${isResizing ? 'bg-primary-400 dark:bg-primary-600' : 'hover:bg-primary-400 dark:hover:bg-primary-600'}`}
+            className={`absolute top-0 right-0 z-10 h-full w-1 cursor-col-resize transition-colors ${isResizing ? 'bg-primary-400 dark:bg-primary-600' : 'hover:bg-primary-400 dark:hover:bg-primary-600'}`}
           />
         )}
 
@@ -387,22 +387,22 @@ export const Sidebar = ({
 
         {!isCollapsed && (
           <div
-            className={`flex-1 flex flex-col min-h-0 motion-safe:transition-opacity motion-safe:duration-150 ${showExpandedContent ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            className={`flex min-h-0 flex-1 flex-col motion-safe:transition-opacity motion-safe:duration-150 ${showExpandedContent ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
           >
-            <div className="flex-1 flex flex-col gap-2 overflow-y-auto overscroll-contain px-2 py-2">
+            <div className="flex flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-2 py-2">
               <button
                 type="button"
                 onClick={() => {
                   setAllTasksViewMutation.mutate();
                   setActiveAccountMutation.mutate(null);
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   activeView === 'tasks' && activeCalendarId === null && activeTagId === null
-                    ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
+                    ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
                     : `text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''}`
                 }`}
               >
-                <Inbox className="w-4 h-4 shrink-0" />
+                <Inbox className="h-4 w-4 shrink-0" />
                 <span className="flex-1 text-left">All Tasks</span>
                 <span className="text-xs">{getTotalActiveTaskCount()}</span>
               </button>
@@ -412,13 +412,13 @@ export const Sidebar = ({
                 onClick={() => {
                   setRecentlyDeletedViewMutation.mutate();
                 }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   activeView === 'recently-deleted'
-                    ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
+                    ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
                     : `text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-200 dark:hover:bg-surface-700' : ''}`
                 }`}
               >
-                <Trash2 className="w-4 h-4 shrink-0" />
+                <Trash2 className="h-4 w-4 shrink-0" />
                 <span className="flex-1 text-left">Recently Deleted</span>
                 <span className="text-xs">{getDeletedTaskCount()}</span>
               </button>

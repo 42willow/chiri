@@ -123,14 +123,14 @@ export const ConfirmDialogModal = ({
         {message && (
           <div
             id="confirm-dialog-description"
-            className="text-sm text-surface-600 dark:text-surface-400 leading-relaxed"
+            className="text-sm text-surface-600 leading-relaxed dark:text-surface-400"
           >
             {message}
           </div>
         )}
 
         {notice && (
-          <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-xs text-surface-700 dark:text-surface-300">
+          <div className="flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
             <AlertTriangle className="mt-px size-3.5 shrink-0 text-semantic-info" />
             <span>
               {notice.message}{' '}
@@ -150,7 +150,7 @@ export const ConfirmDialogModal = ({
         )}
 
         {error && (
-          <div className="flex gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 px-3 py-2 text-xs text-surface-700 dark:text-surface-300">
+          <div className="flex gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
             <AlertTriangle className="mt-px size-3.5 shrink-0 text-semantic-error" />
             <span>{error}</span>
           </div>

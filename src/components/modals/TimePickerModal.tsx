@@ -167,10 +167,10 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(incrementHour)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="w-14 p-3 flex items-center justify-center text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 select-none"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Increment hour"
           >
-            <ChevronUp className="w-5 h-5" />
+            <ChevronUp className="h-5 w-5" />
           </button>
           <input
             ref={hourInputRef}
@@ -180,7 +180,7 @@ export const TimePickerModal = ({
             onChange={(e) => handleHourInputChange(e.target.value)}
             onBlur={handleHourInputBlur}
             onKeyDown={handleHourKeyDown}
-            className="w-14 text-center text-2xl font-bold text-surface-800 dark:text-surface-200 bg-surface-50 dark:bg-surface-700/50 border border-surface-200 dark:border-surface-600 rounded-lg px-2 py-2 tabular-nums outline-hidden focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+            className="w-14 rounded-lg border border-surface-200 bg-surface-50 px-2 py-2 text-center font-bold text-2xl text-surface-800 tabular-nums outline-hidden focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-200"
             aria-label="Hour"
           />
           <button
@@ -188,15 +188,15 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(decrementHour)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="w-14 p-3 flex items-center justify-center text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-200 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 select-none"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Decrement hour"
           >
-            <ChevronDown className="w-5 h-5" />
+            <ChevronDown className="h-5 w-5" />
           </button>
         </div>
 
         {/* Separator */}
-        <span className="text-2xl font-bold text-surface-400 dark:text-surface-500 select-none">
+        <span className="select-none font-bold text-2xl text-surface-400 dark:text-surface-500">
           :
         </span>
 
@@ -207,10 +207,10 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(incrementMinute)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="w-14 p-3 flex items-center justify-center text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 select-none"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Increment minute"
           >
-            <ChevronUp className="w-5 h-5" />
+            <ChevronUp className="h-5 w-5" />
           </button>
           <input
             ref={minuteInputRef}
@@ -220,7 +220,7 @@ export const TimePickerModal = ({
             onChange={(e) => handleMinuteInputChange(e.target.value)}
             onBlur={handleMinuteInputBlur}
             onKeyDown={handleMinuteKeyDown}
-            className="w-14 text-center text-2xl font-bold text-surface-800 dark:text-surface-200 bg-surface-50 dark:bg-surface-700/50 border border-surface-200 dark:border-surface-600 rounded-lg px-2 py-2 tabular-nums outline-hidden focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20"
+            className="w-14 rounded-lg border border-surface-200 bg-surface-50 px-2 py-2 text-center font-bold text-2xl text-surface-800 tabular-nums outline-hidden focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-200"
             aria-label="Minute"
           />
           <button
@@ -228,10 +228,10 @@ export const TimePickerModal = ({
             onMouseDown={() => startHold(decrementMinute)}
             onMouseUp={stopHold}
             onMouseLeave={stopHold}
-            className="w-14 p-3 flex items-center justify-center text-surface-600 dark:text-surface-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 select-none"
+            className="flex w-14 select-none items-center justify-center rounded-lg p-3 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:bg-surface-700 dark:hover:text-primary-400"
             aria-label="Decrement minute"
           >
-            <ChevronDown className="w-5 h-5" />
+            <ChevronDown className="h-5 w-5" />
           </button>
         </div>
       </div>
@@ -241,14 +241,14 @@ export const TimePickerModal = ({
         <button
           type="button"
           onClick={onClose}
-          className="px-4 py-2 text-sm font-medium text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="rounded-lg px-4 py-2 font-medium text-sm text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
         >
           Cancel
         </button>
         <button
           type="button"
           onClick={handleConfirm}
-          className="px-4 py-2 text-sm font-medium text-primary-contrast bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="rounded-lg bg-primary-600 px-4 py-2 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
         >
           Confirm
         </button>

@@ -75,47 +75,47 @@ export const SettingsModal = ({
     {
       id: 'app',
       label: 'App',
-      icon: <Monitor className="w-4 h-4" />,
+      icon: <Monitor className="h-4 w-4" />,
       subtabs: [
-        { id: 'behavior', label: 'Behavior', icon: <Settings className="w-4 h-4" /> },
-        { id: 'data', label: 'Data', icon: <Database className="w-4 h-4" /> },
+        { id: 'behavior', label: 'Behavior', icon: <Settings className="h-4 w-4" /> },
+        { id: 'data', label: 'Data', icon: <Database className="h-4 w-4" /> },
         {
           id: 'keyboard-shortcuts',
           label: 'Keyboard shortcuts',
-          icon: <Keyboard className="w-4 h-4" />,
+          icon: <Keyboard className="h-4 w-4" />,
         },
-        { id: 'look-and-feel', label: 'Look & feel', icon: <Palette className="w-4 h-4" /> },
-        { id: 'notifications', label: 'Notifications', icon: <Bell className="w-4 h-4" /> },
-        { id: 'region-and-time', label: 'Region & time', icon: <Globe className="w-4 h-4" /> },
-        { id: 'system', label: 'System', icon: <Cpu className="w-4 h-4" /> },
+        { id: 'look-and-feel', label: 'Look & feel', icon: <Palette className="h-4 w-4" /> },
+        { id: 'notifications', label: 'Notifications', icon: <Bell className="h-4 w-4" /> },
+        { id: 'region-and-time', label: 'Region & time', icon: <Globe className="h-4 w-4" /> },
+        { id: 'system', label: 'System', icon: <Cpu className="h-4 w-4" /> },
       ],
     },
     {
       id: 'tasks',
       label: 'Tasks',
-      icon: <ListTodo className="w-4 h-4" />,
+      icon: <ListTodo className="h-4 w-4" />,
       subtabs: [
-        { id: 'badges', label: 'Badges', icon: <BadgeCheck className="w-4 h-4" /> },
-        { id: 'defaults', label: 'Defaults', icon: <Sliders className="w-4 h-4" /> },
-        { id: 'editor', label: 'Editor', icon: <SquarePen className="w-4 h-4" /> },
+        { id: 'badges', label: 'Badges', icon: <BadgeCheck className="h-4 w-4" /> },
+        { id: 'defaults', label: 'Defaults', icon: <Sliders className="h-4 w-4" /> },
+        { id: 'editor', label: 'Editor', icon: <SquarePen className="h-4 w-4" /> },
       ],
     },
     {
       id: 'accounts',
       label: 'Accounts',
-      icon: <User className="w-4 h-4" />,
+      icon: <User className="h-4 w-4" />,
       subtabs: [
-        { id: 'connections', label: 'Connections', icon: <Link2 className="w-4 h-4" /> },
-        { id: 'sync', label: 'Sync', icon: <RefreshCw className="w-4 h-4" /> },
+        { id: 'connections', label: 'Connections', icon: <Link2 className="h-4 w-4" /> },
+        { id: 'sync', label: 'Sync', icon: <RefreshCw className="h-4 w-4" /> },
       ],
     },
     {
       id: 'misc',
       label: 'Help',
-      icon: <HelpCircle className="w-4 h-4" />,
+      icon: <HelpCircle className="h-4 w-4" />,
       subtabs: [
-        { id: 'updates', label: 'Updates', icon: <Download className="w-4 h-4" /> },
-        { id: 'about', label: 'About', icon: <Info className="w-4 h-4" /> },
+        { id: 'updates', label: 'Updates', icon: <Download className="h-4 w-4" /> },
+        { id: 'about', label: 'About', icon: <Info className="h-4 w-4" /> },
       ],
     },
   ];
@@ -128,14 +128,14 @@ export const SettingsModal = ({
       onClose={isChildModalOpen ? () => {} : onClose}
       title="Settings"
       zIndex="z-60"
-      className="max-w-3xl max-h-[75vh]"
+      className="max-h-[75vh] max-w-3xl"
       contentPadding={false}
     >
-      <div className="flex overflow-hidden h-[calc(85vh-12rem)] max-h-[75vh]">
-        <div className="w-56 pr-5 border-r border-surface-200 dark:border-surface-700 p-3 space-y-4 bg-white dark:bg-surface-800 rounded-l-xl overflow-y-auto overscroll-contain">
+      <div className="flex h-[calc(85vh-12rem)] max-h-[75vh] overflow-hidden">
+        <div className="w-56 space-y-4 overflow-y-auto overscroll-contain rounded-l-xl border-surface-200 border-r bg-white p-3 pr-5 dark:border-surface-700 dark:bg-surface-800">
           {categories.map((category) => (
             <div key={category.id} className="space-y-2">
-              <p className="px-2 text-xs font-semibold uppercase tracking-wide text-surface-500 dark:text-surface-400">
+              <p className="px-2 font-semibold text-surface-500 text-xs uppercase tracking-wide dark:text-surface-400">
                 {category.label}
               </p>
               <div className="space-y-1">
@@ -154,10 +154,10 @@ export const SettingsModal = ({
                           [category.id]: tab.id,
                         }));
                       }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors flex items-center gap-2 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                      className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                         isActiveTab
-                          ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-                          : 'text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
+                          ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
+                          : 'text-surface-600 hover:bg-surface-200 dark:text-surface-400 dark:hover:bg-surface-700'
                       }`}
                     >
                       <span
@@ -174,7 +174,7 @@ export const SettingsModal = ({
           ))}
         </div>
 
-        <div className="flex-1 p-6 overflow-y-auto overscroll-contain">
+        <div className="flex-1 overflow-y-auto overscroll-contain p-6">
           {activeCategory === 'tasks' && currentSubtab === 'badges' && <BadgesSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'defaults' && <TaskDefaultsSettings />}
           {activeCategory === 'tasks' && currentSubtab === 'editor' && <EditorSettings />}

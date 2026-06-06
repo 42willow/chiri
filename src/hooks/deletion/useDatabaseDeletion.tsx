@@ -14,7 +14,7 @@ export const useDatabaseDeletion = () => {
             <span className="font-bold">Are you sure?</span> This will not affect data on your
             CalDAV servers, but local data will be lost and accounts will need to be set up again.
           </p>
-          <p className="text-sm text-semantic-warning">
+          <p className="text-semantic-warning text-sm">
             Not recommended unless you are experiencing issues or want to start fresh.
           </p>
         </div>

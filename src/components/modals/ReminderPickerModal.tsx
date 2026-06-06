@@ -220,7 +220,7 @@ export const ReminderPickerModal = ({
       <ModalButton
         variant="ghost"
         onClick={handleClear}
-        className="text-surface-500 dark:text-surface-400 hover:text-semantic-error hover:bg-semantic-error/10"
+        className="text-surface-500 hover:bg-semantic-error/10 hover:text-semantic-error dark:text-surface-400"
       >
         Clear
       </ModalButton>
@@ -251,7 +251,7 @@ export const ReminderPickerModal = ({
         <div className="flex">
           <div
             ref={presetListRef}
-            className="w-44 p-4 flex flex-col gap-2 border-r border-surface-200 dark:border-surface-700"
+            className="flex w-44 flex-col gap-2 border-surface-200 border-r p-4 dark:border-surface-700"
           >
             <div className="flex flex-col gap-1.5">
               {CATEGORY_PRESETS.map(({ id, Icon }) => {
@@ -265,33 +265,33 @@ export const ReminderPickerModal = ({
                     onClick={() => handlePresetTimeSelect(minutes)}
                     className={btnClass(active)}
                   >
-                    <Icon className="w-3 h-3" />
+                    <Icon className="h-3 w-3" />
                     {minutesToTimeLabel(minutes)}
                   </button>
                 );
               })}
 
-              <div className="pt-2 border-t border-surface-200 dark:border-surface-700">
+              <div className="border-surface-200 border-t pt-2 dark:border-surface-700">
                 <button
                   type="button"
                   data-vertical-list-item
                   onClick={handleOpenCustomModal}
                   className={btnClass(isCustomTime)}
                 >
-                  <Clock className="w-3 h-3" />
+                  <Clock className="h-3 w-3" />
                   {isCustomTime ? minutesToTimeLabel(selectedMinutes) : 'Custom time'}
                 </button>
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5 pt-2 border-t border-surface-200 dark:border-surface-700">
+            <div className="flex flex-col gap-1.5 border-surface-200 border-t pt-2 dark:border-surface-700">
               <button
                 type="button"
                 data-vertical-list-item
                 onClick={() => handleQuickSelect(today)}
                 className={btnClass(isQuickToday)}
               >
-                <CalendarDays className="w-3 h-3" />
+                <CalendarDays className="h-3 w-3" />
                 Today
               </button>
               <button
@@ -300,7 +300,7 @@ export const ReminderPickerModal = ({
                 onClick={() => handleQuickSelect(addDays(today, 1))}
                 className={btnClass(isQuickTomorrow)}
               >
-                <ArrowRight className="w-3 h-3" />
+                <ArrowRight className="h-3 w-3" />
                 Tomorrow
               </button>
               <button
@@ -309,7 +309,7 @@ export const ReminderPickerModal = ({
                 onClick={() => handleQuickSelect(addDays(today, 7))}
                 className={btnClass(isQuickNextWeek)}
               >
-                <ChevronsRight className="w-3 h-3" />
+                <ChevronsRight className="h-3 w-3" />
                 Next week
               </button>
             </div>
@@ -319,11 +319,11 @@ export const ReminderPickerModal = ({
             <div className="mb-3 min-h-8">
               {selectedDateLabel ? (
                 <div className="flex items-baseline gap-2">
-                  <p className="text-sm font-medium text-surface-800 dark:text-surface-200">
+                  <p className="font-medium text-sm text-surface-800 dark:text-surface-200">
                     {selectedDateLabel}
                   </p>
                   {selectedTimeLabel && (
-                    <p className="text-xs text-surface-500 dark:text-surface-400">
+                    <p className="text-surface-500 text-xs dark:text-surface-400">
                       {selectedTimeLabel}
                     </p>
                   )}
@@ -333,23 +333,23 @@ export const ReminderPickerModal = ({
               )}
             </div>
 
-            <div className="flex items-center justify-between mb-3">
+            <div className="mb-3 flex items-center justify-between">
               <button
                 type="button"
                 onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-                className="p-1 rounded-sm hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronLeft className="h-5 w-5" />
               </button>
-              <span className="text-sm font-medium text-surface-800 dark:text-surface-200">
+              <span className="font-medium text-sm text-surface-800 dark:text-surface-200">
                 {formatMonthYear(currentMonth)}
               </span>
               <button
                 type="button"
                 onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-                className="p-1 rounded-sm hover:bg-surface-100 dark:hover:bg-surface-700 text-surface-600 dark:text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="rounded-sm p-1 text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronRight className="h-5 w-5" />
               </button>
             </div>
 
@@ -359,11 +359,11 @@ export const ReminderPickerModal = ({
               onPointerDown={handleCalendarGridAreaPointerDown}
               className="outline-hidden"
             >
-              <div className="grid grid-cols-7 gap-1 mb-2">
+              <div className="mb-2 grid grid-cols-7 gap-1">
                 {daysOfWeek.map((day) => (
                   <div
                     key={day}
-                    className="text-center text-xs font-medium text-surface-500 dark:text-surface-400"
+                    className="text-center font-medium text-surface-500 text-xs dark:text-surface-400"
                   >
                     {day}
                   </div>
@@ -386,17 +386,15 @@ export const ReminderPickerModal = ({
                       type="button"
                       data-calendar-day-time={day.getTime()}
                       onClick={() => handleDayClick(day)}
-                      className={`
-                        w-8 h-8 rounded-full text-sm flex items-center justify-center transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset
-                        ${
-                          isSelected
-                            ? 'bg-primary-500 text-primary-contrast'
-                            : isTodayDate
-                              ? 'bg-primary-500/15 text-primary-500 font-medium'
-                              : isCurrentMonth
-                                ? 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
-                                : 'text-surface-400 dark:text-surface-600'
-                        }
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset data-[keyboard-navigation-focus=true]:ring-2 data-[keyboard-navigation-focus=true]:ring-primary-500 data-[keyboard-navigation-focus=true]:ring-inset ${
+                        isSelected
+                          ? 'bg-primary-500 text-primary-contrast'
+                          : isTodayDate
+                            ? 'bg-primary-500/15 font-medium text-primary-500'
+                            : isCurrentMonth
+                              ? 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
+                              : 'text-surface-400 dark:text-surface-600'
+                      }
                       `}
                     >
                       {day.getDate()}

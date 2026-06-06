@@ -33,9 +33,9 @@ export const SortDirectionButton = ({
       >
         <div className="flex items-center gap-2">
           {sortConfig.direction === 'asc' ? (
-            <SortAsc className="w-4 h-4" />
+            <SortAsc className="h-4 w-4" />
           ) : (
-            <SortDesc className="w-4 h-4" />
+            <SortDesc className="h-4 w-4" />
           )}
           <span>{sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}</span>
         </div>

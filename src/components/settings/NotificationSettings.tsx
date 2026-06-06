@@ -51,18 +51,18 @@ export const NotificationSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Notifications
       </h3>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
           <label
-            className={`flex items-center justify-between ${macPermissionPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`flex items-center justify-between ${macPermissionPending ? 'cursor-not-allowed opacity-50' : ''}`}
           >
             <div>
               <p className="text-sm text-surface-700 dark:text-surface-300">Enable notifications</p>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
+              <p className="text-surface-500 text-xs dark:text-surface-400">
                 Get notified for task reminders and overdue tasks
               </p>
             </div>
@@ -71,11 +71,11 @@ export const NotificationSettings = () => {
               checked={notifications}
               onChange={(e) => setNotifications(e.target.checked)}
               disabled={macPermissionPending}
-              className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden disabled:cursor-not-allowed"
+              className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
             />
           </label>
           {macPermissionPending && (
-            <p className="text-xs text-semantic-warning mt-1">
+            <p className="mt-1 text-semantic-warning text-xs">
               Notification permission is required, use the controls below to grant it.
             </p>
           )}
@@ -83,13 +83,13 @@ export const NotificationSettings = () => {
 
         {notifications && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
               <label
-                className={`flex items-center justify-between ${macPermissionPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex items-center justify-between ${macPermissionPending ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 <div>
                   <p className="text-sm text-surface-700 dark:text-surface-300">Reminders</p>
-                  <p className="text-xs text-surface-500 dark:text-surface-400">
+                  <p className="text-surface-500 text-xs dark:text-surface-400">
                     Notify when a task reminder is due
                   </p>
                 </div>
@@ -98,15 +98,15 @@ export const NotificationSettings = () => {
                   checked={notifyReminders}
                   onChange={(e) => setNotifyReminders(e.target.checked)}
                   disabled={macPermissionPending}
-                  className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden disabled:cursor-not-allowed"
+                  className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
                 />
               </label>
               <label
-                className={`flex items-center justify-between ${macPermissionPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex items-center justify-between ${macPermissionPending ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 <div>
                   <p className="text-sm text-surface-700 dark:text-surface-300">Overdue tasks</p>
-                  <p className="text-xs text-surface-500 dark:text-surface-400">
+                  <p className="text-surface-500 text-xs dark:text-surface-400">
                     Notify when a task's due date has passed
                   </p>
                 </div>
@@ -115,7 +115,7 @@ export const NotificationSettings = () => {
                   checked={notifyOverdue}
                   onChange={(e) => setNotifyOverdue(e.target.checked)}
                   disabled={macPermissionPending}
-                  className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden disabled:cursor-not-allowed"
+                  className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
                 />
               </label>
             </div>
@@ -131,11 +131,11 @@ export const NotificationSettings = () => {
         />
       )}
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Quiet hours</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Suppress all notifications during a set time window
             </p>
           </div>
@@ -143,19 +143,19 @@ export const NotificationSettings = () => {
             type="checkbox"
             checked={quietHoursEnabled}
             onChange={(e) => setQuietHoursEnabled(e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden"
+            className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
         {quietHoursEnabled && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-surface-600 dark:text-surface-400">From</p>
                 <button
                   type="button"
                   onClick={() => setQuietHoursStartModalOpen(true)}
-                  className="text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg px-3 py-1 outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0 hover:bg-surface-200 dark:hover:bg-surface-600"
+                  className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
                 >
                   {formatHour(quietHoursStart, use24h)}
                 </button>
@@ -165,7 +165,7 @@ export const NotificationSettings = () => {
                 <button
                   type="button"
                   onClick={() => setQuietHoursEndModalOpen(true)}
-                  className="text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg px-3 py-1 outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0 hover:bg-surface-200 dark:hover:bg-surface-600"
+                  className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
                 >
                   {formatHour(quietHoursEnd, use24h)}
                 </button>
@@ -175,13 +175,13 @@ export const NotificationSettings = () => {
         )}
       </div>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">
               All-day reminder notifications
             </p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Add default reminders to all-day tasks
             </p>
           </div>
@@ -189,19 +189,19 @@ export const NotificationSettings = () => {
             type="checkbox"
             checked={allDayReminderNotificationsEnabled}
             onChange={(e) => setAllDayReminderNotificationsEnabled(e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden"
+            className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
         {allDayReminderNotificationsEnabled && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-surface-600 dark:text-surface-400">Notification time</p>
                 <button
                   type="button"
                   onClick={() => setAllDayReminderModalOpen(true)}
-                  className="text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg px-3 py-1 outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0 hover:bg-surface-200 dark:hover:bg-surface-600"
+                  className="shrink-0 rounded-lg border border-transparent bg-surface-100 px-3 py-1 text-sm text-surface-800 outline-hidden transition-colors hover:bg-surface-200 focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800 dark:hover:bg-surface-600"
                 >
                   {formatHour(defaultAllDayReminderHour, use24h)}
                 </button>

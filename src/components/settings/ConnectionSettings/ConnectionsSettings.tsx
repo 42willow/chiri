@@ -106,16 +106,16 @@ export const ConnectionsSettings = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+        <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
           Connections
         </h3>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={handleAddAccount}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="flex items-center gap-1.5 rounded-sm bg-surface-100 px-2 py-1 text-surface-700 text-xs outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="h-3.5 w-3.5" />
             Add Account
           </button>
         </div>
@@ -123,7 +123,7 @@ export const ConnectionsSettings = ({
 
       <div>
         {accounts.length === 0 ? (
-          <div className="rounded-lg border border-surface-200 dark:border-surface-700 p-4">
+          <div className="rounded-lg border border-surface-200 p-4 dark:border-surface-700">
             <p className="text-sm text-surface-500 dark:text-surface-400">
               No accounts connected yet.
             </p>
@@ -139,21 +139,21 @@ export const ConnectionsSettings = ({
               return (
                 <div
                   key={account.id}
-                  className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700 bg-surface-50 dark:bg-surface-900/50"
+                  className="overflow-hidden rounded-lg border border-surface-200 bg-surface-50 dark:border-surface-700 dark:bg-surface-900/50"
                 >
                   <div className="flex justify-between gap-3 p-4">
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="flex flex-row gap-1.5 items-center text-sm font-medium text-surface-700 dark:text-surface-300">
-                          <User className="w-4 h-4 text-surface-500 dark:text-surface-400 shrink-0" />
+                      <div className="mb-1 flex items-center gap-2">
+                        <p className="flex flex-row items-center gap-1.5 font-medium text-sm text-surface-700 dark:text-surface-300">
+                          <User className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
                           {account.name}
                         </p>
                         {!isConnected && (
-                          <span className="text-xs text-semantic-warning">Disconnected</span>
+                          <span className="text-semantic-warning text-xs">Disconnected</span>
                         )}
                       </div>
 
-                      <div className="flex items-center gap-1 text-xs text-surface-500 dark:text-surface-400">
+                      <div className="flex items-center gap-1 text-surface-500 text-xs dark:text-surface-400">
                         <span>
                           {account.calendars.length}{' '}
                           {pluralize(account.calendars.length, 'calendar', 'calendars')}
@@ -171,14 +171,14 @@ export const ConnectionsSettings = ({
                       <WebDAVPushAccountStatus account={account} />
                     </div>
 
-                    <div className="flex justify-center items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <Tooltip content="Edit account" position="bottom" allowInModal>
                         <button
                           type="button"
                           onClick={() => handleEditAccount(account.id)}
-                          className="p-1.5 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-600"
                         >
-                          <Edit2 className="w-5 h-5" />
+                          <Edit2 className="h-5 w-5" />
                         </button>
                       </Tooltip>
                       <Tooltip content="Test connection" position="bottom" allowInModal>
@@ -186,12 +186,12 @@ export const ConnectionsSettings = ({
                           type="button"
                           onClick={() => handleTestConnection(account)}
                           disabled={isTesting}
-                          className="p-1.5 text-surface-600 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-600 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:opacity-50"
+                          className="rounded-sm p-1.5 text-surface-600 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:opacity-50 dark:text-surface-400 dark:hover:bg-surface-600"
                         >
                           {isTesting ? (
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="h-5 w-5 animate-spin" />
                           ) : (
-                            <Activity className="w-5 h-5" />
+                            <Activity className="h-5 w-5" />
                           )}
                         </button>
                       </Tooltip>
@@ -199,9 +199,9 @@ export const ConnectionsSettings = ({
                         <button
                           type="button"
                           onClick={() => handleDeleteAccount(account)}
-                          className="p-1.5 text-semantic-error hover:bg-semantic-error/10 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                          className="rounded-sm p-1.5 text-semantic-error outline-hidden transition-colors hover:bg-semantic-error/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
                         >
-                          <Trash2 className="w-5 h-5" />
+                          <Trash2 className="h-5 w-5" />
                         </button>
                       </Tooltip>
                     </div>
@@ -209,16 +209,16 @@ export const ConnectionsSettings = ({
 
                   {testResult && (
                     <>
-                      <div className="border-t border-surface-200 dark:border-surface-700" />
+                      <div className="border-surface-200 border-t dark:border-surface-700" />
                       <div
                         className={`flex items-center gap-2 px-4 py-3 ${
                           testResult.success ? 'bg-semantic-success/10' : 'bg-semantic-error/10'
                         }`}
                       >
                         {testResult.success ? (
-                          <CheckCircle className="w-4 h-4 text-semantic-success shrink-0" />
+                          <CheckCircle className="h-4 w-4 shrink-0 text-semantic-success" />
                         ) : (
-                          <CircleAlert className="w-4 h-4 text-semantic-error shrink-0" />
+                          <CircleAlert className="h-4 w-4 shrink-0 text-semantic-error" />
                         )}
                         <p
                           className={`flex-1 text-sm ${
@@ -231,13 +231,13 @@ export const ConnectionsSettings = ({
                           type="button"
                           onClick={() => handleDismissTestResult(account.id)}
                           aria-label="Dismiss connection test message"
-                          className={`-mr-1 p-1 rounded-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                          className={`-mr-1 rounded-sm p-1 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                             testResult.success
                               ? 'text-semantic-success hover:bg-semantic-success/10'
                               : 'text-semantic-error hover:bg-semantic-error/10'
                           }`}
                         >
-                          <X className="w-4 h-4" />
+                          <X className="h-4 w-4" />
                         </button>
                       </div>
                     </>

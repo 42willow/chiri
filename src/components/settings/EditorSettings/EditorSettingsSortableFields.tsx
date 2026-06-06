@@ -36,29 +36,29 @@ export const EditorSettingsSortableFields = ({
 
   return (
     <div ref={setNodeRef} style={style} className="bg-white dark:bg-surface-800">
-      {showBorder && <div className="border-t border-surface-200 dark:border-surface-700" />}
+      {showBorder && <div className="border-surface-200 border-t dark:border-surface-700" />}
       <div className="flex items-center justify-between p-4">
-        <div className="flex items-center gap-3 min-w-0">
+        <div className="flex min-w-0 items-center gap-3">
           <button
             type="button"
-            className="text-surface-400 dark:text-surface-500 shrink-0 cursor-grab active:cursor-grabbing rounded-sm focus-visible:ring-2 focus-visible:ring-primary-500 outline-hidden"
+            className="shrink-0 cursor-grab rounded-sm text-surface-400 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 active:cursor-grabbing dark:text-surface-500"
             aria-label={`Reorder ${field.label}`}
             {...attributes}
             {...listeners}
           >
-            <GripVertical className="w-4 h-4" />
+            <GripVertical className="h-4 w-4" />
           </button>
-          <span className="text-surface-400 dark:text-surface-500 shrink-0">{field.icon}</span>
+          <span className="shrink-0 text-surface-400 dark:text-surface-500">{field.icon}</span>
           <div className="min-w-0">
             <p className="text-sm text-surface-700 dark:text-surface-300">{field.label}</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">{field.description}</p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">{field.description}</p>
           </div>
         </div>
         <input
           type="checkbox"
           checked={checked}
           onChange={(e) => onToggle(field.key, e.target.checked)}
-          className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+          className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
         />
       </div>
     </div>

@@ -39,7 +39,7 @@ export const TaskDefaultsColorPicker = ({
 
   return (
     <div className="p-4">
-      <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">{label}</p>
+      <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">{label}</p>
       <div className="flex gap-2">
         <button
           type="button"
@@ -49,7 +49,7 @@ export const TaskDefaultsColorPicker = ({
           }}
           className={`${SWITCHER_CLASS} ${mode === 'accent' ? SWITCHER_ACTIVE : SWITCHER_INACTIVE}`}
         >
-          <Wand2 className="w-4 h-4" />
+          <Wand2 className="h-4 w-4" />
           Follow accent
         </button>
         <button
@@ -60,7 +60,7 @@ export const TaskDefaultsColorPicker = ({
           }}
           className={`${SWITCHER_CLASS} ${mode === 'preset' ? SWITCHER_ACTIVE : SWITCHER_INACTIVE}`}
         >
-          <Grip className="w-4 h-4" />
+          <Grip className="h-4 w-4" />
           Use preset
         </button>
         <button
@@ -71,21 +71,21 @@ export const TaskDefaultsColorPicker = ({
           }}
           className={`${SWITCHER_CLASS} ${mode === 'custom' ? SWITCHER_ACTIVE : SWITCHER_INACTIVE}`}
         >
-          <Palette className="w-4 h-4" />
+          <Palette className="h-4 w-4" />
           Use custom
         </button>
       </div>
       {mode !== 'accent' && (
-        <div className="flex items-center gap-2 mt-3">
+        <div className="mt-3 flex items-center gap-2">
           {mode === 'preset' ? (
             presets.map((preset) => (
               <button
                 type="button"
                 key={preset}
                 onClick={() => onChange(preset)}
-                className={`w-8 h-8 rounded-full border-2 transition-all outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary-500 ${
+                className={`h-8 w-8 rounded-full border-2 outline-hidden transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 ${
                   value === preset
-                    ? 'border-surface-800 dark:border-white scale-110'
+                    ? 'scale-110 border-surface-800 dark:border-white'
                     : 'border-transparent hover:scale-105'
                 }`}
                 style={{ backgroundColor: preset }}
@@ -97,14 +97,14 @@ export const TaskDefaultsColorPicker = ({
                 type="color"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="w-10 h-10 rounded-lg border border-surface-200 dark:border-surface-600 bg-surface-50 dark:bg-surface-700 hover:border-surface-300 dark:hover:border-surface-500 transition-colors cursor-pointer [&::-webkit-color-swatch-wrapper]:p-2 [&::-webkit-color-swatch]:rounded-full"
+                className="h-10 w-10 cursor-pointer rounded-lg border border-surface-200 bg-surface-50 transition-colors hover:border-surface-300 dark:border-surface-600 dark:bg-surface-700 dark:hover:border-surface-500 [&::-webkit-color-swatch-wrapper]:p-2 [&::-webkit-color-swatch]:rounded-full"
               />
               <ComposedInput
                 type="text"
                 value={value}
                 onChange={onChange}
                 placeholder={fallbackColor}
-                className="flex-1 px-3 py-2 text-sm font-mono text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+                className="flex-1 rounded-lg border border-transparent bg-surface-100 px-3 py-2 font-mono text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               />
             </>
           )}

@@ -56,18 +56,18 @@ export const ReviewStep = ({
   return (
     <div className="space-y-4">
       {/* Summary */}
-      <div className="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-700/50 rounded-lg">
+      <div className="flex items-center justify-between rounded-lg bg-surface-50 p-3 dark:bg-surface-700/50">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-surface-200 dark:bg-surface-700 flex items-center justify-center">
-            <span className="text-lg font-semibold text-surface-900 dark:text-surface-100">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-200 dark:bg-surface-700">
+            <span className="font-semibold text-lg text-surface-900 dark:text-surface-100">
               {tasks.length}
             </span>
           </div>
           <div>
-            <p className="text-sm font-medium text-surface-800 dark:text-surface-200">
+            <p className="font-medium text-sm text-surface-800 dark:text-surface-200">
               {tasks.length === 1 ? '1 task' : `${tasks.length} tasks`} ready to import
             </p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               {completedTasks.length > 0 && (
                 <span>
                   {completedTasks.length} completed, {pendingTasks.length} pending
@@ -79,9 +79,9 @@ export const ReviewStep = ({
         </div>
 
         {selectedCalendar && (
-          <div className="flex items-center gap-2 text-xs text-surface-500 dark:text-surface-400">
+          <div className="flex items-center gap-2 text-surface-500 text-xs dark:text-surface-400">
             <div
-              className="w-2.5 h-2.5 rounded-full"
+              className="h-2.5 w-2.5 rounded-full"
               style={{ backgroundColor: selectedCalendar.color || '#3b82f6' }}
             />
             <span className="hidden sm:inline">{selectedCalendar.displayName}</span>
@@ -98,7 +98,7 @@ export const ReviewStep = ({
               {Math.round(importProgress)}%
             </span>
           </div>
-          <div className="h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden">
+          <div className="h-2 overflow-hidden rounded-full bg-surface-200 dark:bg-surface-700">
             <div
               className="h-full bg-primary-500 transition-all duration-300 ease-out"
               style={{ width: `${importProgress}%` }}
@@ -112,20 +112,20 @@ export const ReviewStep = ({
         <button
           type="button"
           onClick={() => setIsExpanded(!isExpanded)}
-          className="flex items-center gap-1 rounded-sm text-sm font-medium text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-200 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+          className="flex items-center gap-1 rounded-sm font-medium text-sm text-surface-600 outline-hidden transition-colors hover:text-surface-800 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:text-surface-200"
         >
-          {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+          {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           <span>Preview tasks</span>
         </button>
 
         {isExpanded && (
-          <div className="mt-2 space-y-1 max-h-48 overflow-y-auto border border-surface-200 dark:border-surface-700 rounded-lg">
+          <div className="mt-2 max-h-48 space-y-1 overflow-y-auto rounded-lg border border-surface-200 dark:border-surface-700">
             {displayTasks.map((task, index) => (
               <div
                 key={task.uid || `task-${index}`}
                 className={`flex items-center gap-2 px-3 py-2 text-sm ${
                   index !== displayTasks.length - 1
-                    ? 'border-b border-surface-100 dark:border-surface-700/50'
+                    ? 'border-surface-100 border-b dark:border-surface-700/50'
                     : ''
                 } ${
                   task.importStatus === 'success'
@@ -138,15 +138,15 @@ export const ReviewStep = ({
                 {/* Status indicator */}
                 <div className="shrink-0">
                   {task.importStatus === 'importing' ? (
-                    <Loader2 className="w-4 h-4 text-primary-500 animate-spin" />
+                    <Loader2 className="h-4 w-4 animate-spin text-primary-500" />
                   ) : task.importStatus === 'success' ? (
-                    <CheckCircle className="w-4 h-4 text-semantic-success" />
+                    <CheckCircle className="h-4 w-4 text-semantic-success" />
                   ) : task.importStatus === 'error' ? (
-                    <AlertTriangle className="w-4 h-4 text-semantic-error" />
+                    <AlertTriangle className="h-4 w-4 text-semantic-error" />
                   ) : task.completed ? (
-                    <Check className="w-4 h-4 text-surface-400" />
+                    <Check className="h-4 w-4 text-surface-400" />
                   ) : (
-                    <Circle className="w-4 h-4 text-surface-300 dark:text-surface-600" />
+                    <Circle className="h-4 w-4 text-surface-300 dark:text-surface-600" />
                   )}
                 </div>
 
@@ -154,7 +154,7 @@ export const ReviewStep = ({
                 <span
                   className={`flex-1 truncate ${
                     task.completed
-                      ? 'text-surface-500 dark:text-surface-400 line-through'
+                      ? 'text-surface-500 line-through dark:text-surface-400'
                       : 'text-surface-700 dark:text-surface-300'
                   }`}
                 >
@@ -162,17 +162,17 @@ export const ReviewStep = ({
                 </span>
 
                 {/* Metadata badges */}
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex shrink-0 items-center gap-1.5">
                   {task.priority && task.priority !== 'none' && (
                     <span
                       className={`flex items-center gap-0.5 text-xs ${PRIORITY_CONFIG[task.priority].color}`}
                     >
-                      <Flag className="w-3 h-3" />
+                      <Flag className="h-3 w-3" />
                     </span>
                   )}
                   {task.dueDate && (
-                    <span className="flex items-center gap-0.5 text-xs text-surface-500 dark:text-surface-400">
-                      <CalendarIcon className="w-3 h-3" />
+                    <span className="flex items-center gap-0.5 text-surface-500 text-xs dark:text-surface-400">
+                      <CalendarIcon className="h-3 w-3" />
                       {formatDate(task.dueDate)}
                     </span>
                   )}
@@ -184,7 +184,7 @@ export const ReviewStep = ({
               <button
                 type="button"
                 onClick={() => setIsExpanded(true)}
-                className="w-full py-2 text-xs text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="w-full py-2 font-medium text-primary-600 text-xs outline-hidden hover:text-primary-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-primary-400 dark:hover:text-primary-300"
               >
                 Show {tasks.length - MAX_VISIBLE} more tasks
               </button>

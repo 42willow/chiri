@@ -20,9 +20,9 @@ export const TaskEditorRepeat = ({ task, onOpen, readOnly = false }: TaskEditorR
     <div>
       <div
         id="repeat-label"
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <RefreshCw className="w-4 h-4" />
+        <RefreshCw className="h-4 w-4" />
         Repeat
       </div>
       <button
@@ -31,16 +31,16 @@ export const TaskEditorRepeat = ({ task, onOpen, readOnly = false }: TaskEditorR
         disabled={readOnly}
         aria-labelledby="repeat-label"
         title={fullSummary ? `Repeats: ${fullSummary}` : undefined}
-        className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
+        className={`flex w-full items-center gap-3 rounded-lg border border-transparent bg-surface-100 px-3 py-2.5 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:focus:bg-surface-800 ${
           readOnly ? 'cursor-not-allowed' : 'hover:border-surface-300 dark:hover:border-surface-500'
         }`}
       >
         <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-surface-200 text-surface-500 dark:bg-surface-700 dark:text-surface-300">
-          <RefreshCw className="w-4 h-4" />
+          <RefreshCw className="h-4 w-4" />
         </span>
         {summary ? (
           <span className="min-w-0 flex-1">
-            <span className="block truncate text-sm font-medium text-surface-800 dark:text-surface-100">
+            <span className="block truncate font-medium text-sm text-surface-800 dark:text-surface-100">
               {summary.primary}
             </span>
             {summary.details.length > 0 && (
@@ -48,7 +48,7 @@ export const TaskEditorRepeat = ({ task, onOpen, readOnly = false }: TaskEditorR
                 {summary.details.map((detail) => (
                   <span
                     key={detail}
-                    className="rounded-sm bg-surface-200 px-1.5 py-0.5 text-xs font-medium text-surface-500 dark:bg-surface-700 dark:text-surface-300"
+                    className="rounded-sm bg-surface-200 px-1.5 py-0.5 font-medium text-surface-500 text-xs dark:bg-surface-700 dark:text-surface-300"
                   >
                     {detail}
                   </span>

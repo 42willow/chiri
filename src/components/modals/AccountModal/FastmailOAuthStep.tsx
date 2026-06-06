@@ -152,7 +152,7 @@ export const FastmailOAuthStep = ({ onSuccess }: FastmailOAuthStepProps) => {
         : null;
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="space-y-4 p-6">
       <div className="space-y-1">
         <p className="text-sm text-surface-600 dark:text-surface-400">
           Chiri will open your browser to authorize with Fastmail. Once you approve access, you'll
@@ -161,7 +161,7 @@ export const FastmailOAuthStep = ({ onSuccess }: FastmailOAuthStepProps) => {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-semantic-error/10 border border-semantic-error/20 px-3 py-2 text-sm text-semantic-error">
+        <div className="rounded-lg border border-semantic-error/20 bg-semantic-error/10 px-3 py-2 text-semantic-error text-sm">
           {error}
         </div>
       )}
@@ -170,11 +170,11 @@ export const FastmailOAuthStep = ({ onSuccess }: FastmailOAuthStepProps) => {
         type="button"
         onClick={handleConnect}
         disabled={isLoading}
-        className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-primary-500 hover:bg-primary-600 disabled:opacity-60 disabled:cursor-not-allowed text-primary-contrast font-semibold text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2"
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary-500 px-4 py-3 font-semibold text-primary-contrast text-sm outline-none transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isLoading ? (
           <>
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             {statusText}
           </>
         ) : (
@@ -183,7 +183,7 @@ export const FastmailOAuthStep = ({ onSuccess }: FastmailOAuthStepProps) => {
       </button>
 
       {phase === 'browser' && (
-        <p className="text-xs text-center text-surface-500 dark:text-surface-400">
+        <p className="text-center text-surface-500 text-xs dark:text-surface-400">
           Complete authorization in your browser, then return here.
         </p>
       )}

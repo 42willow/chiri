@@ -204,17 +204,17 @@ export const TaskItemContextMenu = ({
                 onClick={handleRestore}
                 className={`${menuItemClass} rounded-t-md`}
               >
-                <RotateCcw className="w-4 h-4" />
+                <RotateCcw className="h-4 w-4" />
                 Restore
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={handlePermanentDelete}
-                className="w-full rounded-b-md flex items-center gap-2 px-3 py-2 text-sm text-semantic-error hover:bg-semantic-error/15 outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
+                className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 Delete permanently
               </button>
             </>
@@ -228,23 +228,23 @@ export const TaskItemContextMenu = ({
                 }}
                 className={`${menuItemClass} rounded-t-md`}
               >
-                <Edit2 className="w-4 h-4" />
+                <Edit2 className="h-4 w-4" />
                 Edit
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onMouseEnter={handleStatusMouseEnter}
                 onMouseLeave={handleStatusMouseLeave}
                 className={menuItemClass}
               >
-                <CheckCircle2 className="w-4 h-4" />
+                <CheckCircle2 className="h-4 w-4" />
                 <span className="flex-1 text-left">Set status</span>
-                <ChevronRight className="w-3 h-3" />
+                <ChevronRight className="h-3 w-3" />
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={() => {
@@ -253,23 +253,23 @@ export const TaskItemContextMenu = ({
                 }}
                 className={menuItemClass}
               >
-                <CalendarMove className="w-4 h-4" />
+                <CalendarMove className="h-4 w-4" />
                 Move to calendar
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onMouseEnter={handlePriorityMouseEnter}
                 onMouseLeave={handlePriorityMouseLeave}
                 className={menuItemClass}
               >
-                <Flag className="w-4 h-4" />
+                <Flag className="h-4 w-4" />
                 <span className="flex-1 text-left">Change priority</span>
-                <ChevronRight className="w-3 h-3" />
+                <ChevronRight className="h-3 w-3" />
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={() => {
@@ -278,11 +278,11 @@ export const TaskItemContextMenu = ({
                 }}
                 className={menuItemClass}
               >
-                <Tag className="w-4 h-4" />
+                <Tag className="h-4 w-4" />
                 Manage tags
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={() => {
@@ -291,23 +291,23 @@ export const TaskItemContextMenu = ({
                 }}
                 className={menuItemClass}
               >
-                <ListPlus className="w-4 h-4" />
+                <ListPlus className="h-4 w-4" />
                 Add subtask
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button type="button" onClick={handleExport} className={menuItemClass}>
-                <Share2 className="w-4 h-4" />
+                <Share2 className="h-4 w-4" />
                 Export
               </button>
 
-              <div className="border-t border-surface-200 dark:border-surface-700" />
+              <div className="border-surface-200 border-t dark:border-surface-700" />
               <button
                 type="button"
                 onClick={handleDelete}
-                className="w-full rounded-b-md flex items-center gap-2 px-3 py-2 text-sm text-semantic-error hover:bg-semantic-error/15 outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
+                className="flex w-full items-center gap-2 rounded-b-md px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
                 Delete
               </button>
             </>
@@ -317,7 +317,7 @@ export const TaskItemContextMenu = ({
             <div
               data-context-menu-content
               role="menu"
-              className="fixed bg-white dark:bg-surface-800 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700 z-60 min-w-35 animate-scale-in"
+              className="fixed z-60 min-w-35 animate-scale-in rounded-lg border border-surface-200 bg-white shadow-lg dark:border-surface-700 dark:bg-surface-800"
               style={
                 priorityFlyoutPos.useRight
                   ? { right: priorityFlyoutPos.x, top: priorityFlyoutPos.y }
@@ -331,17 +331,17 @@ export const TaskItemContextMenu = ({
                   type="button"
                   key={p.value}
                   onClick={() => handleChangePriority(p.value)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700 ${
                     i === 0
-                      ? 'rounded-t-lg border-b border-surface-200 dark:border-surface-700'
+                      ? 'rounded-t-lg border-surface-200 border-b dark:border-surface-700'
                       : i === PRIORITIES.length - 1
                         ? 'rounded-b-lg'
-                        : 'border-b border-surface-200 dark:border-surface-700'
+                        : 'border-surface-200 border-b dark:border-surface-700'
                   }`}
                 >
                   <span className={`flex-1 text-left ${p.color}`}>{p.label}</span>
                   {task.priority === p.value && (
-                    <Check className="w-3.5 h-3.5 text-primary-500 shrink-0" />
+                    <Check className="h-3.5 w-3.5 shrink-0 text-primary-500" />
                   )}
                 </button>
               ))}
@@ -352,7 +352,7 @@ export const TaskItemContextMenu = ({
             <div
               data-context-menu-content
               role="menu"
-              className="fixed bg-white dark:bg-surface-800 rounded-lg shadow-lg border border-surface-200 dark:border-surface-700 z-60 min-w-40 animate-scale-in"
+              className="fixed z-60 min-w-40 animate-scale-in rounded-lg border border-surface-200 bg-white shadow-lg dark:border-surface-700 dark:bg-surface-800"
               style={
                 statusFlyoutPos.useRight
                   ? { right: statusFlyoutPos.x, top: statusFlyoutPos.y }
@@ -366,18 +366,18 @@ export const TaskItemContextMenu = ({
                   type="button"
                   key={value}
                   onClick={() => handleChangeStatus(value)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700 ${
                     i === 0
-                      ? 'rounded-t-lg border-b border-surface-200 dark:border-surface-700'
+                      ? 'rounded-t-lg border-surface-200 border-b dark:border-surface-700'
                       : i === STATUS_OPTIONS.length - 1
                         ? 'rounded-b-lg'
-                        : 'border-b border-surface-200 dark:border-surface-700'
+                        : 'border-surface-200 border-b dark:border-surface-700'
                   }`}
                 >
-                  <Icon className="w-4 h-4 shrink-0" />
+                  <Icon className="h-4 w-4 shrink-0" />
                   <span className="flex-1 text-left">{label}</span>
                   {task.status === value && (
-                    <Check className="w-3.5 h-3.5 text-primary-500 shrink-0" />
+                    <Check className="h-3.5 w-3.5 shrink-0 text-primary-500" />
                   )}
                 </button>
               ))}

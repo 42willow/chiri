@@ -137,11 +137,11 @@ export const CredentialsForm = ({
   const hint = SERVER_HINTS[serverType];
 
   return (
-    <form onSubmit={onSubmit} className="p-4 space-y-4">
+    <form onSubmit={onSubmit} className="space-y-4 p-4">
       <div>
         <label
           htmlFor="account-name"
-          className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+          className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
         >
           Account Display Name
         </label>
@@ -160,7 +160,7 @@ export const CredentialsForm = ({
             onChange={onNameChange}
             placeholder="My CalDAV Account"
             required
-            className="flex-1 px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+            className="flex-1 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
         </div>
       </div>
@@ -169,7 +169,7 @@ export const CredentialsForm = ({
         <div>
           <label
             htmlFor="server-url"
-            className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+            className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
           >
             Server URL
           </label>
@@ -180,11 +180,11 @@ export const CredentialsForm = ({
             onChange={onServerUrlChange}
             placeholder="https://caldav.example.com"
             required
-            className="w-full px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+            className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
           />
           {serverType === 'generic' && (
-            <p className="mt-2 text-xs flex flex-row text-surface-500 dark:text-surface-400">
-              <Info className="inline w-3.5 h-3.5 mr-1 text-surface-400" />
+            <p className="mt-2 flex flex-row text-surface-500 text-xs dark:text-surface-400">
+              <Info className="mr-1 inline h-3.5 w-3.5 text-surface-400" />
               The app will attempt to auto-discover for base URLs.
             </p>
           )}
@@ -194,7 +194,7 @@ export const CredentialsForm = ({
       <div>
         <label
           htmlFor="username"
-          className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+          className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
         >
           Username
         </label>
@@ -205,14 +205,14 @@ export const CredentialsForm = ({
           onChange={onUsernameChange}
           placeholder="user@example.com"
           required
-          className="w-full px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+          className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
         />
       </div>
 
       <div>
         <label
           htmlFor="password"
-          className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+          className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
         >
           {serverType === 'fastmail' ? 'App Password' : 'Password'}
         </label>
@@ -229,10 +229,10 @@ export const CredentialsForm = ({
                 : 'Enter password'
           }
           required={!account}
-          className="w-full px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+          className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
         />
         {hint && (
-          <div className="mt-3 flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-xs text-surface-700 dark:text-surface-300">
+          <div className="mt-3 flex gap-2 rounded-lg border border-semantic-info/30 bg-semantic-info/10 px-3 py-2 text-surface-700 text-xs dark:text-surface-300">
             <Info className="mt-px size-3.5 shrink-0 text-semantic-info" />
             <span>{hint.text}</span>
           </div>
@@ -261,17 +261,17 @@ export const CredentialsForm = ({
             <p className="col-span-2">{error.message}</p>
 
             {error.hint && (
-              <p className="col-span-2 text-xs text-surface-600 dark:text-surface-400">
+              <p className="col-span-2 text-surface-600 text-xs dark:text-surface-400">
                 {error.hint}
               </p>
             )}
 
             {error.detail && error.detail !== error.message && (
-              <details className="col-span-2 text-xs text-surface-500 dark:text-surface-400">
+              <details className="col-span-2 text-surface-500 text-xs dark:text-surface-400">
                 <summary className="cursor-pointer select-none font-medium">
                   Technical detail
                 </summary>
-                <p className="mt-1 wrap-break-word font-mono">{error.detail}</p>
+                <p className="wrap-break-word mt-1 font-mono">{error.detail}</p>
               </details>
             )}
           </div>

@@ -26,9 +26,9 @@ export const TaskEditorStatus = ({
       <div>
         <div
           id="status-label"
-          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+          className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
         >
-          <Activity className="w-4 h-4" />
+          <Activity className="h-4 w-4" />
           Status
         </div>
         {/* biome-ignore lint/a11y/useSemanticElements: fieldset would change semantic structure; div with role="group" is appropriate here */}
@@ -77,12 +77,11 @@ export const TaskEditorStatus = ({
                 key={s.value}
                 onClick={() => onStatusChange(s.value)}
                 disabled={readOnly}
-                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500
-                  ${readOnly ? 'disabled:cursor-not-allowed' : ''}
-                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`}
+                className={`flex items-center gap-2 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${readOnly ? 'disabled:cursor-not-allowed' : ''}
+                  ${isActive ? `${s.borderColor} ${s.bgColor} text-surface-900 dark:text-surface-100` : `border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`}
                 `}
               >
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? s.color : ''}`} />
+                <Icon className={`h-4 w-4 shrink-0 ${isActive ? s.color : ''}`} />
                 <span>{s.label}</span>
               </button>
             );
@@ -93,9 +92,9 @@ export const TaskEditorStatus = ({
       <div>
         <label
           htmlFor="task-percent-complete"
-          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-1"
+          className="mb-1 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
         >
-          <Loader className="w-4 h-4" />
+          <Loader className="h-4 w-4" />
           Progress ({draftPercent ?? task.percentComplete ?? 0}%)
         </label>
         <div className={readOnly ? 'cursor-not-allowed' : undefined}>
@@ -126,7 +125,7 @@ export const TaskEditorStatus = ({
             className={`w-full ${readOnly ? 'pointer-events-none' : ''}`}
           />
         </div>
-        <div className="flex justify-between text-xs text-surface-400 mt-1">
+        <div className="mt-1 flex justify-between text-surface-400 text-xs">
           <span>0%</span>
           <span>100%</span>
         </div>

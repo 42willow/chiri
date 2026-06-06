@@ -17,9 +17,9 @@ export const TaskItemRepeatBadge = ({
   return (
     <span
       title={`Repeats: ${fullSummary}`}
-      className="inline-flex max-w-36 items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800 text-surface-600 dark:text-surface-400"
+      className="inline-flex max-w-36 items-center gap-1 rounded-sm border border-surface-300 bg-surface-50 px-2 py-0.5 font-medium text-surface-600 text-xs dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400"
     >
-      <RefreshCw className="w-3 h-3 shrink-0" />
+      <RefreshCw className="h-3 w-3 shrink-0" />
       <span className="truncate">{short}</span>
     </span>
   );

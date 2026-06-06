@@ -141,27 +141,27 @@ export const DestinationStep = ({
 
   if (!hasAccounts) {
     return (
-      <div className="p-4 text-center text-sm text-surface-500 dark:text-surface-400 bg-surface-50 dark:bg-surface-700/50 rounded-lg border border-surface-200 dark:border-surface-600">
-        <Cloud className="w-8 h-8 mx-auto mb-2 text-surface-400" />
+      <div className="rounded-lg border border-surface-200 bg-surface-50 p-4 text-center text-sm text-surface-500 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-400">
+        <Cloud className="mx-auto mb-2 h-8 w-8 text-surface-400" />
         <p className="font-medium text-surface-600 dark:text-surface-300">No accounts configured</p>
-        <p className="text-xs mt-1">Add a CalDAV account first to import tasks.</p>
+        <p className="mt-1 text-xs">Add a CalDAV account first to import tasks.</p>
       </div>
     );
   }
 
   if (!hasCalendars) {
     return (
-      <div className="p-4 text-center text-sm text-surface-500 dark:text-surface-400 bg-surface-50 dark:bg-surface-700/50 rounded-lg border border-surface-200 dark:border-surface-600">
-        <Calendar className="w-8 h-8 mx-auto mb-2 text-surface-400" />
+      <div className="rounded-lg border border-surface-200 bg-surface-50 p-4 text-center text-sm text-surface-500 dark:border-surface-600 dark:bg-surface-700/50 dark:text-surface-400">
+        <Calendar className="mx-auto mb-2 h-8 w-8 text-surface-400" />
         <p className="font-medium text-surface-600 dark:text-surface-300">No calendars available</p>
-        <p className="text-xs mt-1">Your accounts don't have any task lists yet.</p>
+        <p className="mt-1 text-xs">Your accounts don't have any task lists yet.</p>
       </div>
     );
   }
 
   return (
     <div className="space-y-2">
-      <span className="block text-sm font-medium text-surface-700 dark:text-surface-300">
+      <span className="block font-medium text-sm text-surface-700 dark:text-surface-300">
         Import to
       </span>
 
@@ -172,24 +172,24 @@ export const DestinationStep = ({
           type="button"
           onClick={toggleDropdown}
           onKeyDown={handleKeyDown}
-          className={`w-full flex items-center justify-between gap-2 px-3 py-2.5 text-sm text-left rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 ${
+          className={`flex w-full items-center justify-between gap-2 rounded-lg border px-3 py-2.5 text-left text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
             isOpen
-              ? 'border-primary-500 ring-2 ring-primary-500/20 bg-white dark:bg-surface-700'
-              : 'border-surface-200 dark:border-surface-600 bg-white dark:bg-surface-700 hover:border-surface-300 dark:hover:border-surface-500'
+              ? 'border-primary-500 bg-white ring-2 ring-primary-500/20 dark:bg-surface-700'
+              : 'border-surface-200 bg-white hover:border-surface-300 dark:border-surface-600 dark:bg-surface-700 dark:hover:border-surface-500'
           }`}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
         >
           {selectedOption ? (
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex min-w-0 items-center gap-2">
               <div
-                className="w-3 h-3 rounded-full shrink-0"
+                className="h-3 w-3 shrink-0 rounded-full"
                 style={{ backgroundColor: selectedCalendarColor }}
               />
               <span className="truncate text-surface-800 dark:text-surface-200">
                 {selectedOption.calendarName}
               </span>
-              <span className="text-xs text-surface-500 dark:text-surface-400 shrink-0">
+              <span className="shrink-0 text-surface-500 text-xs dark:text-surface-400">
                 ({selectedOption.accountName})
               </span>
             </div>
@@ -197,7 +197,7 @@ export const DestinationStep = ({
             <span className="text-surface-500 dark:text-surface-400">Select a calendar...</span>
           )}
           <ChevronDown
-            className={`w-4 h-4 text-surface-400 shrink-0 transition-transform ${
+            className={`h-4 w-4 shrink-0 text-surface-400 transition-transform ${
               isOpen ? 'rotate-180' : ''
             }`}
           />
@@ -208,7 +208,7 @@ export const DestinationStep = ({
           <div
             ref={listRef}
             role="listbox"
-            className="fixed z-70 py-1 bg-white dark:bg-surface-800 border border-surface-200 dark:border-surface-600 rounded-lg shadow-lg max-h-64 overflow-y-auto animate-fade-in"
+            className="fixed z-70 max-h-64 animate-fade-in overflow-y-auto rounded-lg border border-surface-200 bg-white py-1 shadow-lg dark:border-surface-600 dark:bg-surface-800"
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
@@ -218,7 +218,7 @@ export const DestinationStep = ({
             {groupedOptions.map(({ account, calendars }) => (
               <div key={account.id}>
                 {/* Account header */}
-                <div className="px-3 py-1.5 text-xs font-medium text-surface-500 dark:text-surface-400 bg-surface-50 dark:bg-surface-700/50 sticky top-0">
+                <div className="sticky top-0 bg-surface-50 px-3 py-1.5 font-medium text-surface-500 text-xs dark:bg-surface-700/50 dark:text-surface-400">
                   {account.name}
                 </div>
 
@@ -234,18 +234,18 @@ export const DestinationStep = ({
                       role="option"
                       aria-selected={isSelected}
                       onClick={() => handleSelect(account.id, cal.id)}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                      className={`flex w-full items-center gap-2 px-3 py-2 text-left text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                         isSelected
-                          ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-                          : 'hover:bg-surface-50 dark:hover:bg-surface-700/50 text-surface-700 dark:text-surface-300'
+                          ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
+                          : 'text-surface-700 hover:bg-surface-50 dark:text-surface-300 dark:hover:bg-surface-700/50'
                       }`}
                     >
                       <div
-                        className="w-3 h-3 rounded-full shrink-0"
+                        className="h-3 w-3 shrink-0 rounded-full"
                         style={{ backgroundColor: calendarColor }}
                       />
-                      <span className="truncate flex-1">{cal.displayName}</span>
-                      {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
+                      <span className="flex-1 truncate">{cal.displayName}</span>
+                      {isSelected && <Check className="h-4 w-4 shrink-0 text-primary-500" />}
                     </button>
                   );
                 })}
@@ -257,7 +257,7 @@ export const DestinationStep = ({
 
       {/* Selection summary */}
       {selectedOption && (
-        <p className="text-xs text-surface-500 dark:text-surface-400">
+        <p className="text-surface-500 text-xs dark:text-surface-400">
           Tasks will be added to the "{selectedOption.calendarName}" calendar in your{' '}
           {selectedOption.accountName} account.
         </p>

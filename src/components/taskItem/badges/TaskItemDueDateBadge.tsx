@@ -12,9 +12,9 @@ export const TaskItemDueDateBadge = ({ dueDate }: TaskItemDueDateBadgeProps) => 
 
   return (
     <span
-      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border ${display.className}`}
+      className={`inline-flex items-center gap-1 rounded-sm border px-2 py-0.5 font-medium text-xs ${display.className}`}
     >
-      <Clock className="w-3 h-3" />
+      <Clock className="h-3 w-3" />
       {display.text}
     </span>
   );

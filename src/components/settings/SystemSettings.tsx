@@ -110,14 +110,14 @@ export const SystemSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">System</h3>
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">System</h3>
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label
           className={`flex items-center justify-between p-4 ${launchAtLoginBusy ? 'cursor-wait' : ''}`}
         >
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Launch at login</p>
-            <p className="flex items-center gap-1.5 text-xs text-surface-500 dark:text-surface-400">
+            <p className="flex items-center gap-1.5 text-surface-500 text-xs dark:text-surface-400">
               {launchAtLoginBusy && (
                 <Loader2 className={`size-3 shrink-0 animate-spin ${launchAtLoginSpinnerClass}`} />
               )}
@@ -129,22 +129,22 @@ export const SystemSettings = () => {
             checked={autostart.enabled ?? false}
             disabled={launchAtLoginBusy}
             onChange={(e) => autostart.setEnabled(e.target.checked)}
-            className={`rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50 disabled:cursor-not-allowed ${launchAtLoginBusy ? 'checkbox-busy' : ''}`}
+            className={`shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${launchAtLoginBusy ? 'checkbox-busy' : ''}`}
           />
         </label>
 
         {isMac && (
           <>
             <div className="px-4 pb-4">
-              <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+              <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
                 <label
-                  className={`flex items-center justify-between ${startQuietlyAtLoginDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  className={`flex items-center justify-between ${startQuietlyAtLoginDisabled ? 'cursor-not-allowed opacity-50' : ''}`}
                 >
                   <div>
                     <p className="text-sm text-surface-700 dark:text-surface-300">
                       Start quietly in tray at login
                     </p>
-                    <p className="text-xs text-surface-500 dark:text-surface-400">
+                    <p className="text-surface-500 text-xs dark:text-surface-400">
                       Hide the main window when Chiri starts automatically. Requires system tray.
                     </p>
                   </div>
@@ -153,19 +153,19 @@ export const SystemSettings = () => {
                     checked={!showWindowOnLoginLaunch}
                     disabled={startQuietlyAtLoginDisabled}
                     onChange={(e) => setShowWindowOnLoginLaunch(!e.target.checked)}
-                    className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </label>
               </div>
             </div>
 
-            <div className="border-t border-surface-200 dark:border-surface-700" />
+            <div className="border-surface-200 border-t dark:border-surface-700" />
 
             <div className="px-4 py-3">
               <button
                 type="button"
                 onClick={handleOpenLoginItemsSettings}
-                className="inline-flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="inline-flex items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
               >
                 Open macOS Settings
               </button>
@@ -175,19 +175,19 @@ export const SystemSettings = () => {
 
         {autostart.error && (
           <div className="px-4 pb-4">
-            <div className="flex gap-2 rounded-lg bg-semantic-error/10 p-3 border border-semantic-error/30">
-              <AlertTriangle className="w-4 h-4 text-semantic-error shrink-0 mt-0.5" />
-              <p className="text-xs text-semantic-error">{autostart.error}</p>
+            <div className="flex gap-2 rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-error" />
+              <p className="text-semantic-error text-xs">{autostart.error}</p>
             </div>
           </div>
         )}
       </div>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Enable system tray</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Lets Chiri run in the background with a tray icon.
             </p>
           </div>
@@ -195,19 +195,19 @@ export const SystemSettings = () => {
             type="checkbox"
             checked={enableSystemTray}
             onChange={(e) => handleSystemTrayChange(e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
         {isMac && (
           <div className="px-4 pb-4">
-            <div className="space-y-3 pl-4 border-l-2 border-surface-200 dark:border-surface-600">
+            <div className="space-y-3 border-surface-200 border-l-2 pl-4 dark:border-surface-600">
               <label
-                className={`flex items-center justify-between ${!enableSystemTray ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`flex items-center justify-between ${!enableSystemTray ? 'cursor-not-allowed opacity-50' : ''}`}
               >
                 <div>
                   <p className="text-sm text-surface-700 dark:text-surface-300">Hide Dock icon</p>
-                  <p className="text-xs text-surface-500 dark:text-surface-400">
+                  <p className="text-surface-500 text-xs dark:text-surface-400">
                     Hide the Dock icon when all windows are closed
                   </p>
                 </div>
@@ -216,7 +216,7 @@ export const SystemSettings = () => {
                   checked={hideDockIconWhenWindowClosed}
                   disabled={!enableSystemTray}
                   onChange={(e) => handleHideDockIconWhenWindowClosedChange(e.target.checked)}
-                  className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0 disabled:opacity-50"
+                  className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50"
                 />
               </label>
             </div>
@@ -225,9 +225,9 @@ export const SystemSettings = () => {
 
         {isGNOME && (
           <div className="px-4 pb-4">
-            <div className="flex gap-2 rounded-lg bg-semantic-warning/10 p-3 border border-semantic-warning/30">
-              <AlertTriangle className="w-4 h-4 text-semantic-warning shrink-0 mt-0.5" />
-              <p className="text-xs text-semantic-warning">
+            <div className="flex gap-2 rounded-lg border border-semantic-warning/30 bg-semantic-warning/10 p-3">
+              <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-semantic-warning" />
+              <p className="text-semantic-warning text-xs">
                 <strong>GNOME detected:</strong> System tray requires the{' '}
                 <a
                   href="https://extensions.gnome.org/extension/615/appindicator-support/"
@@ -245,13 +245,13 @@ export const SystemSettings = () => {
       </div>
 
       {isMac && (
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
           <label className="flex items-center justify-between p-4">
             <div>
               <p className="text-sm text-surface-700 dark:text-surface-300">
                 Show warning before quitting with ⌘Q
               </p>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
+              <p className="text-surface-500 text-xs dark:text-surface-400">
                 Hold or double press ⌘Q to quit. Requires restart.
               </p>
             </div>
@@ -259,20 +259,20 @@ export const SystemSettings = () => {
               type="checkbox"
               checked={confirmBeforeQuit}
               onChange={(e) => setConfirmBeforeQuit(e.target.checked)}
-              className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+              className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
             />
           </label>
         </div>
       )}
 
       {isLinux && (
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+        <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
           <div className="flex items-center justify-between gap-4 p-4">
             <div>
               <p className="text-sm text-surface-700 dark:text-surface-300">
                 Enable window decorations
               </p>
-              <p className="text-xs text-surface-500 dark:text-surface-400">
+              <p className="text-surface-500 text-xs dark:text-surface-400">
                 Show title bar and borders on Linux. If changed, overrides the default
                 auto-detection.
               </p>
@@ -282,7 +282,7 @@ export const SystemSettings = () => {
               onChange={(e) =>
                 handleWindowDecorationsChange(e.target.value as WindowDecorationsMode)
               }
-              className="text-sm border border-transparent bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 rounded-lg outline-none focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors shrink-0"
+              className="shrink-0 rounded-lg border border-transparent bg-surface-100 text-sm text-surface-800 outline-none transition-colors focus:border-primary-500 focus:bg-white dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             >
               <option value="auto">Auto (detect)</option>
               <option value="on">Always show</option>
@@ -293,15 +293,15 @@ export const SystemSettings = () => {
       )}
 
       {restartRequired && (
-        <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden">
-          <div className="flex items-center justify-between gap-4 px-4 py-3 bg-surface-100 dark:bg-surface-700/50">
+        <div className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700">
+          <div className="flex items-center justify-between gap-4 bg-surface-100 px-4 py-3 dark:bg-surface-700/50">
             <p className="text-sm text-surface-700 dark:text-surface-300">
               {restartRequiredMessage}
             </p>
             <button
               type="button"
               onClick={handleRestart}
-              className="px-3 py-1.5 text-sm font-medium bg-primary-500 hover:bg-primary-600 text-primary-contrast rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
+              className="shrink-0 rounded-lg bg-primary-500 px-3 py-1.5 font-medium text-primary-contrast text-sm outline-hidden transition-colors hover:bg-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
             >
               Restart now
             </button>

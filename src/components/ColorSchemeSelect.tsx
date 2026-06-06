@@ -123,7 +123,7 @@ const OptionContent = ({
     <span className="flex min-w-0 items-center gap-3">
       <MiniAppSwatch flavor={option.flavor} />
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-medium">{option.name}</span>
+        <span className="block truncate font-medium text-sm">{option.name}</span>
         <span className="mt-0.5 block truncate text-xs" style={{ color: palette.muted }}>
           {option.detail}
         </span>
@@ -131,7 +131,7 @@ const OptionContent = ({
       <span className="flex shrink-0 items-center gap-2">
         <AccentDots flavor={option.flavor} />
         <span
-          className="rounded-md border px-1.5 py-0.5 text-[11px] font-medium"
+          className="rounded-md border px-1.5 py-0.5 font-medium text-[11px]"
           style={{
             backgroundColor: palette.badge,
             borderColor: palette.border,
@@ -296,7 +296,7 @@ export const ColorSchemeSelect = ({ label, value, options, onChange }: ColorSche
           }
         }}
         onKeyDown={handleTriggerKeyDown}
-        className={`flex w-full items-center gap-3 rounded-lg border p-2 text-left transition-colors outline-hidden hover:border-surface-300 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:border-surface-600 ${
+        className={`flex w-full items-center gap-3 rounded-lg border p-2 text-left outline-hidden transition-colors hover:border-surface-300 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:border-surface-600 ${
           isOpen
             ? 'border-surface-300 dark:border-surface-600'
             : 'border-surface-200 dark:border-surface-700'
@@ -346,7 +346,7 @@ export const ColorSchemeSelect = ({ label, value, options, onChange }: ColorSche
                     selectOption(option);
                   }}
                   onFocus={() => setActiveIndex(index)}
-                  className="w-full rounded-md border p-2 text-left transition-shadow outline-hidden hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                  className="w-full rounded-md border p-2 text-left outline-hidden transition-shadow hover:shadow-md focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
                   style={getRowStyle(option, isSelected, isActive)}
                 >
                   <OptionContent option={option} isSelected={isSelected} />

@@ -245,7 +245,7 @@ export const RepeatModal = ({
           </>
         }
       >
-        <div className="p-4 space-y-4">
+        <div className="space-y-4 p-4">
           <AppSelect
             value={ui.freq}
             onChange={(e) => {
@@ -271,7 +271,7 @@ export const RepeatModal = ({
 
           {showInterval && (
             <div className="flex items-center gap-2">
-              <span className="text-sm text-surface-600 dark:text-surface-400 shrink-0">Every</span>
+              <span className="shrink-0 text-sm text-surface-600 dark:text-surface-400">Every</span>
               <input
                 type="text"
                 inputMode="numeric"
@@ -309,7 +309,7 @@ export const RepeatModal = ({
           )}
 
           {showDayPicker && (
-            <fieldset aria-label="Days of week" className="flex gap-1.5 border-0 p-0 m-0 min-w-0">
+            <fieldset aria-label="Days of week" className="m-0 flex min-w-0 gap-1.5 border-0 p-0">
               {orderedWeekdays.map(({ value, label }) => {
                 const active = ui.byday.includes(value);
                 return (
@@ -322,10 +322,10 @@ export const RepeatModal = ({
                         : [...ui.byday, value];
                       update({ byday });
                     }}
-                    className={`w-9 h-9 rounded-full text-xs font-medium border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 ${
+                    className={`h-9 w-9 rounded-full border font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
                       active
-                        ? 'border-surface-300 dark:border-surface-500 bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-                        : 'border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700'
+                        ? 'border-surface-300 bg-surface-200 text-surface-900 dark:border-surface-500 dark:bg-surface-700 dark:text-surface-100'
+                        : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-700'
                     }`}
                   >
                     {label}
@@ -337,7 +337,7 @@ export const RepeatModal = ({
 
           {isRecurring && (
             <div className="space-y-2">
-              <p className="text-xs text-surface-500 dark:text-surface-400">Ends</p>
+              <p className="text-surface-500 text-xs dark:text-surface-400">Ends</p>
               <div className="flex gap-2">
                 {(
                   [
@@ -389,12 +389,12 @@ export const RepeatModal = ({
                     <button
                       type="button"
                       onClick={() => setShowUntilPicker(true)}
-                      className="w-full flex items-center gap-2 h-9 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg hover:border-surface-300 dark:hover:border-surface-500 focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+                      className="flex h-9 w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-800 dark:hover:border-surface-500"
                     >
                       {untilDate ? (
-                        <Calendar className="w-4 h-4 text-surface-400 shrink-0" />
+                        <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
                       ) : (
-                        <CalendarPlus className="w-4 h-4 text-surface-400 shrink-0" />
+                        <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
                       )}
                       <span
                         className={
@@ -411,7 +411,7 @@ export const RepeatModal = ({
 
           {isRecurring && (
             <div className="space-y-2">
-              <p className="text-xs text-surface-500 dark:text-surface-400">Advance from</p>
+              <p className="text-surface-500 text-xs dark:text-surface-400">Advance from</p>
               <div className="flex gap-2">
                 {(
                   [

@@ -11,7 +11,7 @@ export const THEME_OPTIONS: Array<{
   icon: React.ReactNode;
   label: string;
 }> = [
-  { value: 'light', icon: <Sun className="w-4 h-4" />, label: 'Light' },
-  { value: 'dark', icon: <Moon className="w-4 h-4" />, label: 'Dark' },
-  { value: 'system', icon: <Monitor className="w-4 h-4" />, label: 'System' },
+  { value: 'light', icon: <Sun className="h-4 w-4" />, label: 'Light' },
+  { value: 'dark', icon: <Moon className="h-4 w-4" />, label: 'Dark' },
+  { value: 'system', icon: <Monitor className="h-4 w-4" />, label: 'System' },
 ];

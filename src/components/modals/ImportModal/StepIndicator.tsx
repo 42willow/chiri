@@ -41,7 +41,7 @@ export const StepIndicator = ({ currentStep, hasFile, hasDestination }: StepIndi
           <div key={step.key} className="flex items-center">
             {index > 0 && (
               <div
-                className={`w-10 h-px mx-2 transition-colors ${
+                className={`mx-2 h-px w-10 transition-colors ${
                   (index === 1 && (currentStep === 'destination' || currentStep === 'review')) ||
                   (index === 2 && currentStep === 'review')
                     ? 'bg-primary-500'
@@ -51,18 +51,18 @@ export const StepIndicator = ({ currentStep, hasFile, hasDestination }: StepIndi
             )}
             <div className="flex items-center gap-1.5">
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium transition-all ${
+                className={`flex h-6 w-6 items-center justify-center rounded-full font-medium text-xs transition-all ${
                   status === 'completed'
                     ? 'bg-primary-500 text-primary-contrast'
                     : status === 'active'
-                      ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100 ring-2 ring-primary-500'
-                      : 'bg-surface-200 dark:bg-surface-700 text-surface-500 dark:text-surface-400'
+                      ? 'bg-surface-200 text-surface-900 ring-2 ring-primary-500 dark:bg-surface-700 dark:text-surface-100'
+                      : 'bg-surface-200 text-surface-500 dark:bg-surface-700 dark:text-surface-400'
                 }`}
               >
-                {status === 'completed' ? <Check className="w-3.5 h-3.5" /> : index + 1}
+                {status === 'completed' ? <Check className="h-3.5 w-3.5" /> : index + 1}
               </div>
               <span
-                className={`text-xs font-medium hidden sm:inline transition-colors ${
+                className={`hidden font-medium text-xs transition-colors sm:inline ${
                   status === 'active'
                     ? 'text-surface-900 dark:text-surface-100'
                     : status === 'completed'

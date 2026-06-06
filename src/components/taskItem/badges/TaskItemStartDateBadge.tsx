@@ -7,10 +7,10 @@ export const TaskItemStartDateBadge = ({
   startDateDisplay: ReturnType<typeof formatStartDate>;
 }) => (
   <span
-    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border bg-surface-100 dark:bg-surface-700 text-surface-600 dark:text-surface-400"
+    className="inline-flex items-center gap-1 rounded-sm border bg-surface-100 px-2 py-0.5 font-medium text-surface-600 text-xs dark:bg-surface-700 dark:text-surface-400"
     style={{ borderColor: startDateDisplay.borderColor }}
   >
-    <CalendarClock className="w-3 h-3" style={{ color: startDateDisplay.borderColor }} />
+    <CalendarClock className="h-3 w-3" style={{ color: startDateDisplay.borderColor }} />
     {startDateDisplay.text}
   </span>
 );

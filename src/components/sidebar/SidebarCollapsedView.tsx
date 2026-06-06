@@ -76,7 +76,7 @@ export const SidebarCollapsedView = ({
     <span className="flex items-center gap-3 whitespace-nowrap">
       <span>Import tasks...</span>
       {importShortcut && (
-        <span className="text-xs font-normal text-white/70">{importShortcut}</span>
+        <span className="font-normal text-white/70 text-xs">{importShortcut}</span>
       )}
     </span>
   );
@@ -84,27 +84,27 @@ export const SidebarCollapsedView = ({
     <span className="flex items-center gap-3 whitespace-nowrap">
       <span>Settings</span>
       {settingsShortcut && (
-        <span className="text-xs font-normal text-white/70">{settingsShortcut}</span>
+        <span className="font-normal text-white/70 text-xs">{settingsShortcut}</span>
       )}
     </span>
   );
 
   return (
     <div
-      className={`flex-1 flex min-h-0 flex-col items-center motion-safe:transition-opacity motion-safe:duration-150 ${showCollapsedContent ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      className={`flex min-h-0 flex-1 flex-col items-center motion-safe:transition-opacity motion-safe:duration-150 ${showCollapsedContent ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
     >
       <div className="flex min-h-0 w-full flex-1 flex-col items-center gap-1 overflow-y-auto overscroll-contain py-2">
         <Tooltip content="All Tasks" position="right">
           <button
             type="button"
             onClick={onAllTasks}
-            className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`rounded-lg p-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
               activeView === 'tasks' && activeCalendarId === null && activeTagId === null
-                ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-                : 'text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
+                ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
+                : 'text-surface-500 hover:bg-surface-200 dark:text-surface-400 dark:hover:bg-surface-700'
             }`}
           >
-            <Inbox className="w-5 h-5" />
+            <Inbox className="h-5 w-5" />
           </button>
         </Tooltip>
 
@@ -112,13 +112,13 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={onRecentlyDeleted}
-            className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`rounded-lg p-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
               activeView === 'recently-deleted'
-                ? 'bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100'
-                : 'text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700'
+                ? 'bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100'
+                : 'text-surface-500 hover:bg-surface-200 dark:text-surface-400 dark:hover:bg-surface-700'
             }`}
           >
-            <Trash2 className="w-5 h-5" />
+            <Trash2 className="h-5 w-5" />
           </button>
         </Tooltip>
 
@@ -143,7 +143,7 @@ export const SidebarCollapsedView = ({
                   aria-label={`${filter.name} filter`}
                   onClick={() => onSelectFilter(filter.id)}
                   onContextMenu={(e) => onContextMenu(e, 'filter', filter.id)}
-                  className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  className={`rounded-lg p-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                     isActive
                       ? 'bg-surface-200 dark:bg-surface-700'
                       : contextMenu?.type === 'filter' && contextMenu.id === filter.id
@@ -156,7 +156,7 @@ export const SidebarCollapsedView = ({
                       {filter.emoji}
                     </span>
                   ) : (
-                    <FilterIcon className="w-5 h-5" style={{ color: filterColor }} />
+                    <FilterIcon className="h-5 w-5" style={{ color: filterColor }} />
                   )}
                 </button>
               </Tooltip>
@@ -191,7 +191,7 @@ export const SidebarCollapsedView = ({
                         aria-label={`${calendar.displayName} calendar`}
                         onClick={() => onSelectCalendar(account.id, calendar.id)}
                         onContextMenu={(e) => onContextMenu(e, 'calendar', calendar.id, account.id)}
-                        className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                        className={`rounded-lg p-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                           isActive
                             ? 'bg-surface-200 dark:bg-surface-700'
                             : contextMenu?.type === 'calendar' && contextMenu.id === calendar.id
@@ -204,7 +204,7 @@ export const SidebarCollapsedView = ({
                             {calendar.emoji}
                           </span>
                         ) : (
-                          <CalendarIcon className="w-5 h-5" style={{ color: calendarColor }} />
+                          <CalendarIcon className="h-5 w-5" style={{ color: calendarColor }} />
                         )}
                       </button>
                     </Tooltip>
@@ -235,7 +235,7 @@ export const SidebarCollapsedView = ({
                   aria-label={`${tag.name} tag`}
                   onClick={() => onSelectTag(tag.id)}
                   onContextMenu={(e) => onContextMenu(e, 'tag', tag.id)}
-                  className={`p-2 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  className={`rounded-lg p-2 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                     isActive
                       ? 'bg-surface-200 dark:bg-surface-700'
                       : contextMenu?.type === 'tag' && contextMenu.id === tag.id
@@ -248,7 +248,7 @@ export const SidebarCollapsedView = ({
                       {tag.emoji}
                     </span>
                   ) : (
-                    <TagIcon className="w-5 h-5" style={{ color: tagColor }} />
+                    <TagIcon className="h-5 w-5" style={{ color: tagColor }} />
                   )}
                 </button>
               </Tooltip>
@@ -267,9 +267,9 @@ export const SidebarCollapsedView = ({
             <button
               type="button"
               onClick={() => onUpdateClick?.()}
-              className="p-2 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+              className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
             >
-              <Download className="w-5 h-5 text-primary-500" />
+              <Download className="h-5 w-5 text-primary-500" />
             </button>
           </Tooltip>
         )}
@@ -277,18 +277,18 @@ export const SidebarCollapsedView = ({
           <button
             type="button"
             onClick={() => onOpenImport?.()}
-            className="p-2 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
           >
-            <Import className="w-5 h-5" />
+            <Import className="h-5 w-5" />
           </button>
         </Tooltip>
         <Tooltip content={settingsTooltip} position="right">
           <button
             type="button"
             onClick={() => onOpenSettings?.()}
-            className="p-2 rounded-lg text-surface-500 dark:text-surface-400 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="rounded-lg p-2 text-surface-500 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
           >
-            <Settings className="w-5 h-5" />
+            <Settings className="h-5 w-5" />
           </button>
         </Tooltip>
       </div>

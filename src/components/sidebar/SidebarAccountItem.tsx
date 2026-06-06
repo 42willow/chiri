@@ -94,7 +94,7 @@ export const SidebarAccountItem = ({
           type="button"
           onClick={() => onToggleAccount(account.id)}
           onContextMenu={(e) => onContextMenu(e, 'account', account.id)}
-          className={`flex h-9 min-w-0 flex-1 items-center gap-2 px-3 rounded-lg text-sm transition-colors cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`flex h-9 min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-lg px-3 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
             isAccountContextMenuOpen && !isAccountMenuButtonContextMenuOpen
               ? 'bg-surface-200 dark:bg-surface-700'
               : !isAnyModalOpen && !isAnyAccountDragging
@@ -104,14 +104,14 @@ export const SidebarAccountItem = ({
           {...dragHandleProps}
         >
           <ChevronDown
-            className={`w-4 h-4 text-surface-400 shrink-0 motion-safe:transition-transform motion-safe:duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`}
+            className={`h-4 w-4 shrink-0 text-surface-400 motion-safe:transition-transform motion-safe:duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`}
           />
           {account.emoji ? (
-            <span className="w-4 text-xs leading-none text-center shrink-0">{account.emoji}</span>
+            <span className="w-4 shrink-0 text-center text-xs leading-none">{account.emoji}</span>
           ) : (
-            <AccountIcon className="w-4 h-4 text-surface-500 dark:text-surface-400 shrink-0" />
+            <AccountIcon className="h-4 w-4 shrink-0 text-surface-500 dark:text-surface-400" />
           )}
-          <span className="flex-1 text-left truncate min-w-0 pr-2 text-surface-600 dark:text-surface-400">
+          <span className="min-w-0 flex-1 truncate pr-2 text-left text-surface-600 dark:text-surface-400">
             {account.name}
           </span>
         </button>
@@ -128,9 +128,9 @@ export const SidebarAccountItem = ({
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 dark:hover:bg-surface-600 hover:text-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg bg-transparent ${!isAnyModalOpen ? 'hover:bg-surface-300 hover:text-surface-600 dark:hover:bg-surface-600 dark:hover:text-surface-300' : ''} text-surface-400 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
             >
-              <Plus className="w-4 h-4" />
+              <Plus className="h-4 w-4" />
             </button>
           </Tooltip>
           <Tooltip content="Account menu" position="top">
@@ -145,9 +145,9 @@ export const SidebarAccountItem = ({
               onContextMenu={(e) => {
                 onContextMenu(e, 'account', account.id);
               }}
-              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountMenuButtonStateClass}`}
+              className={`flex h-9 w-8 shrink-0 items-center justify-center rounded-lg outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${accountMenuButtonStateClass}`}
             >
-              <MoreVertical className="w-4 h-4" />
+              <MoreVertical className="h-4 w-4" />
             </button>
           </Tooltip>
         </div>
@@ -157,7 +157,7 @@ export const SidebarAccountItem = ({
         <div
           className={`grid pt-1 motion-safe:transition-[grid-template-rows] motion-safe:duration-200 motion-safe:ease-in-out ${isExpanded ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
         >
-          <div className="overflow-hidden min-h-0" aria-hidden={!isExpanded} inert={!isExpanded}>
+          <div className="min-h-0 overflow-hidden" aria-hidden={!isExpanded} inert={!isExpanded}>
             <SidebarCalendarList
               account={account}
               tasks={tasks}

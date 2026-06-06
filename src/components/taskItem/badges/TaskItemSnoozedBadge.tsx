@@ -9,8 +9,8 @@ export const TaskItemSnoozedBadge = ({ taskId }: { taskId: string }) => {
   if (!until || until <= Date.now()) return null;
 
   return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium border text-semantic-warning bg-semantic-warning/15 border-semantic-warning">
-      <BellOff className="w-3 h-3" />
+    <span className="inline-flex items-center gap-1 rounded border border-semantic-warning bg-semantic-warning/15 px-2 py-0.5 font-medium text-semantic-warning text-xs">
+      <BellOff className="h-3 w-3" />
       Snoozed until {formatTime(new Date(until))}
       <button
         type="button"
@@ -18,10 +18,10 @@ export const TaskItemSnoozedBadge = ({ taskId }: { taskId: string }) => {
           e.stopPropagation();
           clear();
         }}
-        className="ml-0.5 rounded hover:bg-semantic-warning/20 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+        className="ml-0.5 rounded outline-hidden hover:bg-semantic-warning/20 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
         aria-label="Cancel snooze"
       >
-        <X className="w-3 h-3" />
+        <X className="h-3 w-3" />
       </button>
     </span>
   );

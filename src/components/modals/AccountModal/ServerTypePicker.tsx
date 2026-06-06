@@ -68,20 +68,20 @@ interface ServerTypePickerProps {
 
 export const ServerTypePicker = ({ onSelect }: ServerTypePickerProps) => {
   return (
-    <div className="p-4 space-y-5">
+    <div className="space-y-5 p-4">
       {CATEGORIES.map((category) => (
         <div key={category.title}>
-          <div className="flex items-center gap-2.5 mb-2.5">
+          <div className="mb-2.5 flex items-center gap-2.5">
             <div
-              className={`size-7 rounded-lg flex items-center justify-center ${category.iconBg}`}
+              className={`flex size-7 items-center justify-center rounded-lg ${category.iconBg}`}
             >
               {category.icon}
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-surface-800 dark:text-surface-200 leading-tight">
+              <h3 className="font-semibold text-sm text-surface-800 leading-tight dark:text-surface-200">
                 {category.title}
               </h3>
-              <p className="text-xs text-surface-700 dark:text-surface-400 leading-tight">
+              <p className="text-surface-700 text-xs leading-tight dark:text-surface-400">
                 {category.subtitle}
               </p>
             </div>
@@ -93,14 +93,14 @@ export const ServerTypePicker = ({ onSelect }: ServerTypePickerProps) => {
                 key={server.value}
                 type="button"
                 onClick={() => onSelect(server.value)}
-                className="group flex items-center justify-between gap-2 px-3 py-2.5 text-left rounded-lg border border-surface-200 dark:border-surface-600 bg-surface-50 dark:bg-surface-700/50 hover:border-surface-300 dark:hover:border-surface-500 hover:bg-surface-100 dark:hover:bg-surface-700 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                className="group flex items-center justify-between gap-2 rounded-lg border border-surface-200 bg-surface-50 px-3 py-2.5 text-left outline-none transition-colors hover:border-surface-300 hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-700/50 dark:hover:border-surface-500 dark:hover:bg-surface-700"
               >
                 <div className="min-w-0">
-                  <div className="text-sm font-medium text-surface-800 dark:text-surface-200 truncate">
+                  <div className="truncate font-medium text-sm text-surface-800 dark:text-surface-200">
                     {server.label}
                   </div>
                 </div>
-                <ArrowRight className="size-3.5 shrink-0 text-surface-300 dark:text-surface-500 group-hover:text-primary-500 dark:group-hover:text-primary-400 transition-colors" />
+                <ArrowRight className="size-3.5 shrink-0 text-surface-300 transition-colors group-hover:text-primary-500 dark:text-surface-500 dark:group-hover:text-primary-400" />
               </button>
             ))}
           </div>

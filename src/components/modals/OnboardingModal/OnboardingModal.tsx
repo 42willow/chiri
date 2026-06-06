@@ -125,7 +125,7 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
       variant="secondary"
       onClick={handleBack}
       disabled={currentStep === 0}
-      className={`${footerButtonClassName} ${currentStep === 0 ? 'invisible pointer-events-none' : ''}`}
+      className={`${footerButtonClassName} ${currentStep === 0 ? 'pointer-events-none invisible' : ''}`}
       aria-hidden={currentStep === 0}
       tabIndex={currentStep === 0 ? -1 : undefined}
     >
@@ -168,7 +168,7 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
               />
             ))}
           </div>
-          <div className="rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 text-xs font-medium text-surface-600 dark:border-surface-700 dark:bg-surface-900 dark:text-surface-400">
+          <div className="rounded-lg border border-surface-200 bg-surface-50 px-3 py-1.5 font-medium text-surface-600 text-xs dark:border-surface-700 dark:bg-surface-900 dark:text-surface-400">
             Step {currentStep + 1} of {STEP_COUNT}
           </div>
         </div>
@@ -180,10 +180,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
                 <AppIcon className="h-8 w-8" />
               </div>
               <div>
-                <h2 className="text-3xl font-semibold text-surface-950 dark:text-surface-50">
+                <h2 className="font-semibold text-3xl text-surface-950 dark:text-surface-50">
                   Welcome to Chiri
                 </h2>
-                <p className="mt-3 max-w-xl text-sm leading-6 text-surface-600 dark:text-surface-400">
+                <p className="mt-3 max-w-xl text-sm text-surface-600 leading-6 dark:text-surface-400">
                   A cross-platform CalDAV task management app for desktop
                 </p>
               </div>
@@ -191,19 +191,19 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
                 <HardDrive className="mb-3 h-5 w-5 text-primary-500" />
-                <div className="text-sm font-medium text-surface-900 dark:text-surface-100">
+                <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
                   Local first
                 </div>
               </div>
               <div className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
                 <Cloud className="mb-3 h-5 w-5 text-primary-500" />
-                <div className="text-sm font-medium text-surface-900 dark:text-surface-100">
+                <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
                   Sync ready
                 </div>
               </div>
               <div className="rounded-lg border border-surface-200 p-3 dark:border-surface-700">
                 <Sparkles className="mb-3 h-5 w-5 text-primary-500" />
-                <div className="text-sm font-medium text-surface-900 dark:text-surface-100">
+                <div className="font-medium text-sm text-surface-900 dark:text-surface-100">
                   No fuss
                 </div>
               </div>
@@ -214,10 +214,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
         {currentStep === 1 && (
           <div className="flex flex-1 flex-col justify-between gap-5">
             <div>
-              <h2 className="text-2xl font-semibold text-surface-950 dark:text-surface-50">
+              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
                 Choose where tasks live
               </h2>
-              <p className="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-400">
+              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
                 Connect your CalDAV account now, or keep tasks local and add sync later.
               </p>
             </div>
@@ -243,10 +243,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
         {currentStep === 2 && (
           <div className="flex flex-1 flex-col justify-between gap-5">
             <div>
-              <h2 className="text-2xl font-semibold text-surface-950 dark:text-surface-50">
+              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
                 Set the vibe
               </h2>
-              <p className="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-400">
+              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
                 Pick the default theme and colors before Chiri opens.
               </p>
             </div>
@@ -258,10 +258,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
         {currentStep === 3 && (
           <div className="flex flex-1 flex-col justify-between gap-5">
             <div>
-              <h2 className="text-2xl font-semibold text-surface-950 dark:text-surface-50">
+              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
                 Set your defaults
               </h2>
-              <p className="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-400">
+              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
                 Review the date and time defaults Chiri picked up from your system.
               </p>
             </div>
@@ -273,10 +273,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
         {currentStep === 4 && (
           <div className="flex flex-1 flex-col justify-between gap-5">
             <div>
-              <h2 className="text-2xl font-semibold text-surface-950 dark:text-surface-50">
+              <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
                 Notifications
               </h2>
-              <p className="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-400">
+              <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
                 Choose how Chiri nudges you about due tasks.
               </p>
             </div>
@@ -293,7 +293,7 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
             <section className="space-y-2 rounded-lg border border-surface-200 p-3 dark:border-surface-700">
               <div className="flex items-center gap-2">
                 <Bell className="h-4 w-4 text-primary-500" />
-                <h3 className="text-sm font-semibold text-surface-900 dark:text-surface-100">
+                <h3 className="font-semibold text-sm text-surface-900 dark:text-surface-100">
                   Alerts
                 </h3>
               </div>
@@ -332,10 +332,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
                 <Check className="h-8 w-8" />
               </div>
               <div>
-                <h2 className="text-2xl font-semibold text-surface-950 dark:text-surface-50">
+                <h2 className="font-semibold text-2xl text-surface-950 dark:text-surface-50">
                   Ready when you are
                 </h2>
-                <p className="mt-2 text-sm leading-6 text-surface-600 dark:text-surface-400">
+                <p className="mt-2 text-sm text-surface-600 leading-6 dark:text-surface-400">
                   {hasConnectedCalDAVHome
                     ? 'Finish setup and Chiri will open with your synced task lists.'
                     : 'Finish setup and Chiri will open straight into your local task list.'}
@@ -350,10 +350,10 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
                   <HardDrive className="h-5 w-5 text-primary-500" />
                 )}
                 <div>
-                  <div className="text-sm font-semibold text-surface-900 dark:text-surface-100">
+                  <div className="font-semibold text-sm text-surface-900 dark:text-surface-100">
                     {hasConnectedCalDAVHome ? 'CalDAV sync' : 'Local-only'}
                   </div>
-                  <div className="mt-1 text-xs text-surface-500 dark:text-surface-400">
+                  <div className="mt-1 text-surface-500 text-xs dark:text-surface-400">
                     {hasConnectedCalDAVHome
                       ? 'Your account is connected and ready to sync.'
                       : 'No account needed. Sync can be added later.'}

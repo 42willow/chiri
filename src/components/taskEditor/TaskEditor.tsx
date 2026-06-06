@@ -325,7 +325,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
 
   return (
     <>
-      <div className="flex flex-col h-full bg-white dark:bg-surface-900" ref={editorContainerRef}>
+      <div className="flex h-full flex-col bg-white dark:bg-surface-900" ref={editorContainerRef}>
         <TaskEditorHeader
           onDelete={handleDelete}
           onClose={handleClose}
@@ -336,7 +336,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
 
         <div
           ref={editorScrollRef}
-          className="flex-1 overflow-y-auto p-4 space-y-6 flex overscroll-contain flex-col"
+          className="flex flex-1 flex-col space-y-6 overflow-y-auto overscroll-contain p-4"
         >
           <TaskEditorTitle
             task={task}

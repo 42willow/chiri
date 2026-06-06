@@ -49,13 +49,13 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">Data</h3>
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Data</h3>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Export settings</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Save your preferences to a file
             </p>
           </div>
@@ -65,19 +65,19 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
               const json = exportSettings();
               await exportSettingsToFile(json);
             }}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
+            className="flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
           >
-            <Download className="w-4 h-4" />
+            <Download className="h-4 w-4" />
             Export
           </button>
         </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
+        <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Import settings</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Restore preferences from a backup file
             </p>
           </div>
@@ -86,78 +86,78 @@ export const DataSettings = ({ onClose }: DataSettingsProps) => {
             onClick={async () => {
               await importSettingsFromFile(importSettings);
             }}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
+            className="flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
           >
-            <Upload className="w-4 h-4" />
+            <Upload className="h-4 w-4" />
             Import
           </button>
         </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700 px-4 py-3">
-          <p className="text-xs text-surface-400 dark:text-surface-500">
+        <div className="border-surface-200 border-t px-4 py-3 dark:border-surface-700">
+          <p className="text-surface-400 text-xs dark:text-surface-500">
             Account credentials and task data are not included.
           </p>
         </div>
       </div>
 
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Diagnostics
       </h3>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">App logs</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Open the folder containing log files
             </p>
           </div>
           <button
             type="button"
             onClick={async () => openPath(await appLogDir())}
-            className="flex items-center gap-2 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
+            className="flex shrink-0 items-center gap-2 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
           >
-            <FileText className="w-4 h-4" />
+            <FileText className="h-4 w-4" />
             Open folder
           </button>
         </div>
       </div>
 
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">Reset</h3>
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Reset</h3>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="flex items-center justify-between p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">Reset preferences</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Restore all preferences to their default values
             </p>
           </div>
           <button
             type="button"
             onClick={handleResetPreferences}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-surface-100 dark:bg-surface-700 hover:bg-surface-200 dark:hover:bg-surface-600 text-surface-700 dark:text-surface-300 rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset shrink-0"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-surface-100 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-200 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="h-3.5 w-3.5" />
             Reset
           </button>
         </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
+        <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="flex items-center justify-between p-4">
           <div>
-            <p className="text-sm text-semantic-error">Reset database</p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-semantic-error text-sm">Reset database</p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Deletes all local data. Only use this as a last resort.
             </p>
           </div>
           <button
             type="button"
             onClick={handleResetDatabase}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-semantic-error hover:opacity-90 text-primary-contrast rounded-lg transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset shrink-0"
+            className="flex shrink-0 items-center gap-1.5 rounded-lg bg-semantic-error px-3 py-1.5 text-primary-contrast text-sm outline-hidden transition-colors hover:opacity-90 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="h-3.5 w-3.5" />
             Reset
           </button>
         </div>

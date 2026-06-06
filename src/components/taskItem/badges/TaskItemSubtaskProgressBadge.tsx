@@ -7,8 +7,8 @@ export const TaskItemSubtaskProgressBadge = ({
   completed: number;
   total: number;
 }) => (
-  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-sm text-xs font-medium border border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800 text-surface-600 dark:text-surface-400">
-    <CheckCircle2 className="w-3 h-3" />
+  <span className="inline-flex items-center gap-1 rounded-sm border border-surface-300 bg-surface-50 px-2 py-0.5 font-medium text-surface-600 text-xs dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400">
+    <CheckCircle2 className="h-3 w-3" />
     {completed}/{total}
   </span>
 );

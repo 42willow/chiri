@@ -282,15 +282,15 @@ export const TaskItem = ({
           />
         </div>
 
-        <div className="flex-1 min-w-0">
+        <div className="min-w-0 flex-1">
           {taskListDensity === 'compact' ? (
             <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+              <div className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden">
                 <TaskItemTitle
                   title={task.title}
                   status={task.status}
                   isUnstarted={isUnstarted}
-                  className="text-sm font-medium truncate shrink min-w-0"
+                  className="min-w-0 shrink truncate font-medium text-sm"
                 />
                 <TaskItemBadges {...badgesProps} compact={true} />
               </div>
@@ -302,13 +302,13 @@ export const TaskItem = ({
                   title={task.title}
                   status={task.status}
                   isUnstarted={isUnstarted}
-                  className="text-sm font-medium leading-5 truncate flex-1 min-w-0"
+                  className="min-w-0 flex-1 truncate font-medium text-sm leading-5"
                 />
               </div>
 
               {filterCalDavDescription(task.description) && (
                 <div
-                  className={`text-xs mt-1 line-clamp-1 ${task.status === 'completed' || task.status === 'cancelled' ? 'text-surface-400 dark:text-surface-500' : 'text-surface-500 dark:text-surface-400'}`}
+                  className={`mt-1 line-clamp-1 text-xs ${task.status === 'completed' || task.status === 'cancelled' ? 'text-surface-400 dark:text-surface-500' : 'text-surface-500 dark:text-surface-400'}`}
                 >
                   {filterCalDavDescription(task.description)}
                 </div>
@@ -318,7 +318,7 @@ export const TaskItem = ({
           )}
         </div>
 
-        <ChevronRight className="w-5 h-5 text-surface-300 dark:text-surface-600 group-hover:text-surface-500 dark:group-hover:text-surface-400 transition-colors shrink-0" />
+        <ChevronRight className="h-5 w-5 shrink-0 text-surface-300 transition-colors group-hover:text-surface-500 dark:text-surface-600 dark:group-hover:text-surface-400" />
       </div>
 
       {contextMenu && (

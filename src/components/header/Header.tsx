@@ -222,7 +222,7 @@ export const Header = ({
 
   if (selectedTasks.length > 0) {
     return (
-      <header className="h-13.25 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 px-4 flex items-center">
+      <header className="flex h-13.25 items-center border-surface-200 border-b bg-white px-4 dark:border-surface-700 dark:bg-surface-900">
         <TaskBatchActionsBar
           selectedTasks={selectedTasks}
           onClearSelection={clearSelection}
@@ -233,21 +233,21 @@ export const Header = ({
   }
 
   return (
-    <header className="h-13.25 bg-white dark:bg-surface-900 border-b border-surface-200 dark:border-surface-700 px-4 flex items-center">
-      <div className="flex-1 flex items-center justify-between gap-4">
-        <div className="flex-1 relative max-w-lg">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+    <header className="flex h-13.25 items-center border-surface-200 border-b bg-white px-4 dark:border-surface-700 dark:bg-surface-900">
+      <div className="flex flex-1 items-center justify-between gap-4">
+        <div className="relative max-w-lg flex-1">
+          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
           <ComposedInput
             type="text"
             data-search-input
             placeholder={`Search tasks... (${searchShortcut})`}
             value={searchQuery}
             onChange={(value) => setSearchQueryMutation.mutate(value)}
-            className="w-full pl-9 pr-4 py-2 bg-surface-100 dark:bg-surface-700/60 border border-transparent rounded-lg text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+            className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-4 pl-9 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700/60 dark:text-surface-200 dark:focus:bg-surface-800"
           />
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-2">
           {onSync && (
             <Tooltip
               content={getSyncTooltip(
@@ -270,7 +270,7 @@ export const Header = ({
                 disabled={isSyncing || isOffline || disableSync}
                 className={getSyncButtonClass(isSyncing, isOffline, disableSync, isAnyModalOpen)}
               >
-                <RefreshCw className={`w-5 h-5 shrink-0 ${isSyncing ? 'animate-spin' : ''}`} />
+                <RefreshCw className={`h-5 w-5 shrink-0 ${isSyncing ? 'animate-spin' : ''}`} />
               </button>
             </Tooltip>
           )}
@@ -281,13 +281,13 @@ export const Header = ({
                 ref={viewMenuButtonRef}
                 type="button"
                 onClick={() => setShowViewMenu(!showViewMenu)}
-                className={`flex items-center border border-transparent gap-1.5 px-3 py-2 rounded-lg text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                className={`flex items-center gap-1.5 rounded-lg border border-transparent px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
                   showViewMenu
-                    ? 'bg-surface-200 dark:bg-surface-600 text-surface-700 dark:text-surface-200'
+                    ? 'bg-surface-200 text-surface-700 dark:bg-surface-600 dark:text-surface-200'
                     : `text-surface-600 dark:text-surface-400 ${!isAnyModalOpen ? 'hover:bg-surface-100 dark:hover:bg-surface-700' : ''}`
                 }`}
               >
-                <SlidersHorizontal className="w-4 h-4" />
+                <SlidersHorizontal className="h-4 w-4" />
                 <span>View</span>
               </button>
             </Tooltip>
@@ -299,7 +299,7 @@ export const Header = ({
                 dropdownClassName="z-50 min-w-60"
                 dataAttribute="data-context-menu-content"
               >
-                <div className="px-3 py-2 border-b border-surface-200 dark:border-surface-700">
+                <div className="border-surface-200 border-b px-3 py-2 dark:border-surface-700">
                   <ViewMenuCheckbox
                     label="Show completed"
                     checked={showCompletedTasks}
@@ -312,19 +312,19 @@ export const Header = ({
                   />
                 </div>
 
-                <div className="py-2 space-y-1">
-                  <div className="px-3 pb-1 pt-1 text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                <div className="space-y-1 py-2">
+                  <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
                     Tasks
                   </div>
 
                   <HoverFlyoutGroup>
                     <button
                       type="button"
-                      className="w-full flex items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 dark:text-surface-300 transition-colors outline-hidden hover:bg-surface-100 dark:hover:bg-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                      className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
                     >
                       <span>Sort Direction</span>
                       <div className="flex min-w-0 items-center gap-2">
-                        <span className="truncate text-xs text-surface-500 dark:text-surface-400">
+                        <span className="truncate text-surface-500 text-xs dark:text-surface-400">
                           {sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
                         </span>
                         <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
@@ -332,7 +332,7 @@ export const Header = ({
                     </button>
 
                     <HoverFlyout side="left" minWidthClassName="min-w-52">
-                      <div className="px-3 pb-2 pt-1 text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                      <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
                         Sort Direction
                       </div>
                       <SortDirectionButton sortConfig={sortConfig} onToggle={toggleSortDirection} />
@@ -342,11 +342,11 @@ export const Header = ({
                   <HoverFlyoutGroup>
                     <button
                       type="button"
-                      className="w-full flex items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 dark:text-surface-300 transition-colors outline-hidden hover:bg-surface-100 dark:hover:bg-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                      className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
                     >
                       <span>Sort By</span>
                       <div className="flex min-w-0 items-center gap-2">
-                        <span className="truncate text-xs text-surface-500 dark:text-surface-400">
+                        <span className="truncate text-surface-500 text-xs dark:text-surface-400">
                           {SORT_OPTIONS.find((option) => option.value === sortConfig.mode)?.label}
                         </span>
                         <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
@@ -354,7 +354,7 @@ export const Header = ({
                     </button>
 
                     <HoverFlyout side="left" minWidthClassName="min-w-52">
-                      <div className="px-3 pb-2 pt-1 text-xs font-medium text-surface-500 dark:text-surface-400 uppercase tracking-wider">
+                      <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
                         Sort By
                       </div>
                       <div className="space-y-1">
@@ -377,9 +377,9 @@ export const Header = ({
           <button
             type="button"
             onClick={handleNewTask}
-            className={`flex items-center gap-2 px-4 py-1.5 font-medium rounded-lg border border-transparent text-sm transition-colors bg-primary-500 text-primary-contrast ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
+            className={`flex items-center gap-2 rounded-lg border border-transparent bg-primary-500 px-4 py-1.5 font-medium text-primary-contrast text-sm transition-colors ${!isAnyModalOpen ? 'hover:bg-primary-600' : ''} shadow-xs outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset`}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="h-4 w-4" />
             New Task
           </button>
         </div>

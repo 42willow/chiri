@@ -19,16 +19,16 @@ export const ConnectionSuccessBanner = ({
   notice,
 }: ConnectionSuccessBannerProps) => (
   <div className="space-y-2">
-    <div className="p-3 text-sm text-semantic-success bg-semantic-success/10 border border-semantic-success/30 rounded-lg">
+    <div className="rounded-lg border border-semantic-success/30 bg-semantic-success/10 p-3 text-semantic-success text-sm">
       <div className="font-medium">Connection verified!</div>
       {calendarCount > 0 && (
-        <div className="text-xs mt-0.5">
+        <div className="mt-0.5 text-xs">
           Found {calendarCount} {pluralize(calendarCount, 'calendar')}.
         </div>
       )}
 
       {pushSupportedCount > 0 && (
-        <div className="mt-2 flex items-center gap-1.5 text-xs font-medium">
+        <div className="mt-2 flex items-center gap-1.5 font-medium text-xs">
           <Zap className="size-3 fill-current" />
           WebDAV Push supported — real-time sync available
         </div>

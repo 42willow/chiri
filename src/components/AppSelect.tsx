@@ -41,7 +41,7 @@ export const AppSelect = ({ className = '', children, onMouseDown, ...props }: A
   return (
     <div className={`relative ${isFullWidth ? 'block w-full' : 'inline-flex items-center'}`}>
       <select
-        className={`appearance-none px-3 py-0.5 pr-7 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 rounded-md ${sanitizedClassName}`}
+        className={`appearance-none rounded-md px-3 py-0.5 pr-7 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 ${sanitizedClassName}`}
         onMouseDown={handleMouseDown}
         {...props}
       >
@@ -49,7 +49,7 @@ export const AppSelect = ({ className = '', children, onMouseDown, ...props }: A
       </select>
       <ChevronDown
         size={14}
-        className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-surface-500 dark:text-surface-400"
+        className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-surface-500 dark:text-surface-400"
       />
     </div>
   );

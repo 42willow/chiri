@@ -116,12 +116,12 @@ export const TaskEditorSubtasks = ({
     <div>
       <div
         id="subtasks-label"
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <CheckCircle2 className="w-4 h-4" />
+        <CheckCircle2 className="h-4 w-4" />
         Subtasks
         {childCount > 0 && (
-          <span className="text-xs bg-surface-100 dark:bg-surface-800 text-surface-500 dark:text-surface-400 rounded-full px-1.5 py-0.5 font-normal tabular-nums">
+          <span className="rounded-full bg-surface-100 px-1.5 py-0.5 font-normal text-surface-500 text-xs tabular-nums dark:bg-surface-800 dark:text-surface-400">
             {childCount}
           </span>
         )}
@@ -129,13 +129,13 @@ export const TaskEditorSubtasks = ({
 
       {/* biome-ignore lint/a11y/useSemanticElements: fieldset would change semantic structure; div with role="group" is appropriate here */}
       <div
-        className="rounded-lg border overflow-hidden border-surface-200 dark:border-surface-700"
+        className="overflow-hidden rounded-lg border border-surface-200 dark:border-surface-700"
         role="group"
         aria-labelledby="subtasks-label"
       >
         {childTasks.length > 0 && (
-          <div className="p-1 overflow-x-auto">
-            <div className="min-w-max w-full">
+          <div className="overflow-x-auto p-1">
+            <div className="w-full min-w-max">
               <DndContext
                 sensors={subtaskSensors}
                 collisionDetection={closestCenter}
@@ -169,7 +169,7 @@ export const TaskEditorSubtasks = ({
                   {activeDragSubtask ? (
                     <div className="relative">
                       {targetSubtaskIndent !== subtaskOriginalIndentRef.current && (
-                        <div className="absolute -top-6 left-2 px-2 py-0.5 bg-primary-500 text-primary-contrast text-xs rounded-sm shadow-sm whitespace-nowrap">
+                        <div className="absolute -top-6 left-2 whitespace-nowrap rounded-sm bg-primary-500 px-2 py-0.5 text-primary-contrast text-xs shadow-sm">
                           {targetSubtaskIndent > subtaskOriginalIndentRef.current
                             ? `→ Nest in ${truncateName(targetSubtaskParentName || 'parent')}`
                             : targetSubtaskIndent === 1
@@ -205,10 +205,10 @@ export const TaskEditorSubtasks = ({
         ) : showAddSubtask ? (
           <div
             className={`flex items-center gap-2 py-2 pr-3 pl-3 ${
-              childTasks.length > 0 ? 'border-t border-surface-200 dark:border-surface-700' : ''
+              childTasks.length > 0 ? 'border-surface-200 border-t dark:border-surface-700' : ''
             }`}
           >
-            <div className="w-4 h-4 rounded-sm border border-dashed border-surface-300 dark:border-surface-600 shrink-0" />
+            <div className="h-4 w-4 shrink-0 rounded-sm border border-surface-300 border-dashed dark:border-surface-600" />
             <input
               // biome-ignore lint/a11y/noAutofocus: intentional — user just clicked "Add subtask"
               autoFocus
@@ -218,18 +218,18 @@ export const TaskEditorSubtasks = ({
               onKeyDown={handleSubtaskKeyDown}
               onBlur={handleSubtaskBlur}
               placeholder="New subtask..."
-              className="flex-1 text-sm bg-transparent outline-hidden text-surface-700 dark:text-surface-300 placeholder:text-surface-400 dark:placeholder:text-surface-500"
+              className="flex-1 bg-transparent text-sm text-surface-700 outline-hidden placeholder:text-surface-400 dark:text-surface-300 dark:placeholder:text-surface-500"
             />
           </div>
         ) : !readOnly ? (
           <button
             type="button"
             onClick={() => setShowAddSubtask(true)}
-            className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-surface-400 dark:text-surface-500 hover:text-surface-600 dark:hover:text-surface-400 hover:bg-surface-50 dark:hover:bg-surface-800/50 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 ${
-              childTasks.length > 0 ? 'border-t border-surface-200 dark:border-surface-700' : ''
+            className={`flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-400 outline-hidden transition-colors hover:bg-surface-50 hover:text-surface-600 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-500 dark:hover:bg-surface-800/50 dark:hover:text-surface-400 ${
+              childTasks.length > 0 ? 'border-surface-200 border-t dark:border-surface-700' : ''
             }`}
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="h-4 w-4" />
             Add subtask
           </button>
         ) : null}

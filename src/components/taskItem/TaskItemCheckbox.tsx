@@ -81,19 +81,19 @@ export const TaskItemCheckbox = ({
       aria-pressed={selectionMode ? selected : undefined}
     >
       {selectionMode && selected && (
-        <Check className="w-4 h-4 text-white dark:text-surface-900" strokeWidth={3} />
+        <Check className="h-4 w-4 text-white dark:text-surface-900" strokeWidth={3} />
       )}
       {!selectionMode && isCompleted && (
         <Check
-          className={`w-4 h-4 ${!useAccentColor ? 'text-surface-900' : ''}`}
+          className={`h-4 w-4 ${!useAccentColor ? 'text-surface-900' : ''}`}
           style={useAccentColor ? { color: checkmarkColor } : undefined}
           strokeWidth={3}
         />
       )}
       {!selectionMode && isCancelled && (
-        <X className="w-4 h-4 text-primary-contrast" strokeWidth={3} />
+        <X className="h-4 w-4 text-primary-contrast" strokeWidth={3} />
       )}
-      {!selectionMode && isInProcess && <Loader className="w-4 h-4 dark:text-primary-contrast" />}
+      {!selectionMode && isInProcess && <Loader className="h-4 w-4 dark:text-primary-contrast" />}
     </button>
   );
 };

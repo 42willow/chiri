@@ -31,9 +31,9 @@ export const AdvancedSection = ({
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex items-center gap-1 text-xs text-surface-500 dark:text-surface-400 hover:text-surface-700 dark:hover:text-surface-200 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary-500 rounded"
+        className="flex items-center gap-1 rounded text-surface-500 text-xs outline-none transition-colors hover:text-surface-700 focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-400 dark:hover:text-surface-200"
       >
-        <ChevronDown className={`w-3.5 h-3.5 transition-transform ${open ? '' : '-rotate-90'}`} />
+        <ChevronDown className={`h-3.5 w-3.5 transition-transform ${open ? '' : '-rotate-90'}`} />
         Advanced
       </button>
       {open && (
@@ -41,7 +41,7 @@ export const AdvancedSection = ({
           <div>
             <label
               htmlFor="principal-url"
-              className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+              className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
             >
               Principal URL
             </label>
@@ -51,17 +51,17 @@ export const AdvancedSection = ({
               value={principalUrl}
               onChange={onPrincipalUrlChange}
               placeholder="https://caldav.example.com/principals/user/"
-              className="w-full px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+              className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
-            <p className="mt-1.5 text-xs flex flex-row text-surface-500 dark:text-surface-400">
-              <Info className="inline w-3.5 h-3.5 mr-1 shrink-0 text-surface-400" />
+            <p className="mt-1.5 flex flex-row text-surface-500 text-xs dark:text-surface-400">
+              <Info className="mr-1 inline h-3.5 w-3.5 shrink-0 text-surface-400" />
               Overrides the auto-discovered principal URL.
             </p>
           </div>
           <div>
             <label
               htmlFor="calendar-home-url"
-              className="block text-sm font-medium text-surface-700 dark:text-surface-300 mb-1"
+              className="mb-1 block font-medium text-sm text-surface-700 dark:text-surface-300"
             >
               Calendar Home URL
             </label>
@@ -71,10 +71,10 @@ export const AdvancedSection = ({
               value={calendarHomeUrl}
               onChange={onCalendarHomeUrlChange}
               placeholder="https://caldav.example.com/calendars/user/"
-              className="w-full px-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+              className="w-full rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
-            <p className="mt-1.5 text-xs flex flex-row text-surface-500 dark:text-surface-400">
-              <Info className="inline w-3.5 h-3.5 mr-1 shrink-0 text-surface-400" />
+            <p className="mt-1.5 flex flex-row text-surface-500 text-xs dark:text-surface-400">
+              <Info className="mr-1 inline h-3.5 w-3.5 shrink-0 text-surface-400" />
               Uses calendar home URLs directly, bypassing auto-discovery.
             </p>
           </div>

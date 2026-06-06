@@ -59,17 +59,17 @@ export const SidebarCalendarContextMenu = ({
               });
             }}
             disabled={isSyncing}
-            className={`w-full flex items-center gap-2 px-3 py-2 text-sm transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+            className={`flex w-full items-center gap-2 px-3 py-2 text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
               isSyncing
-                ? 'text-surface-400 dark:text-surface-500 cursor-not-allowed'
-                : 'text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700'
+                ? 'cursor-not-allowed text-surface-400 dark:text-surface-500'
+                : 'text-surface-700 hover:bg-surface-100 dark:text-surface-300 dark:hover:bg-surface-700'
             }`}
           >
-            <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`h-4 w-4 ${isSyncing ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Syncing...' : 'Sync'}
           </button>
 
-          <div className="border-t border-surface-200 dark:border-surface-700" />
+          <div className="border-surface-200 border-t dark:border-surface-700" />
         </>
       )}
 
@@ -81,13 +81,13 @@ export const SidebarCalendarContextMenu = ({
           }
           onClose();
         }}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
       >
-        <Edit2 className="w-4 h-4" />
+        <Edit2 className="h-4 w-4" />
         Edit Calendar
       </button>
 
-      <div className="border-t border-surface-200 dark:border-surface-700" />
+      <div className="border-surface-200 border-t dark:border-surface-700" />
 
       <button
         type="button"
@@ -95,13 +95,13 @@ export const SidebarCalendarContextMenu = ({
           onExportCalendar(calendarId);
           onClose();
         }}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-surface-700 dark:text-surface-300 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+        className="flex w-full items-center gap-2 px-3 py-2 text-sm text-surface-700 outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
       >
-        <Share2 className="w-4 h-4" />
+        <Share2 className="h-4 w-4" />
         Export Tasks
       </button>
 
-      <div className="border-t border-surface-200 dark:border-surface-700" />
+      <div className="border-surface-200 border-t dark:border-surface-700" />
 
       <button
         type="button"
@@ -111,9 +111,9 @@ export const SidebarCalendarContextMenu = ({
             await onDeleteCalendar(calendarId, accountId);
           }
         }}
-        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-semantic-error hover:bg-semantic-error/15 outline-hidden focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
+        className="flex w-full items-center gap-2 px-3 py-2 text-semantic-error text-sm outline-hidden hover:bg-semantic-error/15 focus-visible:ring-2 focus-visible:ring-semantic-error focus-visible:ring-inset"
       >
-        <Trash2 className="w-4 h-4" />
+        <Trash2 className="h-4 w-4" />
         Delete
       </button>
     </>

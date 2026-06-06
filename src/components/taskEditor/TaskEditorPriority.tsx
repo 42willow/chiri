@@ -19,9 +19,9 @@ export const TaskEditorPriority = ({ task, readOnly = false }: PriorityProps) =>
     <div>
       <div
         id="priority-label"
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <Flag className="w-4 h-4" />
+        <Flag className="h-4 w-4" />
         Priority
       </div>
       {/* biome-ignore lint/a11y/useSemanticElements: fieldset would change semantic structure; div with role="group" is appropriate here */}
@@ -32,13 +32,11 @@ export const TaskEditorPriority = ({ task, readOnly = false }: PriorityProps) =>
             key={p.value}
             onClick={() => handlePriorityChange(p.value)}
             disabled={readOnly}
-            className={`
-              flex-1 px-3 py-2 text-sm font-medium rounded-lg border transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500
-              ${
-                task.priority === p.value
-                  ? `${p.borderColor} bg-surface-200 dark:bg-surface-700 text-surface-900 dark:text-surface-100`
-                  : `border-surface-200 dark:border-surface-700 text-surface-600 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`
-              }
+            className={`flex-1 rounded-lg border px-3 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+              task.priority === p.value
+                ? `${p.borderColor} bg-surface-200 text-surface-900 dark:bg-surface-700 dark:text-surface-100`
+                : `border-surface-200 text-surface-600 dark:border-surface-700 dark:text-surface-400 ${readOnly ? '' : 'hover:border-surface-300 hover:bg-surface-50 dark:hover:bg-surface-800'}`
+            }
               ${readOnly ? 'cursor-not-allowed' : ''}
             `}
           >

@@ -288,7 +288,7 @@ export const Tooltip = ({
             id={tooltipId}
             ref={tooltipRef}
             role="tooltip"
-            className={`fixed z-100 px-2 py-1 text-xs font-medium text-white bg-surface-900 dark:bg-surface-700 rounded-sm shadow-lg pointer-events-none ${isVisible ? 'tooltip-anim animate-tooltip-in' : 'invisible'} ${className}`}
+            className={`pointer-events-none fixed z-100 rounded-sm bg-surface-900 px-2 py-1 font-medium text-white text-xs shadow-lg dark:bg-surface-700 ${isVisible ? 'tooltip-anim animate-tooltip-in' : 'invisible'} ${className}`}
             style={
               {
                 left: coords.x,
@@ -300,14 +300,14 @@ export const Tooltip = ({
           >
             {content}
             <div
-              className={`absolute w-2 h-2 bg-surface-900 dark:bg-surface-700 rotate-45 ${
+              className={`absolute h-2 w-2 rotate-45 bg-surface-900 dark:bg-surface-700 ${
                 position === 'top'
                   ? 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2'
                   : position === 'bottom'
                     ? 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2'
                     : position === 'left'
-                      ? 'right-0 top-1/2 translate-x-1/2 -translate-y-1/2'
-                      : 'left-0 top-1/2 -translate-x-1/2 -translate-y-1/2'
+                      ? 'top-1/2 right-0 translate-x-1/2 -translate-y-1/2'
+                      : 'top-1/2 left-0 -translate-x-1/2 -translate-y-1/2'
               }`}
             />
           </div>,

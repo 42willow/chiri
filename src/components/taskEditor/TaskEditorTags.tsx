@@ -28,9 +28,9 @@ export const TaskEditorTags = ({
     <div>
       <div
         id="tag-label"
-        className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+        className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
       >
-        <TagIcon className="w-4 h-4" />
+        <TagIcon className="h-4 w-4" />
         Tags
       </div>
       {/* biome-ignore lint/a11y/useSemanticElements: fieldset would change semantic structure; div with role="group" is appropriate here */}
@@ -45,7 +45,7 @@ export const TaskEditorTags = ({
           return (
             <span
               key={tag.id}
-              className={`inline-flex h-6.5 box-border items-center gap-1.5 pl-2 pr-1 rounded-sm border text-xs font-medium leading-none group ${
+              className={`group box-border inline-flex h-6.5 items-center gap-1.5 rounded-sm border pr-1 pl-2 font-medium text-xs leading-none ${
                 readOnly ? 'cursor-not-allowed' : ''
               }`}
               style={{
@@ -57,16 +57,16 @@ export const TaskEditorTags = ({
               {tag.emoji ? (
                 <span className="text-xs leading-none">{tag.emoji}</span>
               ) : (
-                <Icon className="w-3 h-3" />
+                <Icon className="h-3 w-3" />
               )}
               {tag.name}
               {!readOnly && (
                 <button
                   type="button"
                   onClick={() => onRemoveTag(tag.id)}
-                  className="p-0.5 rounded-sm hover:bg-black/10 dark:hover:bg-white/10 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                  className="rounded-sm p-0.5 outline-hidden transition-colors hover:bg-black/10 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-white/10"
                 >
-                  <X className="w-3 h-3" />
+                  <X className="h-3 w-3" />
                 </button>
               )}
             </span>
@@ -74,7 +74,7 @@ export const TaskEditorTags = ({
         })}
 
         {readOnly && taskTags.length === 0 && (
-          <span className="text-sm text-surface-400 dark:text-surface-500 cursor-not-allowed">
+          <span className="cursor-not-allowed text-sm text-surface-400 dark:text-surface-500">
             No tags
           </span>
         )}
@@ -83,9 +83,9 @@ export const TaskEditorTags = ({
           <button
             type="button"
             onClick={onOpenTagsModal}
-            className="inline-flex h-6.5 box-border items-center gap-1 px-2 text-xs leading-none bg-surface-50 dark:bg-surface-800 text-surface-500 dark:text-surface-400 border border-surface-200 dark:border-surface-600 rounded-sm hover:border-surface-400 dark:hover:border-surface-500 transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+            className="box-border inline-flex h-6.5 items-center gap-1 rounded-sm border border-surface-200 bg-surface-50 px-2 text-surface-500 text-xs leading-none outline-hidden transition-colors hover:border-surface-400 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:border-surface-600 dark:bg-surface-800 dark:text-surface-400 dark:hover:border-surface-500"
           >
-            {taskTags.length > 0 ? <Pencil className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+            {taskTags.length > 0 ? <Pencil className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
             {taskTags.length > 0 ? 'Edit tags' : 'Add tag'}
           </button>
         )}

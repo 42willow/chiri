@@ -23,7 +23,7 @@ export const TaskDefaultsReminderPickerModal = ({
       className="max-w-xs"
       contentPadding={false}
     >
-      <div className="py-2 max-h-112 overflow-y-auto">
+      <div className="max-h-112 overflow-y-auto py-2">
         {available.map((opt) => (
           <button
             key={opt.value}
@@ -32,13 +32,13 @@ export const TaskDefaultsReminderPickerModal = ({
               onSelect(opt.value);
               onClose();
             }}
-            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm transition-colors outline-hidden focus-visible:bg-surface-50 dark:focus-visible:bg-surface-700 ${
+            className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm outline-hidden transition-colors focus-visible:bg-surface-50 dark:focus-visible:bg-surface-700 ${
               opt.value === editing
-                ? 'bg-surface-100 dark:bg-surface-700 text-surface-800 dark:text-surface-200 font-medium'
-                : 'text-surface-700 dark:text-surface-300 hover:bg-surface-50 dark:hover:bg-surface-700'
+                ? 'bg-surface-100 font-medium text-surface-800 dark:bg-surface-700 dark:text-surface-200'
+                : 'text-surface-700 hover:bg-surface-50 dark:text-surface-300 dark:hover:bg-surface-700'
             }`}
           >
-            <BellRing className="w-4 h-4 text-surface-400 shrink-0" />
+            <BellRing className="h-4 w-4 shrink-0 text-surface-400" />
             {opt.label}
           </button>
         ))}

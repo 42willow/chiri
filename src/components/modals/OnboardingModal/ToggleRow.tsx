@@ -29,10 +29,10 @@ export const ToggleRow = ({
         {icon}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block text-sm font-medium text-surface-900 dark:text-surface-100">
+        <span className="block font-medium text-sm text-surface-900 dark:text-surface-100">
           {label}
         </span>
-        <span className="mt-0.5 block text-xs leading-4 text-surface-500 dark:text-surface-400">
+        <span className="mt-0.5 block text-surface-500 text-xs leading-4 dark:text-surface-400">
           {description}
         </span>
       </span>

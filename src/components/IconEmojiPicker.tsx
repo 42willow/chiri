@@ -46,14 +46,14 @@ export const IconEmojiPicker = ({
       dropdownClassName="z-80 w-88"
       dataAttribute="data-icon-emoji-picker-dropdown"
     >
-      <div className="flex border-b border-surface-200 dark:border-surface-700">
+      <div className="flex border-surface-200 border-b dark:border-surface-700">
         <button
           type="button"
           onClick={() => setActiveTab('icon')}
-          className={`flex-1 px-4 py-2 text-sm font-medium transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`flex-1 px-4 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
             activeTab === 'icon'
-              ? 'text-primary-500 border-b-2 border-primary-500'
-              : 'text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-200'
+              ? 'border-primary-500 border-b-2 text-primary-500'
+              : 'text-surface-600 hover:text-surface-800 dark:text-surface-400 dark:hover:text-surface-200'
           }`}
         >
           Icon
@@ -61,10 +61,10 @@ export const IconEmojiPicker = ({
         <button
           type="button"
           onClick={() => setActiveTab('emoji')}
-          className={`flex-1 px-4 py-2 text-sm font-medium transition-colors outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+          className={`flex-1 px-4 py-2 font-medium text-sm outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
             activeTab === 'emoji'
-              ? 'text-primary-500 border-b-2 border-primary-500'
-              : 'text-surface-600 dark:text-surface-400 hover:text-surface-800 dark:hover:text-surface-200'
+              ? 'border-primary-500 border-b-2 text-primary-500'
+              : 'text-surface-600 hover:text-surface-800 dark:text-surface-400 dark:hover:text-surface-200'
           }`}
         >
           Emoji
@@ -75,24 +75,24 @@ export const IconEmojiPicker = ({
         <div className={activeTab === 'icon' ? '' : 'hidden'}>
           <div className="px-2 pt-2">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-surface-400 pointer-events-none" />
+              <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
               <input
                 type="text"
                 placeholder="Search..."
                 value={iconSearch}
                 onChange={(e) => setIconSearch(e.target.value)}
-                className="w-full appearance-none rounded-md bg-surface-100 dark:bg-surface-700 pl-8 pr-2.5 py-2 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
+                className="w-full appearance-none rounded-md bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 placeholder:text-surface-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-surface-700 dark:text-surface-200"
               />
             </div>
           </div>
           <div className="h-71.5 overflow-y-auto">
             {filteredIcons.length === 0 ? (
-              <div className="flex items-center justify-center h-full text-surface-400 dark:text-surface-500 text-sm">
+              <div className="flex h-full items-center justify-center text-sm text-surface-400 dark:text-surface-500">
                 No icons found
               </div>
             ) : (
               <>
-                <div className="px-3 pt-3 pb-1.5 font-medium text-surface-600 dark:text-surface-400 text-xs">
+                <div className="px-3 pt-3 pb-1.5 font-medium text-surface-600 text-xs dark:text-surface-400">
                   All
                 </div>
                 <div className="grid grid-cols-9 px-2 pb-1.5">
@@ -105,9 +105,9 @@ export const IconEmojiPicker = ({
                         onEmojiChange(''); // Clear emoji when selecting icon
                         setIsOpen(false);
                       }}
-                      className="w-full h-8 rounded-lg flex items-center justify-center transition-colors cursor-pointer text-surface-600 dark:text-surface-400 hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                      className="flex h-8 w-full cursor-pointer items-center justify-center rounded-lg text-surface-600 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-400 dark:hover:bg-surface-700"
                     >
-                      <Icon className="w-4 h-4" />
+                      <Icon className="h-4 w-4" />
                     </button>
                   ))}
                 </div>
@@ -127,19 +127,19 @@ export const IconEmojiPicker = ({
           >
             <div className="px-2 pt-2">
               <div className="relative">
-                <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-surface-400 pointer-events-none" />
+                <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
                 <EmojiPicker.Search
                   placeholder="Search..."
-                  className="w-full appearance-none rounded-md bg-surface-100 dark:bg-surface-700 pl-8 pr-2.5 py-2 text-sm text-surface-800 dark:text-surface-200 placeholder:text-surface-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500"
+                  className="w-full appearance-none rounded-md bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 placeholder:text-surface-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-surface-700 dark:text-surface-200"
                 />
               </div>
             </div>
 
-            <EmojiPicker.Viewport className="outline-hidden h-63">
-              <EmojiPicker.Loading className="absolute inset-0 flex items-center justify-center text-surface-400 text-sm dark:text-surface-500">
+            <EmojiPicker.Viewport className="h-63 outline-hidden">
+              <EmojiPicker.Loading className="absolute inset-0 flex items-center justify-center text-sm text-surface-400 dark:text-surface-500">
                 Loading…
               </EmojiPicker.Loading>
-              <EmojiPicker.Empty className="absolute inset-0 flex items-center justify-center text-surface-400 text-sm dark:text-surface-500">
+              <EmojiPicker.Empty className="absolute inset-0 flex items-center justify-center text-sm text-surface-400 dark:text-surface-500">
                 No emoji found
               </EmojiPicker.Empty>
               <EmojiPicker.List
@@ -147,7 +147,7 @@ export const IconEmojiPicker = ({
                 components={{
                   CategoryHeader: ({ category, ...props }) => (
                     <div
-                      className="bg-white dark:bg-surface-800 px-3 pt-3 pb-1.5 font-medium text-surface-600 dark:text-surface-400 text-xs sticky top-0"
+                      className="sticky top-0 bg-white px-3 pt-3 pb-1.5 font-medium text-surface-600 text-xs dark:bg-surface-800 dark:text-surface-400"
                       {...props}
                     >
                       {category.label}
@@ -161,7 +161,7 @@ export const IconEmojiPicker = ({
                   Emoji: ({ emoji, ...props }) => (
                     <button
                       type="button"
-                      className="flex flex-1 max-w-1/9 h-8 items-center justify-center rounded-lg text-lg hover:bg-surface-100 dark:hover:bg-surface-700 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset"
+                      className="flex h-8 max-w-1/9 flex-1 items-center justify-center rounded-lg text-lg outline-hidden hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:hover:bg-surface-700"
                       {...props}
                     >
                       {emoji.emoji}
@@ -171,18 +171,18 @@ export const IconEmojiPicker = ({
               />
             </EmojiPicker.Viewport>
 
-            <div className="flex items-center gap-2 border-t border-surface-200 dark:border-surface-700 px-3 py-2 min-h-8.5">
+            <div className="flex min-h-8.5 items-center gap-2 border-surface-200 border-t px-3 py-2 dark:border-surface-700">
               <EmojiPicker.ActiveEmoji>
                 {({ emoji }) =>
                   emoji ? (
                     <>
                       <span className="text-base leading-none">{emoji.emoji}</span>
-                      <span className="text-xs text-surface-600 dark:text-surface-400 truncate">
+                      <span className="truncate text-surface-600 text-xs dark:text-surface-400">
                         {emoji.label}
                       </span>
                     </>
                   ) : (
-                    <span className="text-xs text-surface-400 dark:text-surface-500">
+                    <span className="text-surface-400 text-xs dark:text-surface-500">
                       Hover to preview…
                     </span>
                   )
@@ -202,17 +202,17 @@ export const IconEmojiPicker = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         aria-expanded={isOpen}
-        className={`w-10 h-10 rounded-lg border flex items-center justify-center text-surface-600 dark:text-surface-300 transition-colors cursor-pointer outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 ${
+        className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border text-surface-600 outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 dark:text-surface-300 ${
           isOpen
-            ? 'border-primary-500 bg-primary-500/10 dark:bg-primary-500/15 ring-2 ring-primary-500/30'
-            : 'border-surface-200 dark:border-surface-600 bg-surface-50 dark:bg-surface-700 hover:border-surface-300 dark:hover:border-surface-500'
+            ? 'border-primary-500 bg-primary-500/10 ring-2 ring-primary-500/30 dark:bg-primary-500/15'
+            : 'border-surface-200 bg-surface-50 hover:border-surface-300 dark:border-surface-600 dark:bg-surface-700 dark:hover:border-surface-500'
         }`}
         style={color ? { color } : undefined}
       >
         {emojiValue ? (
           <span className="text-lg leading-none">{emojiValue}</span>
         ) : (
-          <SelectedIcon className="w-5 h-5" />
+          <SelectedIcon className="h-5 w-5" />
         )}
       </button>
 

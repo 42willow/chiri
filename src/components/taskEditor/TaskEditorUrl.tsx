@@ -36,28 +36,28 @@ export const TaskEditorUrl = ({ task, readOnly = false }: UrlProps) => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <label
           htmlFor={readOnly ? undefined : 'task-url'}
-          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400"
+          className="flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
         >
-          <Link className="w-4 h-4" />
+          <Link className="h-4 w-4" />
           URL
         </label>
         {pendingUrl && (
           <button
             type="button"
             onClick={() => openUrl(pendingUrl)}
-            className="flex items-center gap-1 text-xs text-primary-500 hover:text-primary-600 dark:hover:text-primary-300 outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 rounded-sm transition-colors"
+            className="flex items-center gap-1 rounded-sm text-primary-500 text-xs outline-hidden transition-colors hover:text-primary-600 focus-visible:ring-2 focus-visible:ring-primary-500 dark:hover:text-primary-300"
             aria-label="Open URL in browser"
           >
-            <ExternalLink className="w-3.5 h-3.5" />
+            <ExternalLink className="h-3.5 w-3.5" />
             Open
           </button>
         )}
       </div>
       {readOnly ? (
-        <div className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg whitespace-pre-wrap wrap-break-word cursor-not-allowed selectable">
+        <div className="wrap-break-word selectable w-full cursor-not-allowed whitespace-pre-wrap rounded-lg border border-transparent bg-surface-100 px-3 py-2.5 text-sm text-surface-700 dark:bg-surface-800 dark:text-surface-300">
           {pendingUrl || <span className="text-surface-400 dark:text-surface-500">No URL</span>}
         </div>
       ) : (
@@ -68,7 +68,7 @@ export const TaskEditorUrl = ({ task, readOnly = false }: UrlProps) => {
           onChange={handleUrlChange}
           placeholder="https://example.com"
           rows={1}
-          className="w-full px-3 py-2.5 text-sm text-surface-700 dark:text-surface-300 bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors resize-none overflow-hidden max-h-24"
+          className="max-h-24 w-full resize-none overflow-hidden rounded-lg border border-transparent bg-surface-100 px-3 py-2.5 text-sm text-surface-700 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:text-surface-300 dark:focus:bg-surface-800"
         />
       )}
     </div>

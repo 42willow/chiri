@@ -157,19 +157,19 @@ export const BatchTaskTagsModal = ({
       >
         <div className="p-4 pb-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-400" />
+            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-surface-400" />
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search tags, or type to create..."
-              className="w-full pl-9 pr-3 py-2 text-sm text-surface-800 dark:text-surface-200 bg-surface-100 dark:bg-surface-700 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors"
+              className="w-full rounded-lg border border-transparent bg-surface-100 py-2 pr-3 pl-9 text-sm text-surface-800 transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
             />
           </div>
         </div>
 
-        <div className="px-2 pt-1 pb-4 max-h-80 overflow-y-auto">
+        <div className="max-h-80 overflow-y-auto px-2 pt-1 pb-4">
           <div className="space-y-1">
             {filteredTags.map((tag) => {
               const selectionState = getSelectionState(tag.id);
@@ -189,20 +189,20 @@ export const BatchTaskTagsModal = ({
                         {tag.emoji}
                       </span>
                     ) : (
-                      <Icon className="w-4 h-4" style={{ color: tagColor }} />
+                      <Icon className="h-4 w-4" style={{ color: tagColor }} />
                     )}
-                    <span className="text-surface-700 dark:text-surface-300 flex-1 text-left">
+                    <span className="flex-1 text-left text-surface-700 dark:text-surface-300">
                       {tag.name}
                     </span>
                     <span
-                      className={`w-5 h-5 rounded-sm border flex items-center justify-center shrink-0 ${
+                      className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-sm border ${
                         selectionState === 'none'
                           ? 'border-surface-300 dark:border-surface-600'
                           : 'border-primary-500 bg-primary-500 text-primary-contrast'
                       }`}
                     >
-                      {selectionState === 'all' && <Check className="w-3.5 h-3.5" />}
-                      {selectionState === 'some' && <Minus className="w-3.5 h-3.5" />}
+                      {selectionState === 'all' && <Check className="h-3.5 w-3.5" />}
+                      {selectionState === 'some' && <Minus className="h-3.5 w-3.5" />}
                     </span>
                   </span>
                 </button>
@@ -224,7 +224,7 @@ export const BatchTaskTagsModal = ({
             {(canCreateTag || tags.length === 0) && (
               <button type="button" onClick={openCreateTagModal} className={tagRowButtonClass}>
                 <span className={`${tagRowContentClass} text-surface-700 dark:text-surface-300`}>
-                  <Plus className="w-4 h-4 text-surface-400 shrink-0" />
+                  <Plus className="h-4 w-4 shrink-0 text-surface-400" />
                   {trimmedSearchQuery ? `Create tag "${trimmedSearchQuery}"` : 'Create a new tag'}
                 </span>
               </button>

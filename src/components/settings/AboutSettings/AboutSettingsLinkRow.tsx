@@ -25,23 +25,23 @@ export const AboutSettingsLinkRow = ({
     type="button"
     onClick={onClick}
     disabled={loading}
-    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-surface-100 dark:hover:bg-surface-700/60 transition-colors group outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary-500 disabled:opacity-60 disabled:cursor-not-allowed"
+    className="group flex w-full items-center gap-3 px-4 py-3 text-left outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset disabled:cursor-not-allowed disabled:opacity-60 dark:hover:bg-surface-700/60"
   >
-    <span className="text-surface-400 dark:text-surface-500 shrink-0">{icon}</span>
+    <span className="shrink-0 text-surface-400 dark:text-surface-500">{icon}</span>
 
-    <div className="flex-1 min-w-0">
+    <div className="min-w-0 flex-1">
       <p className="text-sm text-surface-800 dark:text-surface-200">{label}</p>
       {description && (
-        <p className="text-xs text-surface-500 dark:text-surface-400 mt-0.5">{description}</p>
+        <p className="mt-0.5 text-surface-500 text-xs dark:text-surface-400">{description}</p>
       )}
     </div>
 
     {loading ? (
-      <Loader2 className="w-3.5 h-3.5 text-surface-400 dark:text-surface-500 animate-spin shrink-0" />
+      <Loader2 className="h-3.5 w-3.5 shrink-0 animate-spin text-surface-400 dark:text-surface-500" />
     ) : variant === 'internal' ? (
-      <ChevronRight className="w-5 h-5 text-surface-400 dark:text-surface-500 group-hover:text-surface-600 dark:group-hover:text-surface-300 transition-colors shrink-0" />
+      <ChevronRight className="h-5 w-5 shrink-0 text-surface-400 transition-colors group-hover:text-surface-600 dark:text-surface-500 dark:group-hover:text-surface-300" />
     ) : (
-      <ExternalLink className="w-4 h-4 text-surface-400 dark:text-surface-500 shrink-0" />
+      <ExternalLink className="h-4 w-4 shrink-0 text-surface-400 dark:text-surface-500" />
     )}
   </button>
 );

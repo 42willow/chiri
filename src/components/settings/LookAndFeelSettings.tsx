@@ -12,8 +12,8 @@ import type { TaskListDensity } from '$types/settings';
 import { resolveAccentColor, resolveEffectiveTheme } from '$utils/color';
 
 const DENSITY_OPTIONS: { value: TaskListDensity; label: string; icon: React.ReactNode }[] = [
-  { value: 'comfortable', label: 'Comfortable', icon: <LayoutList className="w-4 h-4" /> },
-  { value: 'compact', label: 'Compact', icon: <AlignJustify className="w-4 h-4" /> },
+  { value: 'comfortable', label: 'Comfortable', icon: <LayoutList className="h-4 w-4" /> },
+  { value: 'compact', label: 'Compact', icon: <AlignJustify className="h-4 w-4" /> },
 ];
 
 const SWITCHER_CLASS =
@@ -131,13 +131,13 @@ export const LookAndFeelSettings = () => {
 
   return (
     <div className="space-y-4">
-      <h3 className="text-base font-semibold text-surface-800 dark:text-surface-200">
+      <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
         Look & feel
       </h3>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
-          <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">Theme</p>
+          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">Theme</p>
           <div className="flex gap-2">
             {THEME_OPTIONS.map((option) => (
               <button
@@ -154,9 +154,9 @@ export const LookAndFeelSettings = () => {
         </div>
       </div>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
-          <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Color scheme
           </p>
           <ColorSchemeSelect
@@ -168,7 +168,7 @@ export const LookAndFeelSettings = () => {
 
           {availableFlavors.length > 1 && (
             <div className="mt-4">
-              <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+              <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
                 Flavor
               </p>
               <ColorSchemeSelect
@@ -181,10 +181,10 @@ export const LookAndFeelSettings = () => {
           )}
         </div>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
+        <div className="border-surface-200 border-t dark:border-surface-700" />
 
         <div className="p-4">
-          <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Accent color
           </p>
 
@@ -203,9 +203,9 @@ export const LookAndFeelSettings = () => {
         </div>
       </div>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <div className="p-4">
-          <p className="text-xs font-medium text-surface-500 dark:text-surface-400 mb-2">
+          <p className="mb-2 font-medium text-surface-500 text-xs dark:text-surface-400">
             Task list density
           </p>
           <div className="flex gap-2">
@@ -225,13 +225,13 @@ export const LookAndFeelSettings = () => {
         </div>
       </div>
 
-      <div className="rounded-lg border border-surface-200 dark:border-surface-700 overflow-hidden bg-white dark:bg-surface-800">
-        <label className="flex items-center justify-between gap-4 p-4 cursor-pointer">
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <label className="flex cursor-pointer items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">
               Use accent color for completed checkboxes
             </p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Completed tasks use your selected accent
             </p>
           </div>
@@ -239,18 +239,18 @@ export const LookAndFeelSettings = () => {
             type="checkbox"
             checked={useAccentColorForCheckboxes}
             onChange={(e) => setUseAccentColorForCheckboxes(e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
 
-        <div className="border-t border-surface-200 dark:border-surface-700" />
+        <div className="border-surface-200 border-t dark:border-surface-700" />
 
-        <label className="flex items-center justify-between gap-4 p-4 cursor-pointer">
+        <label className="flex cursor-pointer items-center justify-between gap-4 p-4">
           <div>
             <p className="text-sm text-surface-700 dark:text-surface-300">
               Show pointer cursor on interactive controls
             </p>
-            <p className="text-xs text-surface-500 dark:text-surface-400">
+            <p className="text-surface-500 text-xs dark:text-surface-400">
               Buttons, links, menus, and toggles use the hand cursor
             </p>
           </div>
@@ -258,7 +258,7 @@ export const LookAndFeelSettings = () => {
             type="checkbox"
             checked={showCursorPointers}
             onChange={(e) => setShowCursorPointers(e.target.checked)}
-            className="rounded-sm border-surface-300 focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 outline-hidden shrink-0"
+            className="shrink-0 rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           />
         </label>
       </div>

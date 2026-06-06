@@ -26,9 +26,9 @@ export const TaskEditorDates = ({
       <div>
         <div
           id="start-date-label"
-          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+          className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
         >
-          <CalendarClock className="w-4 h-4" />
+          <CalendarClock className="h-4 w-4" />
           Start Date
         </div>
         <button
@@ -36,16 +36,16 @@ export const TaskEditorDates = ({
           onClick={onOpenStartDate}
           disabled={readOnly}
           aria-labelledby="start-date-label"
-          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
+          className={`flex w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:focus:bg-surface-800 ${
             readOnly
               ? 'cursor-not-allowed'
               : 'hover:border-surface-300 dark:hover:border-surface-500'
           }`}
         >
           {task.startDate ? (
-            <Calendar className="w-4 h-4 text-surface-400 shrink-0" />
+            <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
           ) : (
-            <CalendarPlus className="w-4 h-4 text-surface-400 shrink-0" />
+            <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
           )}
           <span
             className={
@@ -65,9 +65,9 @@ export const TaskEditorDates = ({
       <div>
         <div
           id="due-date-label"
-          className="flex items-center gap-2 text-sm font-medium text-surface-600 dark:text-surface-400 mb-2"
+          className="mb-2 flex items-center gap-2 font-medium text-sm text-surface-600 dark:text-surface-400"
         >
-          <CalendarFold className="w-4 h-4" />
+          <CalendarFold className="h-4 w-4" />
           Due Date
         </div>
         <button
@@ -75,16 +75,16 @@ export const TaskEditorDates = ({
           onClick={onOpenDueDate}
           disabled={readOnly}
           aria-labelledby="due-date-label"
-          className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-left bg-surface-100 dark:bg-surface-800 border border-transparent rounded-lg focus:outline-hidden focus:border-primary-500 focus:bg-white dark:focus:bg-surface-800 transition-colors ${
+          className={`flex w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-800 dark:focus:bg-surface-800 ${
             readOnly
               ? 'cursor-not-allowed'
               : 'hover:border-surface-300 dark:hover:border-surface-500'
           }`}
         >
           {task.dueDate ? (
-            <Calendar className="w-4 h-4 text-surface-400 shrink-0" />
+            <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
           ) : (
-            <CalendarPlus className="w-4 h-4 text-surface-400 shrink-0" />
+            <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
           )}
           <span
             className={task.dueDate ? 'text-surface-700 dark:text-surface-300' : 'text-surface-400'}
