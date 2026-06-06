@@ -1,0 +1,30 @@
+name: 'Upload Tauri artifact'
+description: 'Upload a Tauri build artifact with Chiri CI defaults.'
+
+inputs:
+  name:
+    description: 'Artifact name.'
+    required: true
+  path:
+    description: 'Artifact path or glob.'
+    required: true
+  retention-days:
+    description: 'Artifact retention in days.'
+    required: false
+    default: '14'
+  compression-level:
+    description: 'Artifact compression level.'
+    required: false
+    default: '0'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Upload artifact
+      uses: actions/upload-artifact@v7
+      with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+        if-no-files-found: error
+        retention-days: ${{ inputs.retention-days }}
+        compression-level: ${{ inputs.compression-level }}

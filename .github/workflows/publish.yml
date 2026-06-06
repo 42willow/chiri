@@ -237,34 +237,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Linux dependencies [Ubuntu]
-        if: startsWith(matrix.platform, 'ubuntu')
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
+      - name: Setup Tauri build
+        uses: ./.github/actions/setup-tauri-build
         with:
-          node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 11.1.2
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
-
-      - name: Cache Rust dependencies
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Install Node dependencies
-        run: pnpm install --frozen-lockfile
+          platform: ${{ matrix.platform }}
+          rust-targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
       - name: Load signing secrets from 1Password
         if: matrix.platform != 'windows-11-arm'

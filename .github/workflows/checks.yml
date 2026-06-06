@@ -23,15 +23,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v25
-
-      - name: Set up Cachix
-        uses: cachix/cachix-action@v17
+      - name: Setup Nix and Cachix
+        uses: ./.github/actions/setup-nix-cachix
         with:
-          name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
+          cache-name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
+          auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skip-push: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
 
       - name: Install dependencies
         run: nix develop -c pnpm install --frozen-lockfile
@@ -51,15 +48,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v25
-
-      - name: Set up Cachix
-        uses: cachix/cachix-action@v17
+      - name: Setup Nix and Cachix
+        uses: ./.github/actions/setup-nix-cachix
         with:
-          name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
+          cache-name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
+          auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skip-push: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
 
       - name: Evaluate flake outputs
         run: nix flake show --all-systems
@@ -130,15 +124,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Nix
-        uses: cachix/install-nix-action@v25
-
-      - name: Set up Cachix
-        uses: cachix/cachix-action@v17
+      - name: Setup Nix and Cachix
+        uses: ./.github/actions/setup-nix-cachix
         with:
-          name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
-          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
-          skipPush: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
+          cache-name: ${{ vars.CACHIX_CACHE_NAME || 'chiri' }}
+          auth-token: ${{ secrets.CACHIX_AUTH_TOKEN }}
+          skip-push: ${{ secrets.CACHIX_AUTH_TOKEN == '' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository) }}
 
       - name: Check Rust formatting
         run: nix develop -c cargo fmt --manifest-path src-tauri/Cargo.toml -- --check

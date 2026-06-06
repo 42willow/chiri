@@ -1,0 +1,29 @@
+name: 'Setup Nix and Cachix'
+description: 'Install Nix and configure the Chiri Cachix cache.'
+
+inputs:
+  cache-name:
+    description: 'Cachix cache name.'
+    required: false
+    default: 'chiri'
+  auth-token:
+    description: 'Cachix auth token.'
+    required: false
+    default: ''
+  skip-push:
+    description: 'Whether Cachix should skip pushing new paths.'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Nix
+      uses: cachix/install-nix-action@v25
+
+    - name: Set up Cachix
+      uses: cachix/cachix-action@v17
+      with:
+        name: ${{ inputs.cache-name }}
+        authToken: ${{ inputs.auth-token }}
+        skipPush: ${{ inputs.skip-push }}

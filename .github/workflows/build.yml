@@ -13,6 +13,8 @@ on:
       - 'src-tauri/**'
       - 'tsconfig*.json'
       - 'vite.config.ts'
+      - '.github/actions/setup-tauri-build/**'
+      - '.github/actions/upload-tauri-artifact/**'
       - '.github/workflows/build.yml'
   push:
     branches:
@@ -29,6 +31,8 @@ on:
       - 'src-tauri/**'
       - 'tsconfig*.json'
       - 'vite.config.ts'
+      - '.github/actions/setup-tauri-build/**'
+      - '.github/actions/upload-tauri-artifact/**'
       - '.github/workflows/build.yml'
 
 permissions:
@@ -79,34 +83,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
-      - name: Install Linux dependencies [Ubuntu]
-        if: startsWith(matrix.platform, 'ubuntu')
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
-
-      - name: Setup Node
-        uses: actions/setup-node@v6
+      - name: Setup Tauri build
+        uses: ./.github/actions/setup-tauri-build
         with:
-          node-version: lts/*
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 11.1.2
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
-
-      - name: Cache Rust dependencies
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: './src-tauri -> target'
-
-      - name: Install Node dependencies
-        run: pnpm install --frozen-lockfile
+          platform: ${{ matrix.platform }}
+          rust-targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin' || '' }}
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -116,55 +97,40 @@ jobs:
 
       - name: Upload macOS artifacts
         if: startsWith(matrix.platform, 'macos')
-        uses: actions/upload-artifact@v7
+        uses: ./.github/actions/upload-tauri-artifact
         with:
           name: Chiri-${{ matrix.artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.dmg
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0
 
       - name: Upload Ubuntu artifacts
         if: startsWith(matrix.platform, 'ubuntu')
-        uses: actions/upload-artifact@v7
+        uses: ./.github/actions/upload-tauri-artifact
         with:
           name: Chiri-${{ matrix.artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.deb
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0
 
       - name: Upload Fedora artifacts
         if: startsWith(matrix.platform, 'ubuntu')
-        uses: actions/upload-artifact@v7
+        uses: ./.github/actions/upload-tauri-artifact
         with:
           name: Chiri-${{ matrix.rpm_artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.rpm
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0
 
       - name: Upload Windows NSIS artifacts
         if: startsWith(matrix.platform, 'windows')
-        uses: actions/upload-artifact@v7
+        uses: ./.github/actions/upload-tauri-artifact
         with:
           name: Chiri-${{ matrix.nsis_artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*-setup.exe
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0
 
       - name: Upload Windows MSI artifacts
         if: startsWith(matrix.platform, 'windows')
-        uses: actions/upload-artifact@v7
+        uses: ./.github/actions/upload-tauri-artifact
         with:
           name: Chiri-${{ matrix.msi_artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.msi
-          if-no-files-found: error
-          retention-days: 14
-          compression-level: 0

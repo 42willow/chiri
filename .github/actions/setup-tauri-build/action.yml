@@ -1,0 +1,49 @@
+name: 'Setup Tauri build'
+description: 'Install the shared toolchain and dependencies for Chiri Tauri builds.'
+
+inputs:
+  platform:
+    description: 'GitHub Actions runner label from the workflow matrix.'
+    required: true
+  rust-targets:
+    description: 'Additional Rust targets to install.'
+    required: false
+    default: ''
+  pnpm-version:
+    description: 'pnpm version to install.'
+    required: false
+    default: '11.1.2'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Linux dependencies [Ubuntu]
+      if: ${{ startsWith(inputs.platform, 'ubuntu') }}
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+    - name: Setup Node
+      uses: actions/setup-node@v6
+      with:
+        node-version: lts/*
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v6
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ inputs.rust-targets }}
+
+    - name: Cache Rust dependencies
+      uses: swatinem/rust-cache@v2
+      with:
+        workspaces: './src-tauri -> target'
+
+    - name: Install Node dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
