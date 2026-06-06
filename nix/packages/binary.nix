@@ -18,7 +18,7 @@
 
   # This tracks signed/notarized release artifacts, not the checkout version.
   # Update the version and per-platform hashes when publishing new artifacts.
-  version ? "0.8.1",
+  version ? "0.9.0",
 }:
 
 let
@@ -28,19 +28,19 @@ let
   platformInfo = {
     "x86_64-linux" = {
       asset = "Chiri_${version}_amd64.deb";
-      hash = "sha256-DvFBj5IevVWLbqyM36HJlvg7EEyIo/g5c9O1x3mMgo8=";
+      hash = "sha256-/m0JMx4xtytIFU2/2EDEjOINSLX3LFkF/TR0/OiPj4c=";
     };
     "aarch64-linux" = {
       asset = "Chiri_${version}_arm64.deb";
-      hash = "sha256-OMNKX69wQ7D/MV/ntOjj9Omn6Iq8WBquWgNo67bwrnU=";
+      hash = "sha256-bKa4U3BqG7xy+nqbYnaPccJzk19L2aoOJHqX1J6fPGo=";
     };
     "x86_64-darwin" = {
       asset = "Chiri_${version}_x64.dmg";
-      hash = "sha256-aXQ80QAEVAFrXlwD16b61U7VZ2c8QXtFk9NAhaa4X38=";
+      hash = "sha256-r+RoizbroIdkZHwVnuT7wXl3dlwuj5r6Rt/EGm5/Mgs=";
     };
     "aarch64-darwin" = {
       asset = "Chiri_${version}_aarch64.dmg";
-      hash = "sha256-8jutJ5vOb4VNNtcv2WzSMMkaHCtPjFFnSsN9/Hz6rAk=";
+      hash = "sha256-q9xcbT546wsHIGRh/AbBrRFGKnVrsf1ttuDZShwPTqc=";
     };
   };
 
