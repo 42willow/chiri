@@ -113,8 +113,6 @@ brew install --cask chiri
 ```
 </details>
 
-<br>
-
 ---
 
 #### From this repo
@@ -239,7 +237,6 @@ environment.systemPackages = [
   }
   ```
 </details>
-<br>
 
 # Support
 If you found Chiri useful, please consider donating! 
