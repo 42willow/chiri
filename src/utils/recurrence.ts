@@ -147,6 +147,11 @@ const formatMonthlyByday = (byday: string): string | null => {
   return ` on the ${ordinal} ${BYDAY_LABEL[day] ?? day}`;
 };
 
+const formatMonthlyBydayDetail = (byday: string): string | null => {
+  const monthlyByday = formatMonthlyByday(byday);
+  return monthlyByday ? monthlyByday.replace(/^ on the /, '') : null;
+};
+
 /**
  * Format the UNTIL date (e.g., "until Jan 1, 2024")
  */
@@ -155,6 +160,68 @@ const formatUntilDate = (until: string, dateFormat?: DateFormat): string => {
   const m = parseInt(until.slice(4, 6), 10) - 1;
   const d = parseInt(until.slice(6, 8), 10);
   return formatDate(new Date(y, m, d), true, dateFormat);
+};
+
+export interface RRuleDisplaySummary {
+  primary: string;
+  short: string;
+  details: string[];
+}
+
+const WEEKDAYS = 'MO,TU,WE,TH,FR';
+
+export const rruleToDisplaySummary = (
+  rruleValue: string,
+  repeatFrom?: number,
+  dateFormat?: DateFormat,
+): RRuleDisplaySummary => {
+  try {
+    const parts = parseRRule(rruleValue);
+    const freq = parts.FREQ ?? '';
+    const interval = parseInt(parts.INTERVAL ?? '1', 10);
+    const count = parts.COUNT ? parseInt(parts.COUNT, 10) : undefined;
+    const byday = parts.BYDAY;
+    const details: string[] = [];
+
+    let primary = interval > 1 ? getIntervalLabel(freq, interval) : (FREQ_LABEL[freq] ?? freq);
+
+    if (freq === 'WEEKLY' && byday) {
+      if (byday === WEEKDAYS) {
+        primary = 'Weekdays';
+      } else {
+        details.push(formatWeeklyDays(byday));
+      }
+    }
+
+    if (freq === 'MONTHLY' && byday) {
+      const monthlyByday = formatMonthlyBydayDetail(byday);
+      if (monthlyByday) details.push(monthlyByday);
+    }
+
+    if (count !== undefined) {
+      details.push(`${count} ${count === 1 ? 'time' : 'times'}`);
+    } else if (parts.UNTIL) {
+      details.push(`until ${formatUntilDate(parts.UNTIL, dateFormat)}`);
+    }
+
+    if (repeatFrom === 1) {
+      details.push('from completion');
+    } else if (repeatFrom === 0) {
+      details.push('from due date');
+    }
+
+    return {
+      primary,
+      short: primary,
+      details,
+    };
+  } catch {
+    return {
+      primary: rruleValue,
+      short: rruleValue,
+      details: [],
+    };
+  }
 };
 
 /**

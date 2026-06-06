@@ -14,6 +14,7 @@ import {
   frequencyToRRule,
   getNextOccurrence,
   parseRRule,
+  rruleToDisplaySummary,
   rruleToFrequency,
   rruleToText,
 } from '$utils/recurrence';
@@ -112,6 +113,24 @@ describe('rruleToText', () => {
   it('appends repeatFrom suffix', () => {
     expect(rruleToText('FREQ=DAILY', 0)).toContain('from due date');
     expect(rruleToText('FREQ=DAILY', 1)).toContain('from completion');
+  });
+});
+
+describe('rruleToDisplaySummary', () => {
+  it('uses compact weekday wording', () => {
+    expect(rruleToDisplaySummary('FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR')).toEqual({
+      primary: 'Weekdays',
+      short: 'Weekdays',
+      details: [],
+    });
+  });
+
+  it('moves secondary recurrence details out of the primary label', () => {
+    expect(rruleToDisplaySummary('FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR;COUNT=5', 0)).toEqual({
+      primary: 'Weekdays',
+      short: 'Weekdays',
+      details: ['5 times', 'from due date'],
+    });
   });
 });
 

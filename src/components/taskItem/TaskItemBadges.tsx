@@ -9,6 +9,7 @@ import { TaskItemStartDateBadge } from '$components/taskItem/badges/TaskItemStar
 import { TaskItemSubtaskProgressBadge } from '$components/taskItem/badges/TaskItemSubtaskProgressBadge';
 import { TaskItemTagBadge } from '$components/taskItem/badges/TaskItemTagBadge';
 import { TaskItemURLBadge } from '$components/taskItem/badges/TaskItemURLBadge';
+import { useSettingsStore } from '$context/settingsContext';
 import { useAccentColorResolver, useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { getAllTags } from '$lib/store/tags';
 import { getChildTasks } from '$lib/store/tasks';
@@ -43,6 +44,7 @@ export const TaskItemBadges = ({
   badgeVisibility,
   badgeOrder,
 }: TaskItemBadgesProps) => {
+  const { dateFormat } = useSettingsStore();
   const resolveAccent = useAccentColorResolver();
   const resolvedAccentColor = useResolvedAccentColor();
   const childTaskFilter = task.deletedAt ? 'deleted' : 'active';
@@ -72,6 +74,7 @@ export const TaskItemBadges = ({
     (badgeVisibility.calendar && showCalendar) ||
     (badgeVisibility.url && task.url) ||
     (badgeVisibility.status && task.status === 'in-process') ||
+    (badgeVisibility.repeat && task.rrule) ||
     (badgeVisibility.subtasks && (totalSubtasks > 0 || childCount > 0));
 
   if (!hasAnyVisibleBadge) {
@@ -103,7 +106,14 @@ export const TaskItemBadges = ({
       badgeVisibility.status && task.status === 'in-process' ? (
         <TaskItemInProgressBadge percentComplete={task.percentComplete} />
       ) : null,
-    repeat: () => (badgeVisibility.repeat && task.rrule ? <TaskItemRepeatBadge /> : null),
+    repeat: () =>
+      badgeVisibility.repeat && task.rrule ? (
+        <TaskItemRepeatBadge
+          rrule={task.rrule}
+          repeatFrom={task.repeatFrom}
+          dateFormat={dateFormat}
+        />
+      ) : null,
     subtasks: () =>
       badgeVisibility.subtasks ? (
         <>
