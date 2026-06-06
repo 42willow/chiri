@@ -257,10 +257,10 @@ run_server() {
   # Run the suite with GitHub's summary path hidden so Vitest doesn't append
   # one generic "Vitest Test Report" block per CalDAV server.
   local test_log
+  local status
   test_log=$(mktemp)
   set +e
   GITHUB_STEP_SUMMARY='' pnpm test:integration 2>&1 | tee "$test_log"
-  local status
   status=${PIPESTATUS[0]}
 
   # tear down
