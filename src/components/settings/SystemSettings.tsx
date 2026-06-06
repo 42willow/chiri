@@ -41,7 +41,9 @@ export const SystemSettings = () => {
   const isMac = isMacPlatform();
 
   const windowDecorationsChanged =
-    isLinux && windowDecorationsMode !== windowDecorationsAppliedValue;
+    isLinux &&
+    windowDecorationsMode === 'auto' &&
+    windowDecorationsMode !== windowDecorationsAppliedValue;
   const confirmBeforeQuitChanged = isMac && confirmBeforeQuit !== confirmBeforeQuitAppliedValue;
   const restartReasons = [
     ...(windowDecorationsChanged ? ['window decoration'] : []),
@@ -79,7 +81,7 @@ export const SystemSettings = () => {
     setWindowDecorationsMode(mode);
     // 'auto' can only be re-applied by restarting. the Rust startup hook is
     // the only thing that runs the per-DE titlebar logic. for 'on'/'off' we
-    // can toggle live via the Rust WebviewWindow API
+    // can toggle live via the Rust WebviewWindow API.
     if (mode !== 'auto') {
       try {
         await invoke('set_window_decorations', { enabled: mode === 'on' });
@@ -273,8 +275,7 @@ export const SystemSettings = () => {
                 Enable window decorations
               </p>
               <p className="text-surface-500 text-xs dark:text-surface-400">
-                Show title bar and borders on Linux. If changed, overrides the default
-                auto-detection.
+                Show title bar and borders on Linux. Auto-detection is applied on restart.
               </p>
             </div>
             <AppSelect

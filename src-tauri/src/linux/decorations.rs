@@ -125,5 +125,19 @@ pub async fn set_window_decorations(
     window: tauri::WebviewWindow,
     enabled: bool,
 ) -> Result<(), String> {
+    let window_for_gtk = window.clone();
+    window
+        .run_on_main_thread(move || {
+            use gtk::prelude::GtkWindowExt;
+
+            if let Ok(gtk_window) = window_for_gtk.gtk_window() {
+                if !enabled {
+                    gtk_window.set_titlebar(Option::<&gtk::Widget>::None);
+                }
+                gtk_window.set_decorated(enabled);
+            }
+        })
+        .map_err(|e| e.to_string())?;
+
     window.set_decorations(enabled).map_err(|e| e.to_string())
 }
