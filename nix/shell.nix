@@ -63,37 +63,39 @@ pkgs.mkShell {
 
     export PATH="${llvm.clang-unwrapped}/bin:${llvm.lld}/bin:${llvm.llvm}/bin:$PATH"
 
-    bold="$(tput bold 2>/dev/null || true)"
-    green="$(tput setaf 2 2>/dev/null || true)"
-    cyan="$(tput setaf 6 2>/dev/null || true)"
-    dim="$(tput dim 2>/dev/null || true)"
-    reset="$(tput sgr0 2>/dev/null || true)"
+    if [ -z "$CI" ]; then
+      bold="$(tput bold 2>/dev/null || true)"
+      green="$(tput setaf 2 2>/dev/null || true)"
+      cyan="$(tput setaf 6 2>/dev/null || true)"
+      dim="$(tput dim 2>/dev/null || true)"
+      reset="$(tput sgr0 2>/dev/null || true)"
 
-    os_name="$(uname -s)"
-    case "$os_name" in
-      Darwin)
-        os_label="macOS $(sw_vers -productVersion 2>/dev/null || uname -r)"
-        ;;
-      Linux)
-        if [ -r /etc/os-release ]; then
-          os_label="$(. /etc/os-release && printf "%s" "$PRETTY_NAME")"
-        else
-          os_label="Linux $(uname -r)"
-        fi
-        ;;
-      *)
-        os_label="$os_name $(uname -r)"
-        ;;
-    esac
+      os_name="$(uname -s)"
+      case "$os_name" in
+        Darwin)
+          os_label="macOS $(sw_vers -productVersion 2>/dev/null || uname -r)"
+          ;;
+        Linux)
+          if [ -r /etc/os-release ]; then
+            os_label="$(. /etc/os-release && printf "%s" "$PRETTY_NAME")"
+          else
+            os_label="Linux $(uname -r)"
+          fi
+          ;;
+        *)
+          os_label="$os_name $(uname -r)"
+          ;;
+      esac
 
-    printf "🍃%b%b Chiri dev environment%b\n\n" "$green" "$bold" "$reset"
-    printf "%bThe following commands are available:%b\n" "$bold" "$reset"
-    printf "  %b%-14s%b %b%s%b\n" "$cyan" "just install" "$reset" "$dim" "install dependencies with pnpm" "$reset"
-    printf "  %b%-14s%b %b%s%b\n" "$cyan" "just dev" "$reset" "$dim" "start development server" "$reset"
-    printf "  %b%-14s%b %b%s%b\n" "$cyan" "just build" "$reset" "$dim" "build app" "$reset"
-    printf "  %b%-14s%b %b%s%b\n" "$cyan" "nix build" "$reset" "$dim" "build app with Nix" "$reset"
-    printf "\nRunning Node ${nodejs.version}, pnpm ${pnpm.version}, Rust ${rustToolchain.version}"
-    printf "\n%bUsing %s (${pkgs.stdenv.hostPlatform.system})%b\n" "$dim" "$os_label" "$reset"
+      printf "🍃%b%b Chiri dev environment%b\n\n" "$green" "$bold" "$reset"
+      printf "%bThe following commands are available:%b\n" "$bold" "$reset"
+      printf "  %b%-14s%b %b%s%b\n" "$cyan" "just install" "$reset" "$dim" "install dependencies with pnpm" "$reset"
+      printf "  %b%-14s%b %b%s%b\n" "$cyan" "just dev" "$reset" "$dim" "start development server" "$reset"
+      printf "  %b%-14s%b %b%s%b\n" "$cyan" "just build" "$reset" "$dim" "build app" "$reset"
+      printf "  %b%-14s%b %b%s%b\n" "$cyan" "nix build" "$reset" "$dim" "build app with Nix" "$reset"
+      printf "\nRunning Node ${nodejs.version}, pnpm ${pnpm.version}, Rust ${rustToolchain.version}"
+      printf "\n%bUsing %s (${pkgs.stdenv.hostPlatform.system})%b\n" "$dim" "$os_label" "$reset"
+    fi
   '';
 
   # Required for Tauri on macOS
