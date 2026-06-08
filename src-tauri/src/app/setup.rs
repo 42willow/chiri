@@ -31,7 +31,9 @@ pub(super) fn setup_app(
     // Register deep link URL scheme handler (macOS uses Info.plist; Windows/Linux
     // need explicit runtime registration so the OS knows which binary to call).
     #[cfg(any(windows, target_os = "linux"))]
-    app.deep_link().register_all()?;
+    if let Err(e) = app.deep_link().register_all() {
+        log::warn!("[Setup] Failed to register deep link scheme: {e}");
+    }
 
     // Disable App Nap after logging has been initialized so App Nap
     // messages follow the same format as the rest of the app logs.
