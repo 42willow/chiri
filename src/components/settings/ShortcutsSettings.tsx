@@ -73,7 +73,7 @@ export const ShortcutsSettings = ({
           <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">
             Keyboard shortcuts
           </h3>
-          <Tooltip content={resetTitle} position="bottom" allowInModal>
+          <Tooltip content={resetTitle} position="top" allowInModal>
             <button
               type="button"
               onClick={resetShortcuts}
