@@ -60,11 +60,13 @@ jobs:
             label: 'Ubuntu'
             artifact: 'linux-ubuntu'
             rpm_artifact: 'linux-fedora'
+            appimage_artifact: 'linux-appimage'
             args: ''
           - platform: 'ubuntu-22.04-arm'
             label: 'Ubuntu (ARM)'
             artifact: 'linux-ubuntu-arm'
             rpm_artifact: 'linux-fedora-arm'
+            appimage_artifact: 'linux-appimage-arm'
             args: ''
           - platform: 'windows-latest'
             label: 'Windows'
@@ -118,6 +120,14 @@ jobs:
           name: Chiri-${{ matrix.rpm_artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.rpm
+
+      - name: Upload AppImage artifacts
+        if: startsWith(matrix.platform, 'ubuntu')
+        uses: ./.github/actions/upload-tauri-artifact
+        with:
+          name: Chiri-${{ matrix.appimage_artifact }}
+          path: |
+            src-tauri/target/**/release/bundle/**/*.AppImage
 
       - name: Upload Windows NSIS artifacts
         if: startsWith(matrix.platform, 'windows')
