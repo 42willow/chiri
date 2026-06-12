@@ -24,7 +24,7 @@ jobs:
       release_id: ${{ steps.create_release.outputs.id }}
       release_url: ${{ steps.create_release.outputs.url }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0  # Need full history for changelog
 
@@ -238,7 +238,7 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - name: Setup Tauri build
         uses: ./.github/actions/setup-tauri-build
@@ -248,7 +248,7 @@ jobs:
 
       - name: Load signing secrets from 1Password
         if: matrix.platform != 'windows-11-arm'
-        uses: 1password/load-secrets-action@v4
+        uses: 1password/load-secrets-action@3a12b0ab99d9cd590a3e9b5a90ea017210ed9556 # v4
         with:
           export-env: true
         env:
@@ -311,7 +311,7 @@ jobs:
           chmod 600 "$APPLE_KEY_FILE"
           echo "APPLE_API_KEY_PATH=$APPLE_KEY_FILE" >> "$GITHUB_ENV"
 
-      - uses: tauri-apps/tauri-action@v0
+      - uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ env.TAURI_SIGNING_PRIVATE_KEY || secrets.TAURI_SIGNING_PRIVATE_KEY }}

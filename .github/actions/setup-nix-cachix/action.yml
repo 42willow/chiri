@@ -19,10 +19,10 @@ runs:
   using: 'composite'
   steps:
     - name: Install Nix
-      uses: cachix/install-nix-action@v25
+      uses: cachix/install-nix-action@6004951b182f8860210c8d6f0d808ec5b1a33d28 # v25
 
     - name: Set up Cachix
-      uses: cachix/cachix-action@v17
+      uses: cachix/cachix-action@5f2d7c5294214f71b873db4b969586b980625e71 # v17
       with:
         name: ${{ inputs.cache-name }}
         authToken: ${{ inputs.auth-token }}
