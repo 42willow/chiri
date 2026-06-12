@@ -144,8 +144,11 @@ vi.mock('$lib/queryClient', () => ({
 
 vi.mock('$lib/tauriHttp', () => ({ getErrorMessage: (e: unknown) => String(e) }));
 
-vi.mock('$utils/color', () => ({
+vi.mock('$utils/color/tag', () => ({
   generateTagColor: vi.fn(() => '#000'),
+}));
+
+vi.mock('$utils/color/theme', () => ({
   resolveEffectiveTheme: vi.fn(() => 'light'),
 }));
 

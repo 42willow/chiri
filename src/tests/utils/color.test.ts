@@ -13,13 +13,9 @@ vi.mock('$constants/colorSchemes', () => ({
 }));
 vi.mock('$types/color', () => ({ DEFAULT_COLOR_SCHEME_ID: 'default' }));
 
-import {
-  applyAccentColor,
-  generateTagColor,
-  getContrastTextColor,
-  normalizeHexColor,
-  resolveAccentColor,
-} from '$utils/color';
+import { getContrastTextColor, normalizeHexColor } from '$utils/color';
+import { applyAccentColor, resolveAccentColor } from '$utils/color/accent';
+import { generateTagColor } from '$utils/color/tag';
 
 describe('normalizeHexColor', () => {
   it('returns undefined for null/undefined', () => {

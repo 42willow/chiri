@@ -1,4 +1,5 @@
-import type { ColorSchemeFlavor } from '$types/color';
+import { getColorSchemeFlavor } from '$constants/colorSchemes';
+import type { ColorSchemeDefinition, ColorSchemeFlavor, ColorSchemeMode } from '$types/color';
 
 interface ColorSchemePreviewPalette {
   background: string;
@@ -10,6 +11,16 @@ interface ColorSchemePreviewPalette {
   muted: string;
   badge: string;
 }
+
+export const getPreviewFlavor = (
+  scheme: ColorSchemeDefinition,
+  activeScheme: ColorSchemeDefinition,
+  activeFlavor: ColorSchemeFlavor,
+  effectiveMode: ColorSchemeMode,
+) =>
+  scheme.id === activeScheme.id
+    ? activeFlavor
+    : getColorSchemeFlavor(scheme.id, null, effectiveMode);
 
 export const getColorSchemePreviewPalette = (
   flavor: ColorSchemeFlavor,

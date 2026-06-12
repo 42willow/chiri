@@ -2,14 +2,9 @@ import { useEffect } from 'react';
 import { COLOR_SCHEMES, getColorSchemeFlavor } from '$constants/colorSchemes';
 import { DEFAULT_COLOR_SCHEME_ID } from '$constants/colorSchemes/default';
 import { useSettingsStore } from '$context/settingsContext';
-import {
-  applyAccentColor,
-  applyColorScheme,
-  applySchemeAccentColor,
-  applyTheme,
-  resolveAccentColor,
-  resolveEffectiveTheme,
-} from '$utils/color';
+import { applyAccentColor, applySchemeAccentColor, resolveAccentColor } from '$utils/color/accent';
+import { applyColorScheme } from '$utils/color/scheme';
+import { applyTheme, resolveEffectiveTheme } from '$utils/color/theme';
 
 /**
  * applies the theme, color scheme surface palette, and accent color, and

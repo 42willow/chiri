@@ -25,14 +25,9 @@ import type {
   TaskListDensity,
   WindowDecorationsMode,
 } from '$types/settings';
-import {
-  applyAccentColor,
-  applyColorScheme,
-  applySchemeAccentColor,
-  applyTheme,
-  resolveAccentColor,
-  resolveEffectiveTheme,
-} from '$utils/color';
+import { applyAccentColor, applySchemeAccentColor, resolveAccentColor } from '$utils/color/accent';
+import { applyColorScheme } from '$utils/color/scheme';
+import { applyTheme, resolveEffectiveTheme } from '$utils/color/theme';
 import { defaultState } from './settingsDefaults';
 import { exportSettings, importSettings, mergeOrder, mergeShortcuts } from './settingsImportExport';
 

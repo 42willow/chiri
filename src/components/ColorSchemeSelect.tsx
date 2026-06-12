@@ -4,7 +4,7 @@ import { type CSSProperties, type KeyboardEvent, useEffect, useId, useRef, useSt
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { getColorSchemeFlavorDefaultAccentColor } from '$constants/colorSchemes';
 import type { ColorSchemeFlavor } from '$types/color';
-import { getColorSchemePreviewPalette } from '$utils/colorSchemePreview';
+import { getColorSchemePreviewPalette } from '$utils/color/preview';
 
 export interface ColorSchemeSelectOption {
   id: string;

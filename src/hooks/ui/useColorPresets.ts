@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { getColorSchemeColorPresets } from '$constants/colorSchemes';
 import { useSettingsStore } from '$context/settingsContext';
-import { resolveEffectiveTheme } from '$utils/color';
+import { resolveEffectiveTheme } from '$utils/color/theme';
 
 /**
  * Returns the color presets appropriate for the active color scheme.

@@ -18,7 +18,8 @@ import { createTask, getTasksByCalendar, removeLocalTask, updateTask } from '$li
 import { getUIState, setAllTasksView } from '$lib/store/ui';
 import { getErrorMessage } from '$lib/tauriHttp';
 import type { CalDAVTaskObject, Calendar, Task, TaskWithCalDAVObject } from '$types';
-import { generateTagColor, resolveEffectiveTheme } from '$utils/color';
+import { generateTagColor } from '$utils/color/tag';
+import { resolveEffectiveTheme } from '$utils/color/theme';
 
 const log = loggers.dataStore;
 const syncLog = loggers.sync;
