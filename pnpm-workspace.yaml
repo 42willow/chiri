@@ -1,8 +1,13 @@
 packages:
   - .
 
-onlyBuiltDependencies:
-  - esbuild
-
 allowBuilds:
   esbuild: true
+
+blockExoticSubdeps: true
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+trustLockfile: false
+trustPolicy: no-downgrade
+verifyDepsBeforeRun: error
