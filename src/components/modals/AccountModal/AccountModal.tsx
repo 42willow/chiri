@@ -441,6 +441,7 @@ export function AccountModal({
           password: effectivePassword,
           serverType,
           calendarHomeUrl: calendarHomeUrl.trim() || undefined,
+          principalUrl: principalUrl.trim() || undefined,
           acceptInvalidCerts: acceptInvalidCerts || undefined,
           authType: 'basic',
         },
