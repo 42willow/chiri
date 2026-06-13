@@ -20,8 +20,10 @@ vi.mock('$context/connectionContext', () => ({
 }));
 
 vi.mock('$lib/caldav/utils', () => ({
+  hasHttpUrlScheme: (url: string) => /^https?:\/\//i.test(url.trim()),
   makeAbsoluteUrl: (href: string, base: string) =>
     href.startsWith('http') ? href : new URL(href, base).toString(),
+  normalizeUrl: (url: string) => url.replace(/\/$/, ''),
 }));
 
 import { connect, detectVikunja, handleCommonHttpErrors } from '$lib/caldav/connection';
@@ -288,6 +290,12 @@ describe('connect — generic server URL path stripping', () => {
       expect.anything(),
       expect.anything(),
       '0',
+    );
+  });
+
+  it('rejects scheme-less generic server URLs', async () => {
+    await expect(connect('a1', 'x.com', 'alice', 'pw', 'generic')).rejects.toThrow(
+      /must start with http:\/\/ or https:\/\//i,
     );
   });
 

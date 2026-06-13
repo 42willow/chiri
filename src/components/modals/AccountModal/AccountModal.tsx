@@ -25,6 +25,7 @@ import {
   getSetupNotice,
   probeSetupVtodoCreationIfNeeded,
 } from '$lib/caldav/setup';
+import { hasHttpUrlScheme } from '$lib/caldav/utils';
 import { getServerWarning, getUrlWarning, toConfirmOptions } from '$lib/caldav/warnings';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
@@ -184,8 +185,19 @@ export function AccountModal({
     return await confirm(toConfirmOptions(warning));
   };
 
-  const confirmServerUrlWarning = async () => {
-    const warning = getUrlWarning(serverUrl);
+  const validateServerUrlScheme = () => {
+    if (hasHttpUrlScheme(serverUrl)) return true;
+
+    setSetupError({
+      title: 'URL scheme required',
+      message: 'Server URL must start with http:// or https://.',
+      hint: 'Add the scheme explicitly, for example https://caldav.example.com.',
+    });
+    return false;
+  };
+
+  const confirmServerUrlWarning = async (url: string) => {
+    const warning = getUrlWarning(url);
     if (!warning) return true;
 
     return await confirm(toConfirmOptions(warning));
@@ -246,12 +258,16 @@ export function AccountModal({
     });
   };
 
-  const connectWithCertHandling = async (accountId: string, effectivePassword: string) => {
+  const connectWithCertHandling = async (
+    accountId: string,
+    effectivePassword: string,
+    trimmedServerUrl: string,
+  ) => {
     const isOAuth = account?.caldav?.authType === 'oauth';
     const tryConnect = (withInvalidCerts?: boolean) =>
       CalDAVClient.connect(
         accountId,
-        serverUrl,
+        trimmedServerUrl,
         username,
         isOAuth ? '' : effectivePassword,
         serverType,
@@ -272,7 +288,7 @@ export function AccountModal({
 
       let serverReachable = false;
       try {
-        await tauriRequest(serverUrl, 'OPTIONS', {
+        await tauriRequest(trimmedServerUrl, 'OPTIONS', {
           username,
           password: effectivePassword,
           acceptInvalidCerts: true,
@@ -315,16 +331,26 @@ export function AccountModal({
         throw new Error('Server URL and username are required');
       }
 
-      const proceedWithUrl = await confirmServerUrlWarning();
+      if (!validateServerUrlScheme()) {
+        setIsTesting(false);
+        return;
+      }
+
+      const trimmedServerUrl = serverUrl.trim();
+      const proceedWithUrl = await confirmServerUrlWarning(trimmedServerUrl);
       if (!proceedWithUrl) {
         setIsTesting(false);
         return;
       }
 
       const tempId = generateUUID();
-      log.debug(`Testing connection to ${serverUrl}...`);
+      log.debug(`Testing connection to ${trimmedServerUrl}...`);
 
-      const connectionInfo = await connectWithCertHandling(tempId, effectivePassword);
+      const connectionInfo = await connectWithCertHandling(
+        tempId,
+        effectivePassword,
+        trimmedServerUrl,
+      );
       if (!connectionInfo) {
         setIsTesting(false);
         return;
@@ -362,9 +388,16 @@ export function AccountModal({
   };
 
   const updateExistingAccount = async (effectivePassword: string | undefined) => {
+    if (!validateServerUrlScheme()) return false;
+    const trimmedServerUrl = serverUrl.trim();
+
     if (effectivePassword) {
-      log.debug(`Testing connection to ${serverUrl}...`);
-      const result = await connectWithCertHandling(account!.id, effectivePassword);
+      log.debug(`Testing connection to ${trimmedServerUrl}...`);
+      const result = await connectWithCertHandling(
+        account!.id,
+        effectivePassword,
+        trimmedServerUrl,
+      );
       if (!result) return false;
     }
 
@@ -375,7 +408,7 @@ export function AccountModal({
         icon,
         emoji,
         caldav: {
-          serverUrl,
+          serverUrl: trimmedServerUrl,
           username,
           password: effectivePassword || account!.caldav!.password,
           serverType,
@@ -393,18 +426,29 @@ export function AccountModal({
   };
 
   const connectAndFetchCalendars = async (effectivePassword: string) => {
+    if (!validateServerUrlScheme()) return null;
+    const trimmedServerUrl = serverUrl.trim();
+
     if (testSuccess && testedConnectionId) {
       log.debug('Reusing tested connection...');
-      return { tempId: testedConnectionId, calendars: testedCalendars };
+      return {
+        tempId: testedConnectionId,
+        calendars: testedCalendars,
+        serverUrl: trimmedServerUrl,
+      };
     }
 
     const tempId = generateUUID();
 
-    log.debug(`Connecting to ${serverUrl}...`);
-    const proceedWithUrl = await confirmServerUrlWarning();
+    log.debug(`Connecting to ${trimmedServerUrl}...`);
+    const proceedWithUrl = await confirmServerUrlWarning(trimmedServerUrl);
     if (!proceedWithUrl) return null;
 
-    const connectionInfo = await connectWithCertHandling(tempId, effectivePassword);
+    const connectionInfo = await connectWithCertHandling(
+      tempId,
+      effectivePassword,
+      trimmedServerUrl,
+    );
     if (!connectionInfo) return null;
 
     const proceed = await confirmServerWarning(connectionInfo.calendarHome);
@@ -421,14 +465,14 @@ export function AccountModal({
     log.info(`Found ${calendars.length} calendars:`, calendars);
     setSetupNotice(getSetupNotice(diagnostics, canCreateVtodoCalendar));
 
-    return { tempId, calendars };
+    return { tempId, calendars, serverUrl: trimmedServerUrl };
   };
 
   const createNewAccount = async (effectivePassword: string) => {
     const accountSetup = await connectAndFetchCalendars(effectivePassword);
     if (!accountSetup) return false;
 
-    const { tempId, calendars } = accountSetup;
+    const { tempId, calendars, serverUrl: trimmedServerUrl } = accountSetup;
     createAccountMutation.mutate(
       {
         id: tempId,
@@ -436,7 +480,7 @@ export function AccountModal({
         icon,
         emoji,
         caldav: {
-          serverUrl,
+          serverUrl: trimmedServerUrl,
           username,
           password: effectivePassword,
           serverType,

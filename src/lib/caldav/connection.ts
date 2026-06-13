@@ -1,5 +1,5 @@
 import { connectionStore } from '$context/connectionContext';
-import { makeAbsoluteUrl } from '$lib/caldav/utils';
+import { hasHttpUrlScheme, makeAbsoluteUrl, normalizeUrl } from '$lib/caldav/utils';
 import type { CalDAVCredentials } from '$lib/tauriHttp';
 import { parseMultiStatus, propfind, tauriRequest } from '$lib/tauriHttp';
 import type { Account, ServerType } from '$types';
@@ -223,7 +223,12 @@ export const connect = async (
     ...(bearerToken ? { bearerToken } : {}),
   };
 
-  let baseUrl = serverUrl.replace(/\/$/, '');
+  const trimmedServerUrl = serverUrl.trim();
+  if (!hasHttpUrlScheme(trimmedServerUrl)) {
+    throw new Error('Server URL must start with http:// or https://.');
+  }
+
+  let baseUrl = normalizeUrl(trimmedServerUrl);
 
   if (serverType === 'generic') {
     for (const pattern of CALDAV_PATH_PATTERNS) {
@@ -239,7 +244,11 @@ export const connect = async (
 
   // If a direct calendar home URL is provided, skip autodiscovery entirely
   if (calendarHomeUrl) {
-    calendarHome = `${calendarHomeUrl.replace(/\/$/, '')}/`;
+    const trimmedCalendarHomeUrl = calendarHomeUrl.trim();
+    if (!hasHttpUrlScheme(trimmedCalendarHomeUrl)) {
+      throw new Error('Calendar Home URL must start with http:// or https://.');
+    }
+    calendarHome = `${normalizeUrl(trimmedCalendarHomeUrl)}/`;
     principalUrl = calendarHome;
   } else if (principalUrlOverride) {
     // Principal URL provided — derive calendar home from it
