@@ -25,12 +25,13 @@ import {
   getSetupNotice,
   probeSetupVtodoCreationIfNeeded,
 } from '$lib/caldav/setup';
+import { getServerWarning, getUrlWarning, toConfirmOptions } from '$lib/caldav/warnings';
 import { loggers } from '$lib/logger';
 import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
 import { isCertError, tauriRequest } from '$lib/tauriHttp';
 import type { Account, Calendar, ServerType } from '$types';
-import { generateUUID, isVikunjaServer } from '$utils/misc';
+import { generateUUID } from '$utils/misc';
 import type { MobileConfigCalDAVSettings } from '$utils/mobileconfig';
 
 const log = loggers.account;
@@ -176,28 +177,18 @@ export function AccountModal({
     setStep('connect-method');
   };
 
-  const showVikunjaWarning = async () => {
-    return await confirm({
-      title: 'Vikunja server warning',
-      message: (
-        <div className="space-y-3">
-          <p>Vikunja's current CalDAV implementation is incomplete and may cause issues.</p>
-          <p className="font-extrabold text-base text-surface-700 dark:text-surface-300">
-            This app may not work reliably with Vikunja, and you may encounter sync problems,
-            missing features, or other bugs.
-          </p>
-          <p className="font-bold text-surface-800 dark:text-surface-200">
-            Only limited support will be offered. It's recommended to use a different CalDAV server
-            if possible.
-          </p>
-          <p>Do you want to continue anyway?</p>
-        </div>
-      ),
-      confirmLabel: 'Continue (dangerous)',
-      cancelLabel: 'Cancel',
-      destructive: true,
-      delayConfirmSeconds: 5,
-    });
+  const confirmServerWarning = async (calendarHome?: string) => {
+    const warning = getServerWarning(serverType, { calendarHome });
+    if (!warning) return true;
+
+    return await confirm(toConfirmOptions(warning));
+  };
+
+  const confirmServerUrlWarning = async () => {
+    const warning = getUrlWarning(serverUrl);
+    if (!warning) return true;
+
+    return await confirm(toConfirmOptions(warning));
   };
 
   const fetchTasksForCalendar = async (accountId: string, calendar: Calendar) => {
@@ -324,6 +315,12 @@ export function AccountModal({
         throw new Error('Server URL and username are required');
       }
 
+      const proceedWithUrl = await confirmServerUrlWarning();
+      if (!proceedWithUrl) {
+        setIsTesting(false);
+        return;
+      }
+
       const tempId = generateUUID();
       log.debug(`Testing connection to ${serverUrl}...`);
 
@@ -333,14 +330,12 @@ export function AccountModal({
         return;
       }
 
-      if (isVikunjaServer(connectionInfo.calendarHome)) {
-        const proceed = await showVikunjaWarning();
+      const proceed = await confirmServerWarning(connectionInfo.calendarHome);
 
-        if (!proceed) {
-          CalDAVClient.disconnect(tempId);
-          setIsTesting(false);
-          return;
-        }
+      if (!proceed) {
+        CalDAVClient.disconnect(tempId);
+        setIsTesting(false);
+        return;
       }
 
       log.debug(`Fetching calendars...`);
@@ -406,16 +401,17 @@ export function AccountModal({
     const tempId = generateUUID();
 
     log.debug(`Connecting to ${serverUrl}...`);
+    const proceedWithUrl = await confirmServerUrlWarning();
+    if (!proceedWithUrl) return null;
+
     const connectionInfo = await connectWithCertHandling(tempId, effectivePassword);
     if (!connectionInfo) return null;
 
-    if (isVikunjaServer(connectionInfo.calendarHome)) {
-      const proceed = await showVikunjaWarning();
+    const proceed = await confirmServerWarning(connectionInfo.calendarHome);
 
-      if (!proceed) {
-        CalDAVClient.disconnect(tempId);
-        return null;
-      }
+    if (!proceed) {
+      CalDAVClient.disconnect(tempId);
+      return null;
     }
 
     log.debug(`Fetching calendars...`);
