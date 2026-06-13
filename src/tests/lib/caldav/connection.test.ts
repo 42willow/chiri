@@ -175,6 +175,13 @@ describe('connect — explicit server type URL construction', () => {
     expect(result.calendarHome).toBe('https://radicale.x.com/alice/');
   });
 
+  it('builds Xandikos URLs', async () => {
+    const result = await connect('a1', 'https://xandikos.x.com', 'alice', 'pw', 'xandikos');
+
+    expect(result.principalUrl).toBe('https://xandikos.x.com/alice/');
+    expect(result.calendarHome).toBe('https://xandikos.x.com/alice/calendars/');
+  });
+
   it('builds Rustical URL', async () => {
     const result = await connect('a1', 'https://rust.x.com', 'alice', 'pw', 'rustical');
 

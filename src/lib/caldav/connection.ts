@@ -47,6 +47,10 @@ const SERVER_CONFIGS: Record<string, ServerConfig> = {
     principalPath: (username) => `/dav/principals/${username}/`,
     calendarHomePath: () => `/dav/projects/`,
   },
+  xandikos: {
+    principalPath: (username) => `/${username}/`,
+    calendarHomePath: (username) => `/${username}/calendars/`,
+  },
 };
 
 export const handleCommonHttpErrors = (response: { status: number }, context = 'CalDAV') => {
@@ -252,7 +256,8 @@ export const connect = async (
       case 'nextcloud':
       case 'radicale':
       case 'rustical':
-      case 'vikunja': {
+      case 'vikunja':
+      case 'xandikos': {
         const config = SERVER_CONFIGS[serverType];
         principalUrl = `${baseUrl}${config.principalPath(username)}`;
         calendarHome = config.calendarHomePath
