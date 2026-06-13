@@ -1,4 +1,5 @@
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
@@ -68,6 +69,9 @@ export default defineConfig({
       $styles: resolve(__dirname, './src/styles'),
       $types: resolve(__dirname, './src/types'),
       $utils: resolve(__dirname, './src/utils'),
+      'lucide-react/icons': fileURLToPath(
+        new URL('./node_modules/lucide-react/dist/esm/icons', import.meta.url),
+      ),
     },
   },
 });
