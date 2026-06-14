@@ -1,0 +1,63 @@
+name: 'Setup portable AppImage build'
+description: 'Install the Arch Linux dependencies and experimental Tauri AppImage bundler.'
+
+inputs:
+  pnpm-version:
+    description: 'pnpm version to install.'
+    required: false
+    default: '11.1.2'
+  tauri-revision:
+    description: 'tauri-apps/tauri commit containing the sharun AppImage bundler.'
+    required: false
+    default: '105550cf9986a1a752eafb288baa562d6a564cce'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up AnyLinux packaging tools
+      uses: pkgforge-dev/anylinux-setup-action@8872fabe63f9a00b35e25b2f46da62a05afc9a7d # v1
+
+    - name: Install Tauri dependencies
+      shell: bash
+      run: |
+        pacman -Syu --noconfirm \
+          libayatana-appindicator \
+          librsvg \
+          openssl \
+          patchelf \
+          webkit2gtk-4.1 \
+          xdg-utils
+
+        get-debloated-pkgs --add-common --prefer-nano
+
+    - name: Setup Node
+      uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+      with:
+        node-version: lts/*
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable
+
+    - name: Cache Rust dependencies
+      uses: swatinem/rust-cache@e18b497796c12c097a38f9edb9d0641fb99eee32 # v2
+      with:
+        workspaces: './src-tauri -> target'
+
+    - name: Install portable AppImage Tauri CLI
+      shell: bash
+      env:
+        TAURI_REVISION: ${{ inputs.tauri-revision }}
+      run: |
+        cargo install tauri-cli \
+          --git https://github.com/tauri-apps/tauri \
+          --rev "$TAURI_REVISION" \
+          --locked
+
+    - name: Install Node dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile

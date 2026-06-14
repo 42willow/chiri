@@ -226,10 +226,10 @@ jobs:
             args: '--target x86_64-apple-darwin'
           - platform: 'ubuntu-22.04'
             label: 'Ubuntu'
-            args: ''
+            args: '--bundles deb,rpm'
           - platform: 'ubuntu-22.04-arm'
             label: 'Ubuntu (ARM)'
-            args: ''
+            args: '--bundles deb,rpm'
           - platform: 'windows-latest'
             label: 'Windows'
             args: ''
@@ -330,11 +330,60 @@ jobs:
           tagName: app-v${{ needs.prepare-release.outputs.version }}
           args: ${{ matrix.args }}
 
+  publish-appimage:
+    name: ${{ matrix.label }}
+    needs: prepare-release
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'ubuntu-24.04'
+            label: 'AppImage (x86_64)'
+          - platform: 'ubuntu-24.04-arm'
+            label: 'AppImage (ARM64)'
+
+    runs-on: ${{ matrix.platform }}
+    container: ghcr.io/pkgforge-dev/archlinux@sha256:f6fc7e14b0612a355d7ab50efb3cc40010ba28e4766860bd238d313b308f190b
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: Setup portable AppImage build
+        uses: ./.github/actions/setup-portable-appimage
+
+      - name: Load signing secrets from 1Password
+        uses: 1password/load-secrets-action@3a12b0ab99d9cd590a3e9b5a90ea017210ed9556 # v4
+        with:
+          export-env: true
+          version: 2.33.1
+        env:
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: op://GitHub Actions/Tauri Secrets/signing-key
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: op://GitHub Actions/Tauri Secrets/signing-key-password
+
+      - name: Build and publish portable AppImage
+        uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: 'true'
+          TAURI_SIGNING_PRIVATE_KEY: ${{ env.TAURI_SIGNING_PRIVATE_KEY || secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ env.TAURI_SIGNING_PRIVATE_KEY_PASSWORD || secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tauriScript: cargo tauri
+          releaseId: ${{ needs.prepare-release.outputs.release_id }}
+          tagName: app-v${{ needs.prepare-release.outputs.version }}
+          args: --bundles appimage
+
   publish-summary:
     name: Publish summary
     needs:
       - prepare-release
       - publish-tauri
+      - publish-appimage
     if: always() && needs.prepare-release.result == 'success'
     runs-on: ubuntu-latest
     permissions:
@@ -347,6 +396,7 @@ jobs:
           VERSION: ${{ needs.prepare-release.outputs.version }}
           RELEASE_URL: ${{ needs.prepare-release.outputs.release_url }}
           BUILD_RESULT: ${{ needs.publish-tauri.result }}
+          APPIMAGE_BUILD_RESULT: ${{ needs.publish-appimage.result }}
         run: |
           set -euo pipefail
 
@@ -377,6 +427,7 @@ jobs:
             echo "| Version | \`$VERSION\` |"
             echo "| Release | [$TAG]($RELEASE_URL) |"
             echo "| Build result | $BUILD_RESULT |"
+            echo "| AppImage result | $APPIMAGE_BUILD_RESULT |"
             echo "| Asset count | $ASSET_COUNT |"
             echo "| Updater platform count | $UPDATER_PLATFORM_COUNT |"
             echo "| Hash update status | Pending post-release |"

@@ -14,6 +14,7 @@ on:
       - 'tsconfig*.json'
       - 'vite.config.ts'
       - '.github/actions/setup-tauri-build/**'
+      - '.github/actions/setup-portable-appimage/**'
       - '.github/actions/upload-tauri-artifact/**'
       - '.github/workflows/build.yml'
   push:
@@ -32,6 +33,7 @@ on:
       - 'tsconfig*.json'
       - 'vite.config.ts'
       - '.github/actions/setup-tauri-build/**'
+      - '.github/actions/setup-portable-appimage/**'
       - '.github/actions/upload-tauri-artifact/**'
       - '.github/workflows/build.yml'
 
@@ -60,14 +62,12 @@ jobs:
             label: 'Ubuntu'
             artifact: 'linux-ubuntu'
             rpm_artifact: 'linux-fedora'
-            appimage_artifact: 'linux-appimage'
-            args: ''
+            args: '--bundles deb,rpm'
           - platform: 'ubuntu-22.04-arm'
             label: 'Ubuntu (ARM)'
             artifact: 'linux-ubuntu-arm'
             rpm_artifact: 'linux-fedora-arm'
-            appimage_artifact: 'linux-appimage-arm'
-            args: ''
+            args: '--bundles deb,rpm'
           - platform: 'windows-latest'
             label: 'Windows'
             nsis_artifact: 'windows-nsis'
@@ -123,14 +123,6 @@ jobs:
           path: |
             src-tauri/target/**/release/bundle/**/*.rpm
 
-      - name: Upload AppImage artifacts
-        if: startsWith(matrix.platform, 'ubuntu')
-        uses: ./.github/actions/upload-tauri-artifact
-        with:
-          name: Chiri-${{ matrix.appimage_artifact }}
-          path: |
-            src-tauri/target/**/release/bundle/**/*.AppImage
-
       - name: Upload Windows NSIS artifacts
         if: startsWith(matrix.platform, 'windows')
         uses: ./.github/actions/upload-tauri-artifact
@@ -146,3 +138,42 @@ jobs:
           name: Chiri-${{ matrix.msi_artifact }}
           path: |
             src-tauri/target/**/release/bundle/**/*.msi
+
+  appimage:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'ubuntu-24.04'
+            label: 'AppImage (x86_64)'
+            artifact: 'linux-appimage'
+          - platform: 'ubuntu-24.04-arm'
+            label: 'AppImage (ARM64)'
+            artifact: 'linux-appimage-arm'
+
+    runs-on: ${{ matrix.platform }}
+    container: ghcr.io/pkgforge-dev/archlinux@sha256:f6fc7e14b0612a355d7ab50efb3cc40010ba28e4766860bd238d313b308f190b
+    name: ${{ matrix.label }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          persist-credentials: false
+
+      - name: Setup portable AppImage build
+        uses: ./.github/actions/setup-portable-appimage
+
+      - name: Build portable AppImage
+        uses: tauri-apps/tauri-action@84b9d35b5fc46c1e45415bdb6144030364f7ebc5 # v0
+        env:
+          TAURI_BUNDLER_NEW_APPIMAGE_FORMAT: 'true'
+        with:
+          tauriScript: cargo tauri
+          args: --bundles appimage --config '{"bundle":{"createUpdaterArtifacts":false}}'
+
+      - name: Upload AppImage artifact
+        uses: ./.github/actions/upload-tauri-artifact
+        with:
+          name: Chiri-${{ matrix.artifact }}
+          path: |
+            src-tauri/target/**/release/bundle/**/*.AppImage
