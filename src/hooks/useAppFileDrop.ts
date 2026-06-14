@@ -1,35 +1,32 @@
 import { useCallback, useMemo, useState } from 'react';
 import { type FileDropResult, useFileDrop } from '$hooks/system/useFileDrop';
 import { toastManager } from '$hooks/ui/useToast';
+import type { OpenAccountOptions } from '$types/controller';
 import type { MobileConfigCalDAVSettings } from '$utils/mobileconfig';
-
-type AccountModalZIndex = 'z-60' | 'z-70';
 
 interface UseAppFileDropOptions {
   isAnyModalOpen: boolean;
   isImportOpen: boolean;
-  setShowImport: (showImport: boolean) => void;
-  setShowAccountModal: (showAccountModal: boolean) => void;
-  setEditingAccountId: (accountId: string | null) => void;
-  setAccountModalZIndex: (zIndex: AccountModalZIndex) => void;
+  openImport: () => void;
+  closeImport: () => void;
+  openAccount: (options?: OpenAccountOptions) => void;
 }
 
 export const useAppFileDrop = ({
   isAnyModalOpen,
   isImportOpen,
-  setShowImport,
-  setShowAccountModal,
-  setEditingAccountId,
-  setAccountModalZIndex,
+  openImport,
+  closeImport,
+  openAccount,
 }: UseAppFileDropOptions) => {
   const [preloadedFile, setPreloadedFile] = useState<FileDropResult | null>(null);
   const [preloadedConfig, setPreloadedConfig] = useState<MobileConfigCalDAVSettings | null>(null);
   const canHandleGlobalFileDrop = !isAnyModalOpen && !isImportOpen;
 
   const handleImportClose = useCallback(() => {
-    setShowImport(false);
+    closeImport();
     setPreloadedFile(null);
-  }, [setShowImport]);
+  }, [closeImport]);
 
   const clearPreloadedConfig = useCallback(() => {
     setPreloadedConfig(null);
@@ -40,9 +37,9 @@ export const useAppFileDrop = ({
       if (!canHandleGlobalFileDrop) return;
 
       setPreloadedFile(file);
-      setShowImport(true);
+      openImport();
     },
-    [canHandleGlobalFileDrop, setShowImport],
+    [canHandleGlobalFileDrop, openImport],
   );
 
   const handleDroppedConfigProfile = useCallback(
@@ -50,11 +47,9 @@ export const useAppFileDrop = ({
       if (!canHandleGlobalFileDrop) return;
 
       setPreloadedConfig(config);
-      setEditingAccountId(null);
-      setAccountModalZIndex('z-60');
-      setShowAccountModal(true);
+      openAccount({ accountId: null });
     },
-    [canHandleGlobalFileDrop, setAccountModalZIndex, setEditingAccountId, setShowAccountModal],
+    [canHandleGlobalFileDrop, openAccount],
   );
 
   const handleConfigProfileError = useCallback(
