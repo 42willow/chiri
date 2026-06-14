@@ -8,7 +8,7 @@ import ZapOff from 'lucide-react/icons/zap-off';
 import { useRef, useState } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { useSettingsStore } from '$context/settingsContext';
-import { usePushProviderAvailability } from '$hooks/usePushProviderAvailability';
+import { usePushProviderAvailability } from '$hooks/push/usePushProviderAvailability';
 import { getWebDAVPushAccountDiagnostics } from '$lib/push';
 import { queryKeys } from '$lib/queryClient';
 import type { Account } from '$types';

@@ -9,9 +9,9 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSettingsStore } from '$context/settingsContext';
+import { usePushProviderConfigState } from '$hooks/push/usePushProviderAvailability';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import type { SyncTrigger } from '$hooks/queries/useSync';
-import { usePushProviderConfigState } from '$hooks/usePushProviderAvailability';
 import { loggers } from '$lib/logger';
 import {
   disableAllPushSubscriptions,

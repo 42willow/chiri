@@ -21,6 +21,7 @@ import { TaskEditor } from '$components/taskEditor/TaskEditor';
 import { RECENTLY_DELETED_CLEANUP_INTERVAL_MS } from '$constants';
 import { useModalState } from '$context/modalStateContext';
 import { useSettingsStore } from '$context/settingsContext';
+import { useWebDAVPush } from '$hooks/push/useWebDAVPush';
 import { useAccounts } from '$hooks/queries/useAccounts';
 import { useSyncQuery } from '$hooks/queries/useSync';
 import { useTasks } from '$hooks/queries/useTasks';
@@ -40,7 +41,6 @@ import { useAppFileDrop } from '$hooks/useAppFileDrop';
 import { useAppMenu } from '$hooks/useAppMenu';
 import { useChangelog } from '$hooks/useChangelog';
 import { useMenuHandlers } from '$hooks/useMenuHandlers';
-import { useWebDAVPush } from '$hooks/useWebDAVPush';
 import { deleteExpiredRecentlyDeletedTasks, getTasksByCalendar } from '$lib/store/tasks';
 
 import { shouldShowOnboarding } from '$utils/onboarding';

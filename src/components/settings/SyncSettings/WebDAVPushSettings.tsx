@@ -7,7 +7,7 @@ import Loader2 from 'lucide-react/icons/loader-2';
 import { useEffect, useRef, useState } from 'react';
 import { AppSelect } from '$components/AppSelect';
 import { useSettingsStore } from '$context/settingsContext';
-import { usePushProviderAvailability } from '$hooks/usePushProviderAvailability';
+import { usePushProviderAvailability } from '$hooks/push/usePushProviderAvailability';
 import { DEFAULT_NTFY_SERVER_URL } from '$lib/push/ntfyProvider';
 import {
   KUNIFIED_PUSH_PROVIDER_ID,
