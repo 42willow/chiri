@@ -1,0 +1,17 @@
+# normalize text files to use LF line endings
+* text=auto eol=lf
+
+# binary assets
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.icns binary
+*.car binary
+*.dmg binary
+*.pdf binary
+
+# generated Tauri schemas/assets
+src-tauri/gen/** linguist-generated=true
