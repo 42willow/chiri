@@ -1,0 +1,34 @@
+diff --git a/crates/tauri-bundler/src/bundle/linux/appimage/sharun.rs b/crates/tauri-bundler/src/bundle/linux/appimage/sharun.rs
+index 74e1b7314..1c0527e3d 100644
+--- a/crates/tauri-bundler/src/bundle/linux/appimage/sharun.rs
++++ b/crates/tauri-bundler/src/bundle/linux/appimage/sharun.rs
+@@ -78,6 +78,17 @@ pub fn bundle_project(settings: &Settings) -> crate::Result<Vec<PathBuf>> {
+   fs_utils::copy_custom_files(&settings.appimage().files, &data_dir)
+     .with_context(|| "Failed to copy custom files")?;
+ 
++  let generated_desktop_entry =
++    data_dir.join(format!("usr/share/applications/{product_name}.desktop"));
++  let desktop_entry = if settings.bundle_identifier().is_empty() {
++    generated_desktop_entry
++  } else {
++    let identifier_desktop_entry =
++      generated_desktop_entry.with_file_name(format!("{}.desktop", settings.bundle_identifier()));
++    fs::rename(generated_desktop_entry, &identifier_desktop_entry)?;
++    identifier_desktop_entry
++  };
++
+   fs::create_dir_all(&output_path)?;
+   let app_dir_path = output_path.join(format!("{}.AppDir", settings.product_name()));
+   let appimage_filename = format!(
+@@ -111,10 +122,7 @@ pub fn bundle_project(settings: &Settings) -> crate::Result<Vec<PathBuf>> {
+     .current_dir(&output_path)
+     .env("APPDIR", &app_dir_path)
+     .env("OUTNAME", &appimage_filename)
+-    .env(
+-      "DESKTOP",
+-      data_dir.join(format!("usr/share/applications/{product_name}.desktop")),
+-    )
++    .env("DESKTOP", desktop_entry)
+     .env("ICON", &larger_icon.path)
+     .env("OUTPUT_APPIMAGE", "1")
+     //.env("URUNTIME2APPIMAGE_SOURCE", "https://raw.githubusercontent.com/FabianLars/Anylinux-AppImages/refs/heads/main/useful-tools/uruntime2appimage.sh")
