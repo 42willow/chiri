@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { toast } from 'sonner';
 import { loggers } from '$lib/logger';
 
@@ -6,6 +7,10 @@ const log = loggers.toastManager;
 interface ToastAction {
   label: string;
   onClick: () => void;
+}
+
+interface ToastOptions {
+  icon?: ReactNode;
 }
 
 /**
@@ -22,12 +27,13 @@ class ToastManager {
    * @param closeButton - Whether to show the close button (defaults to true)
    */
   show(
-    title: string,
-    message: string,
+    title: ReactNode,
+    message: ReactNode,
     type: 'error' | 'warning' | 'info' | 'success' = 'info',
     groupKey?: string,
     action?: ToastAction,
     closeButton = true,
+    options: ToastOptions = {},
   ) {
     log.debug(
       `[${type.toUpperCase()}] Showing toast: "${title}" | "${message}" | groupKey: ${groupKey || 'none'}`,
@@ -43,12 +49,13 @@ class ToastManager {
     }
 
     // Map our type to the appropriate sonner method
-    const toastFn = type === 'info' ? toast : toast[type];
+    const toastFn = toast[type];
 
     const toastId = toastFn(title, {
       description: message,
       duration: 5000,
       closeButton,
+      icon: options.icon,
       action: action
         ? {
             label: action.label,
@@ -70,43 +77,47 @@ class ToastManager {
   }
 
   error(
-    title: string,
-    message: string,
+    title: ReactNode,
+    message: ReactNode,
     groupKey?: string,
     action?: ToastAction,
     closeButton = true,
+    options: ToastOptions = {},
   ) {
-    return this.show(title, message, 'error', groupKey, action, closeButton);
+    return this.show(title, message, 'error', groupKey, action, closeButton, options);
   }
 
   warning(
-    title: string,
-    message: string,
+    title: ReactNode,
+    message: ReactNode,
     groupKey?: string,
     action?: ToastAction,
     closeButton = true,
+    options: ToastOptions = {},
   ) {
-    return this.show(title, message, 'warning', groupKey, action, closeButton);
+    return this.show(title, message, 'warning', groupKey, action, closeButton, options);
   }
 
   info(
-    title: string,
-    message: string,
+    title: ReactNode,
+    message: ReactNode,
     groupKey?: string,
     action?: ToastAction,
     closeButton = true,
+    options: ToastOptions = {},
   ) {
-    return this.show(title, message, 'info', groupKey, action, closeButton);
+    return this.show(title, message, 'info', groupKey, action, closeButton, options);
   }
 
   success(
-    title: string,
-    message: string,
+    title: ReactNode,
+    message: ReactNode,
     groupKey?: string,
     action?: ToastAction,
     closeButton = true,
+    options: ToastOptions = {},
   ) {
-    return this.show(title, message, 'success', groupKey, action, closeButton);
+    return this.show(title, message, 'success', groupKey, action, closeButton, options);
   }
 
   /**

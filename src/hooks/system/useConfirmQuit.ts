@@ -2,7 +2,8 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import type { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { getAllWebviewWindows } from '@tauri-apps/api/webviewWindow';
-import { useEffect, useRef } from 'react';
+import Info from 'lucide-react/icons/info';
+import { createElement, useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useSettingsStore } from '$context/settingsContext';
 import {
@@ -87,11 +88,23 @@ const trySendNativeNotification = async (
  * Show a toast notification for quit confirmation
  */
 const showQuitToast = (): string | number =>
-  toast.info(QUIT_MESSAGE.title, {
-    description: QUIT_MESSAGE.description,
-    duration: 2000,
-    closeButton: false,
-  });
+  toast.info(
+    createElement(
+      'span',
+      { className: 'inline-flex items-center gap-2' },
+      createElement(Info, {
+        className: 'h-4 w-4 shrink-0 text-primary-500',
+        'aria-hidden': true,
+      }),
+      QUIT_MESSAGE.title,
+    ),
+    {
+      description: QUIT_MESSAGE.description,
+      duration: 2000,
+      closeButton: false,
+      icon: null,
+    },
+  );
 
 /**
  * Show window and display quit confirmation toast as fallback
