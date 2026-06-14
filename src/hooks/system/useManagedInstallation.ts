@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { invoke } from '@tauri-apps/api/core';
 import { loggers } from '$lib/logger';
-import type { InstallType } from '$types';
+import { getInstallType } from '$utils/platform';
 
 const log = loggers.platform;
 
@@ -14,7 +13,7 @@ export const useManagedInstallation = () => {
     queryKey: ['platform', 'installType'],
     queryFn: async () => {
       try {
-        return await invoke<InstallType>('get_install_type');
+        return await getInstallType();
       } catch (error) {
         log.error('[Platform] Failed to get installation type:', error);
         return 'standard';

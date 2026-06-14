@@ -2,11 +2,12 @@ import { useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/
 import { getVersion } from '@tauri-apps/api/app';
 import { relaunch } from '@tauri-apps/plugin-process';
 import { check } from '@tauri-apps/plugin-updater';
-import { useCallback, useEffect, useState } from 'react';
+import Info from 'lucide-react/icons/info';
+import { createElement, useCallback, useEffect, useState } from 'react';
 import { settingsStore } from '$context/settingsContext';
 import { toastManager } from '$hooks/ui/useToast';
 import { loggers } from '$lib/logger';
-import { shouldDisableUpdates } from '$utils/platform';
+import { getInstallType, getPackageManagerName, shouldDisableUpdates } from '$utils/platform';
 import { fetchReleaseNotes } from '$utils/version';
 
 const log = loggers.updater;
@@ -160,6 +161,27 @@ export const useUpdateChecker = (): UseUpdateCheckerResult => {
           trigger,
         });
         queryClient.setQueryData(UPDATE_AVAILABLE_QUERY_KEY, null);
+        if (isMenuCheck) {
+          const installType = await getInstallType();
+          const packageManagerName = getPackageManagerName(installType);
+          toastManager.dismiss('update-check-checking');
+          toastManager.info(
+            createElement(
+              'span',
+              { className: 'inline-flex items-center gap-2' },
+              createElement(Info, {
+                className: 'h-4 w-4 shrink-0 text-primary-500',
+                'aria-hidden': true,
+              }),
+              `Updates managed by ${packageManagerName}`,
+            ),
+            `This installation is managed by ${packageManagerName}. Update Chiri through your system's update mechanism.`,
+            'update-check-managed-install',
+            undefined,
+            false,
+            { icon: null },
+          );
+        }
         return;
       }
 

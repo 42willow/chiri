@@ -1,6 +1,7 @@
 import { invoke } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
 import { loggers } from '$lib/logger';
+import type { InstallType } from '$types';
 
 const log = loggers.platform;
 
@@ -51,6 +52,32 @@ export const isLinuxPlatform = () => {
  */
 export const isWindowsPlatform = () => {
   return platform() === 'windows';
+};
+
+export const getInstallType = async (): Promise<InstallType> => {
+  try {
+    return await invoke<InstallType>('get_install_type');
+  } catch (error) {
+    log.error('[Platform] Failed to get installation type:', error);
+    return 'standard';
+  }
+};
+
+export const getPackageManagerName = (installType: InstallType | null | undefined) => {
+  switch (installType) {
+    case 'nix':
+      return 'Nix';
+    case 'aur':
+      return 'AUR (Arch User Repository)';
+    case 'flatpak':
+      return 'Flatpak';
+    case 'homebrew':
+      return 'Homebrew';
+    case 'scoop':
+      return 'Scoop';
+    default:
+      return 'your package manager';
+  }
 };
 
 /**

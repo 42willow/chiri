@@ -10,6 +10,7 @@ import { ChangelogModal } from '$components/modals/ChangelogModal';
 import { useSettingsStore } from '$context/settingsContext';
 import { useManagedInstallation } from '$hooks/system/useManagedInstallation';
 import { useUpdateChecker } from '$hooks/system/useUpdateChecker';
+import { getPackageManagerName } from '$utils/platform';
 import { getAppInfo } from '$utils/version';
 
 export const UpdateSettings = () => {
@@ -53,20 +54,7 @@ export const UpdateSettings = () => {
     !updateAvailable &&
     !error;
 
-  const getPackageManagerName = () => {
-    switch (installType) {
-      case 'nix':
-        return 'Nix';
-      case 'aur':
-        return 'AUR (Arch User Repository)';
-      case 'flatpak':
-        return 'Flatpak';
-      case 'homebrew':
-        return 'Homebrew';
-      default:
-        return 'your package manager';
-    }
-  };
+  const packageManagerName = getPackageManagerName(installType);
 
   return (
     <div className="space-y-4">
@@ -86,9 +74,9 @@ export const UpdateSettings = () => {
           <div className="flex items-start gap-2 bg-semantic-info/10 px-4 py-3 text-surface-700 dark:text-surface-300">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-semantic-info" />
             <div>
-              <p className="font-medium text-sm">Updates managed by {getPackageManagerName()}</p>
+              <p className="font-medium text-sm">Updates managed by {packageManagerName}</p>
               <p className="mt-0.5 text-xs">
-                This installation is managed by {getPackageManagerName()}. Update Chiri through your
+                This installation is managed by {packageManagerName}. Update Chiri through your
                 system's update mechanism.
               </p>
             </div>
