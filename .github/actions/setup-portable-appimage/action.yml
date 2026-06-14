@@ -53,15 +53,9 @@ runs:
       env:
         TAURI_REVISION: ${{ inputs.tauri-revision }}
       run: |
-        tauri_source="$RUNNER_TEMP/tauri-portable-appimage"
-        git init "$tauri_source"
-        git -C "$tauri_source" remote add origin https://github.com/tauri-apps/tauri
-        git -C "$tauri_source" fetch --depth 1 origin "$TAURI_REVISION"
-        git -C "$tauri_source" checkout --detach FETCH_HEAD
-        git -C "$tauri_source" apply "$GITHUB_ACTION_PATH/tauri-identifier-desktop-entry.patch"
-
-        cargo install \
-          --path "$tauri_source/crates/tauri-cli" \
+        cargo install tauri-cli \
+          --git https://github.com/tauri-apps/tauri \
+          --rev "$TAURI_REVISION" \
           --locked
 
     - name: Install Node dependencies
