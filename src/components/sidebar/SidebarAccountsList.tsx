@@ -71,11 +71,24 @@ export const SidebarAccountsList = ({
 
   const closeSortMenu = useCallback(() => setShowSortMenu(false), []);
 
+  const getAccountTaskCount = (accountId: string) =>
+    tasks.filter((t) => t.accountId === accountId && !t.deletedAt && t.status !== 'completed' && t.status !== 'cancelled').length;
+
   const sortedAccounts = (() => {
     const sorted = [...accounts];
     if (accountSortConfig.mode === 'title') {
       sorted.sort((a, b) => {
         const cmp = a.name.localeCompare(b.name);
+        return accountSortConfig.direction === 'desc' ? -cmp : cmp;
+      });
+    } else if (accountSortConfig.mode === 'task-count') {
+      sorted.sort((a, b) => {
+        const cmp = getAccountTaskCount(a.id) - getAccountTaskCount(b.id);
+        return accountSortConfig.direction === 'desc' ? -cmp : cmp;
+      });
+    } else if (accountSortConfig.mode === 'calendar-count') {
+      sorted.sort((a, b) => {
+        const cmp = a.calendars.length - b.calendars.length;
         return accountSortConfig.direction === 'desc' ? -cmp : cmp;
       });
     } else {

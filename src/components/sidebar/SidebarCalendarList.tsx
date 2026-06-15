@@ -75,6 +75,11 @@ export const SidebarCalendarList = ({
         const cmp = a.displayName.localeCompare(b.displayName);
         return calendarSortConfig.direction === 'desc' ? -cmp : cmp;
       });
+    } else if (calendarSortConfig.mode === 'task-count') {
+      cals.sort((a, b) => {
+        const cmp = getTaskCount(a.id) - getTaskCount(b.id);
+        return calendarSortConfig.direction === 'desc' ? -cmp : cmp;
+      });
     } else {
       cals.sort((a, b) => {
         const cmp = a.sortOrder - b.sortOrder;

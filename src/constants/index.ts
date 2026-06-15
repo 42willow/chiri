@@ -42,6 +42,8 @@ export const DEFAULT_ACCOUNT_SORT_CONFIG = {
 export const ACCOUNT_SORT_OPTIONS: Array<{ value: AccountSortMode; label: string }> = [
   { value: 'manual', label: 'Manual' },
   { value: 'title', label: 'Title' },
+  { value: 'task-count', label: 'Task Count' },
+  { value: 'calendar-count', label: 'Calendar Count' },
 ];
 
 export const DEFAULT_CALENDAR_SORT_CONFIG = {
@@ -53,6 +55,7 @@ export const CALENDAR_SORT_OPTIONS: Array<{ value: CalendarSortMode; label: stri
   { value: 'manual', label: 'Manual' },
   { value: 'server', label: 'Server Order' },
   { value: 'title', label: 'Title' },
+  { value: 'task-count', label: 'Task Count' },
 ];
 
 export const DEFAULT_TAG_SORT_CONFIG = {
@@ -63,6 +66,7 @@ export const DEFAULT_TAG_SORT_CONFIG = {
 export const TAG_SORT_OPTIONS: Array<{ value: TagSortMode; label: string }> = [
   { value: 'manual', label: 'Manual' },
   { value: 'title', label: 'Title' },
+  { value: 'task-count', label: 'Task Count' },
 ];
 
 export const SORT_OPTIONS: Array<{ value: SortMode; label: string }> = [

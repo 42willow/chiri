@@ -72,6 +72,11 @@ export const SidebarTagsList = ({
         const cmp = a.name.localeCompare(b.name);
         return tagSortConfig.direction === 'desc' ? -cmp : cmp;
       });
+    } else if (tagSortConfig.mode === 'task-count') {
+      sorted.sort((a, b) => {
+        const cmp = getTagTaskCount(a.id) - getTagTaskCount(b.id);
+        return tagSortConfig.direction === 'desc' ? -cmp : cmp;
+      });
     } else {
       // manual: use sortOrder
       sorted.sort((a, b) => {

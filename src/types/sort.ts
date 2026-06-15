@@ -13,19 +13,19 @@ export interface SortConfig {
   direction: SortDirection;
 }
 
-export type AccountSortMode = 'manual' | 'title';
+export type AccountSortMode = 'manual' | 'title' | 'task-count' | 'calendar-count';
 export interface AccountSortConfig {
   mode: AccountSortMode;
   direction: SortDirection;
 }
 
-export type CalendarSortMode = 'manual' | 'server' | 'title';
+export type CalendarSortMode = 'manual' | 'server' | 'title' | 'task-count';
 export interface CalendarSortConfig {
   mode: CalendarSortMode;
   direction: SortDirection;
 }
 
-export type TagSortMode = 'manual' | 'title';
+export type TagSortMode = 'manual' | 'title' | 'task-count';
 export interface TagSortConfig {
   mode: TagSortMode;
   direction: SortDirection;
