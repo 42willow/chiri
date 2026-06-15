@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { HoverFlyout, HoverFlyoutGroup } from '$components/HoverFlyout';
 import { SidebarSortDirectionButton } from '$components/sidebar/SidebarSortDirectionButton';
+import { Tooltip } from '$components/Tooltip';
 import { ACCOUNT_SORT_OPTIONS, CALENDAR_SORT_OPTIONS } from '$constants';
 import { useSetAccountSortConfig, useSetCalendarSortConfig } from '$hooks/queries/useUIState';
 import type { AccountSortConfig, CalendarSortConfig } from '$types/sort';
@@ -58,31 +59,46 @@ export const SidebarAccountsSortMenu = ({
           Accounts
         </div>
 
-        <HoverFlyoutGroup>
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+        {accountSortConfig.mode === 'manual' ? (
+          <Tooltip
+            content="Not available for manual sorting"
+            position="right"
+            className="whitespace-nowrap"
+            triggerClassName="w-full"
+            allowInModal
           >
-            <span>Sort Direction</span>
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-surface-500 text-xs dark:text-surface-400">
-                {accountSortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
-              </span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+            <div className="flex w-full cursor-not-allowed items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-400 dark:text-surface-600">
+              <span>Sort Direction</span>
+              <span className="text-xs">Disabled</span>
             </div>
-          </button>
+          </Tooltip>
+        ) : (
+          <HoverFlyoutGroup>
+            <button
+              type="button"
+              className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+            >
+              <span>Sort Direction</span>
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="truncate text-surface-500 text-xs dark:text-surface-400">
+                  {accountSortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+              </div>
+            </button>
 
-          <HoverFlyout side="right">
-            <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
-              Sort Direction
-            </div>
-            <SidebarSortDirectionButton
-              direction={accountSortConfig.direction}
-              disabled={accountSortConfig.mode === 'manual'}
-              onToggle={toggleAccountSortDirection}
-            />
-          </HoverFlyout>
-        </HoverFlyoutGroup>
+            <HoverFlyout side="right">
+              <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
+                Sort Direction
+              </div>
+              <SidebarSortDirectionButton
+                direction={accountSortConfig.direction}
+                disabled={false}
+                onToggle={toggleAccountSortDirection}
+              />
+            </HoverFlyout>
+          </HoverFlyoutGroup>
+        )}
 
         <HoverFlyoutGroup>
           <button
@@ -128,31 +144,46 @@ export const SidebarAccountsSortMenu = ({
           Calendars
         </div>
 
-        <HoverFlyoutGroup>
-          <button
-            type="button"
-            className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+        {calendarSortConfig.mode === 'manual' ? (
+          <Tooltip
+            content="Not available for manual sorting"
+            position="right"
+            className="whitespace-nowrap"
+            triggerClassName="w-full"
+            allowInModal
           >
-            <span>Sort Direction</span>
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="truncate text-surface-500 text-xs dark:text-surface-400">
-                {calendarSortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
-              </span>
-              <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+            <div className="flex w-full cursor-not-allowed items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-400 dark:text-surface-600">
+              <span>Sort Direction</span>
+              <span className="text-xs">Disabled</span>
             </div>
-          </button>
+          </Tooltip>
+        ) : (
+          <HoverFlyoutGroup>
+            <button
+              type="button"
+              className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+            >
+              <span>Sort Direction</span>
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="truncate text-surface-500 text-xs dark:text-surface-400">
+                  {calendarSortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+              </div>
+            </button>
 
-          <HoverFlyout side="right">
-            <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
-              Sort Direction
-            </div>
-            <SidebarSortDirectionButton
-              direction={calendarSortConfig.direction}
-              disabled={calendarSortConfig.mode === 'manual'}
-              onToggle={toggleCalendarSortDirection}
-            />
-          </HoverFlyout>
-        </HoverFlyoutGroup>
+            <HoverFlyout side="right">
+              <div className="px-3 pt-1 pb-1 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
+                Sort Direction
+              </div>
+              <SidebarSortDirectionButton
+                direction={calendarSortConfig.direction}
+                disabled={false}
+                onToggle={toggleCalendarSortDirection}
+              />
+            </HoverFlyout>
+          </HoverFlyoutGroup>
+        )}
 
         <HoverFlyoutGroup>
           <button

@@ -317,27 +317,45 @@ export const Header = ({
                     Tasks
                   </div>
 
-                  <HoverFlyoutGroup>
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+                  {sortConfig.mode === 'manual' ? (
+                    <Tooltip
+                      content="Not available for manual sorting"
+                      position="left"
+                      className="whitespace-nowrap"
+                      triggerClassName="w-full"
+                      allowInModal
                     >
-                      <span>Sort Direction</span>
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span className="truncate text-surface-500 text-xs dark:text-surface-400">
-                          {sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
-                        </span>
-                        <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+                      <div className="flex w-full cursor-not-allowed items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-400 dark:text-surface-600">
+                        <span>Sort Direction</span>
+                        <span className="text-xs">Disabled</span>
                       </div>
-                    </button>
+                    </Tooltip>
+                  ) : (
+                    <HoverFlyoutGroup>
+                      <button
+                        type="button"
+                        className="flex w-full items-center justify-between gap-3 px-3 py-1.5 text-sm text-surface-700 outline-hidden transition-colors hover:bg-surface-100 focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset dark:text-surface-300 dark:hover:bg-surface-700"
+                      >
+                        <span>Sort Direction</span>
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="truncate text-surface-500 text-xs dark:text-surface-400">
+                            {sortConfig.direction === 'asc' ? 'Ascending' : 'Descending'}
+                          </span>
+                          <ChevronRight className="h-4 w-4 shrink-0 text-surface-400" />
+                        </div>
+                      </button>
 
-                    <HoverFlyout side="left" minWidthClassName="min-w-52">
-                      <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
-                        Sort Direction
-                      </div>
-                      <SortDirectionButton sortConfig={sortConfig} onToggle={toggleSortDirection} />
-                    </HoverFlyout>
-                  </HoverFlyoutGroup>
+                      <HoverFlyout side="left" minWidthClassName="min-w-52">
+                        <div className="px-3 pt-1 pb-2 font-medium text-surface-500 text-xs uppercase tracking-wider dark:text-surface-400">
+                          Sort Direction
+                        </div>
+                        <SortDirectionButton
+                          sortConfig={sortConfig}
+                          onToggle={toggleSortDirection}
+                        />
+                      </HoverFlyout>
+                    </HoverFlyoutGroup>
+                  )}
 
                   <HoverFlyoutGroup>
                     <button
