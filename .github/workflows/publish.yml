@@ -214,6 +214,8 @@ jobs:
     needs: prepare-release
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -330,11 +332,18 @@ jobs:
           tagName: app-v${{ needs.prepare-release.outputs.version }}
           args: ${{ matrix.args }}
 
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: 'src-tauri/target/**/release/bundle/**/*.{dmg,deb,rpm,exe,msi,zip,tar.gz,sig}'
+
   publish-appimage:
     name: ${{ matrix.label }}
     needs: prepare-release
     permissions:
       contents: write
+      id-token: write
+      attestations: write
     strategy:
       fail-fast: false
       matrix:
@@ -377,6 +386,11 @@ jobs:
           releaseId: ${{ needs.prepare-release.outputs.release_id }}
           tagName: app-v${{ needs.prepare-release.outputs.version }}
           args: --bundles appimage
+
+      - name: Attest build provenance
+        uses: actions/attest@v4
+        with:
+          subject-path: 'src-tauri/target/**/release/bundle/**/*.AppImage*'
 
   publish-summary:
     name: Publish summary
