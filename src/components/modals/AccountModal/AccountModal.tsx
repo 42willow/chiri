@@ -610,6 +610,7 @@ export function AccountModal({
       size={step === 'pick-type' ? 'xl' : 'md'}
       zIndex={zIndex}
       contentPadding={false}
+      contentOverflow="auto"
       preventClose={preventClose}
       footerLeft={backButton}
       footer={
@@ -656,7 +657,7 @@ export function AccountModal({
         ) : undefined
       }
     >
-      <div key={step} className={`h-full overflow-y-auto ${stepAnimationClass}`}>
+      <div key={step} className={stepAnimationClass}>
         {step === 'pick-type' && <ServerTypePicker onSelect={handleSelectServerType} />}
 
         {step === 'connect-method' && (
