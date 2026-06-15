@@ -2,7 +2,11 @@ import Monitor from 'lucide-react/icons/monitor';
 import Moon from 'lucide-react/icons/moon';
 import Sun from 'lucide-react/icons/sun';
 import { createElement, type ReactNode } from 'react';
-import { COLOR_SCHEMES, DEFAULT_COLOR_SCHEME_ID, defaultColorScheme } from '$constants/colorSchemes';
+import {
+  COLOR_SCHEMES,
+  DEFAULT_COLOR_SCHEME_ID,
+  defaultColorScheme,
+} from '$constants/colorSchemes';
 import type {
   AccentColor,
   ColorSchemeDefinition,
