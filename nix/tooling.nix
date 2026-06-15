@@ -7,8 +7,8 @@ let
     "aarch64-pc-windows-msvc"
   ];
 
-  nodejs = pkgs.nodejs_26;
-  pnpm = pkgs.pnpm.override { inherit nodejs; };
+  nodejs = pkgs.nodejs-slim_26;
+  pnpm = pkgs.pnpm.override { nodejs-slim = nodejs; };
   llvm = pkgs.llvmPackages;
   darwinSdk = pkgs.apple-sdk_14;
   darwinSdkRoot = "${darwinSdk}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk";
