@@ -81,7 +81,7 @@ export const IconEmojiPicker = ({
                 placeholder="Search..."
                 value={iconSearch}
                 onChange={(e) => setIconSearch(e.target.value)}
-                className="w-full appearance-none rounded-md bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 placeholder:text-surface-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-surface-700 dark:text-surface-200"
+                className="w-full appearance-none rounded-md border border-transparent bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
               />
             </div>
           </div>
@@ -130,7 +130,7 @@ export const IconEmojiPicker = ({
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
                 <EmojiPicker.Search
                   placeholder="Search..."
-                  className="w-full appearance-none rounded-md bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 placeholder:text-surface-400 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 dark:bg-surface-700 dark:text-surface-200"
+                  className="w-full appearance-none rounded-md border border-transparent bg-surface-100 py-2 pr-2.5 pl-8 text-sm text-surface-800 transition-colors placeholder:text-surface-400 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:text-surface-200 dark:focus:bg-surface-800"
                 />
               </div>
             </div>
