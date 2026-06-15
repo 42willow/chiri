@@ -130,7 +130,9 @@ export const ModalWrapper = ({
         style={dialogAnimationStyle}
       >
         {title && (
-          <div className="flex shrink-0 items-center justify-between rounded-t-xl border-surface-200 border-b bg-white p-4 dark:border-surface-700 dark:bg-surface-800">
+          <div
+            className={`flex shrink-0 justify-between rounded-t-xl border-surface-200 border-b bg-white p-4 dark:border-surface-700 dark:bg-surface-800 ${description ? 'items-start' : 'items-center'}`}
+          >
             <div className="flex min-w-0 items-center gap-3">
               {headerLeft}
               <div className="min-w-0">
