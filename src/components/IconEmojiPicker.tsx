@@ -74,7 +74,7 @@ export const IconEmojiPicker = ({
       <div>
         <div className={activeTab === 'icon' ? '' : 'hidden'}>
           <div className="px-2 pt-2">
-            <div className="relative">
+            <div className="relative z-10">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
               <input
                 type="text"
@@ -126,7 +126,7 @@ export const IconEmojiPicker = ({
             columns={9}
           >
             <div className="px-2 pt-2">
-              <div className="relative">
+              <div className="relative z-10">
                 <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
                 <EmojiPicker.Search
                   placeholder="Search..."
