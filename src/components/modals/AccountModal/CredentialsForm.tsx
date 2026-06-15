@@ -253,7 +253,7 @@ export const CredentialsForm = ({
           role="alert"
           className="min-w-0 rounded-lg border border-semantic-error/30 bg-semantic-error/10 p-3 text-sm text-surface-700 dark:text-surface-300"
         >
-          <div className="grid min-w-0 grid-cols-[1rem_minmax(0,1fr)] gap-x-3 gap-y-2">
+          <div className="grid min-w-0 grid-cols-[1rem_minmax(0,1fr)] gap-x-2 gap-y-2">
             <CircleX className="mt-0.5 size-4 shrink-0 text-semantic-error" />
             <div className="min-w-0">
               <p className="wrap-break-word font-medium text-semantic-error">{error.title}</p>
