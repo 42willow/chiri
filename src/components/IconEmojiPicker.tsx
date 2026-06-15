@@ -71,8 +71,14 @@ export const IconEmojiPicker = ({
         </button>
       </div>
 
-      <div>
-        <div className={activeTab === 'icon' ? '' : 'hidden'}>
+      <div className="relative">
+        <div
+          className={
+            activeTab === 'icon'
+              ? 'relative z-10'
+              : 'pointer-events-none invisible absolute inset-x-0 top-0 z-0 opacity-0'
+          }
+        >
           <div className="px-2 pt-2">
             <div className="relative z-10">
               <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-surface-400" />
@@ -116,7 +122,13 @@ export const IconEmojiPicker = ({
           </div>
         </div>
 
-        <div className={activeTab === 'emoji' ? '' : 'hidden'}>
+        <div
+          className={
+            activeTab === 'emoji'
+              ? 'relative z-10'
+              : 'pointer-events-none invisible absolute inset-x-0 top-0 z-0 opacity-0'
+          }
+        >
           <EmojiPicker.Root
             className="w-full"
             onEmojiSelect={(emoji) => {
