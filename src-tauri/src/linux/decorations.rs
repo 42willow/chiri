@@ -2,6 +2,9 @@
 
 #[cfg(target_os = "linux")]
 use std::env;
+#[cfg(target_os = "linux")]
+use tauri::Manager;
+
 
 /// Detects if the current desktop environment needs GTK client-side decorations
 /// Returns true for GNOME, COSMIC, and other DEs that work better with GTK decorations
