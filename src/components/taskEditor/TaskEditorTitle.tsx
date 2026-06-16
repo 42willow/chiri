@@ -149,7 +149,7 @@ export const TaskEditorTitle = ({
             id="task-title"
             value={pendingTitle}
             onChange={handleTitleChange}
-            placeholder="Task title..."
+            placeholder={task.parentUid ? 'Subtask title...' : 'Task title...'}
             rows={1}
             className="w-full flex-1 resize-none overflow-hidden border-0 bg-transparent p-0 font-medium text-sm text-surface-700 focus:outline-hidden focus:ring-0 dark:text-surface-300"
           />

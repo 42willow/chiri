@@ -7,6 +7,7 @@ interface TaskEditorHeaderProps {
   onDelete: () => void;
   onClose: () => void;
   isDeleted?: boolean;
+  isSubtask?: boolean;
   onRestore?: () => void;
   onDeletePermanently?: () => void;
 }
@@ -15,13 +16,14 @@ export const TaskEditorHeader = ({
   onDelete,
   onClose,
   isDeleted = false,
+  isSubtask = false,
   onRestore,
   onDeletePermanently,
 }: TaskEditorHeaderProps) => {
   return (
     <div className="flex items-center justify-between border-surface-200 border-b p-4 dark:border-surface-700">
       <h2 className="font-semibold text-lg text-surface-800 dark:text-surface-200">
-        {isDeleted ? 'Recently deleted' : 'Edit task'}
+        {isDeleted ? 'Recently deleted' : isSubtask ? 'Edit subtask' : 'Edit task'}
       </h2>
       <div className="flex items-center gap-2">
         {isDeleted ? (

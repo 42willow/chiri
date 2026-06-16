@@ -342,6 +342,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
           onDelete={handleDelete}
           onClose={handleClose}
           isDeleted={isReadOnly}
+          isSubtask={!!task.parentUid}
           onRestore={handleRestore}
           onDeletePermanently={handlePermanentDelete}
         />

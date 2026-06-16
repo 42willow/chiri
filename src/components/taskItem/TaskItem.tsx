@@ -290,6 +290,7 @@ export const TaskItem = ({
                   title={task.title}
                   status={task.status}
                   isUnstarted={isUnstarted}
+                  isSubtask={!!task.parentUid}
                   className="min-w-0 shrink truncate font-medium text-sm"
                 />
                 <TaskItemBadges {...badgesProps} compact={true} />
@@ -302,6 +303,7 @@ export const TaskItem = ({
                   title={task.title}
                   status={task.status}
                   isUnstarted={isUnstarted}
+                  isSubtask={!!task.parentUid}
                   className="min-w-0 flex-1 truncate font-medium text-sm leading-5"
                 />
               </div>

@@ -4,6 +4,7 @@ interface TaskItemTitleProps {
   title: string;
   status: TaskStatus;
   isUnstarted: boolean;
+  isSubtask?: boolean;
   className?: string;
 }
 
@@ -11,6 +12,7 @@ export const TaskItemTitle = ({
   title,
   status,
   isUnstarted,
+  isSubtask = false,
   className = '',
 }: TaskItemTitleProps) => {
   const getTextClass = () => {
@@ -22,7 +24,7 @@ export const TaskItemTitle = ({
 
   return (
     <div className={`${className} ${getTextClass()}`}>
-      {title || <span className="text-surface-400 italic">Untitled task</span>}
+      {title || <span className="text-surface-400 italic">{isSubtask ? 'Untitled subtask' : 'Untitled task'}</span>}
     </div>
   );
 };
