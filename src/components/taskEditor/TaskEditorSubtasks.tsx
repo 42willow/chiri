@@ -85,7 +85,6 @@ export const TaskEditorSubtasks = ({
       parentUid: task.uid,
       accountId: task.accountId,
       calendarId: task.calendarId,
-      priority: 'none',
     });
   };
 

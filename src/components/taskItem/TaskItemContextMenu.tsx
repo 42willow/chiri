@@ -290,7 +290,6 @@ export const TaskItemContextMenu = ({
                       parentUid: task.uid,
                       accountId: task.accountId,
                       calendarId: task.calendarId,
-                      priority: 'none',
                     },
                     {
                       onSuccess: (newTask) => {
