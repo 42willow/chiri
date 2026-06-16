@@ -15,6 +15,7 @@ import { FloatingDropdownFrame } from '$components/FloatingDropdownFrame';
 import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
+import { Tooltip } from '$components/Tooltip';
 import { PRIORITIES } from '$constants/priority';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -287,16 +288,23 @@ export const TaskBatchActionsBar = ({
                 <span className={compactLabelClass(isCompact)}>Tags</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setShowMoveModal(true)}
-                className={getActionButtonClass({ isCompact })}
-                disabled={allCalendars.length === 0}
-                title="Move to calendar"
+              <Tooltip
+                content={
+                  allCalendars.length === 0 ? 'Add a calendar to be able to move tasks' : null
+                }
+                position="bottom"
               >
-                <CalendarMove className="h-4 w-4" />
-                <span className={compactLabelClass(isCompact)}>Move</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setShowMoveModal(true)}
+                  className={getActionButtonClass({ isCompact })}
+                  disabled={allCalendars.length === 0}
+                  title={allCalendars.length === 0 ? undefined : 'Move to calendar'}
+                >
+                  <CalendarMove className="h-4 w-4" />
+                  <span className={compactLabelClass(isCompact)}>Move</span>
+                </button>
+              </Tooltip>
 
               <button
                 type="button"
