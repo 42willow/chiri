@@ -19,12 +19,19 @@ export const MacNotificationPermissionCard = ({
 }: MacNotificationPermissionCardProps) => {
   const isCompact = density === 'compact';
 
-  const permissionBadgeClass =
+  const permissionDotClass =
     permissionStatus === 'granted'
-      ? 'bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 text-semantic-success'
+      ? 'bg-semantic-success'
       : permissionStatus === 'denied'
-        ? 'bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 text-semantic-error'
-        : 'bg-surface-100 dark:bg-surface-700 border border-surface-200 dark:border-surface-600 text-semantic-warning';
+        ? 'bg-semantic-error'
+        : 'bg-semantic-warning';
+
+  const permissionLabelClass =
+    permissionStatus === 'granted'
+      ? 'text-semantic-success'
+      : permissionStatus === 'denied'
+        ? 'text-semantic-error'
+        : 'text-semantic-warning';
 
   const permissionLabel =
     permissionStatus === 'granted'
@@ -87,7 +94,8 @@ export const MacNotificationPermissionCard = ({
             </p>
           )}
         </div>
-        <span className={`shrink-0 rounded-lg px-2 py-1 text-xs ${permissionBadgeClass}`}>
+        <span className={`flex shrink-0 items-center gap-1.5 text-xs ${permissionLabelClass}`}>
+          <span className={`size-1.5 rounded-full ${permissionDotClass}`} />
           {permissionLabel}
         </span>
       </div>
