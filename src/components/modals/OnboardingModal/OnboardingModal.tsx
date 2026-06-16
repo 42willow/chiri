@@ -9,7 +9,7 @@ import HardDrive from 'lucide-react/icons/hard-drive';
 import Sparkles from 'lucide-react/icons/sparkles';
 import { useEffect, useRef, useState } from 'react';
 import AppIcon from '$components/Icon';
-import { MacNotificationPermissionCard } from '$components/MacNotificationPermissionCard';
+import { MacNotificationCard } from '$components/MacNotificationCard';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { ActionCard } from '$components/modals/OnboardingModal/ActionCard';
@@ -283,7 +283,7 @@ export const OnboardingModal = ({ hasCalDAVAccount, onAddAccount }: OnboardingMo
             </div>
 
             {isMac && permissionStatus !== null && (
-              <MacNotificationPermissionCard
+              <MacNotificationCard
                 permissionStatus={permissionStatus}
                 isCheckingPermission={isCheckingPermission}
                 requestPermission={requestPermission}

@@ -4,19 +4,19 @@ import type {
   NotificationPermissionStatus,
 } from '$types/notification';
 
-interface MacNotificationPermissionCardProps {
+interface MacNotificationCardProps {
   permissionStatus: NotificationPermissionStatus;
   isCheckingPermission: boolean;
   requestPermission: () => Promise<NotificationPermissionResult>;
   density?: 'default' | 'compact';
 }
 
-export const MacNotificationPermissionCard = ({
+export const MacNotificationCard = ({
   permissionStatus,
   isCheckingPermission,
   requestPermission,
   density = 'default',
-}: MacNotificationPermissionCardProps) => {
+}: MacNotificationCardProps) => {
   const isCompact = density === 'compact';
 
   const permissionDotClass =

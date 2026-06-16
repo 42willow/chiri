@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { MacNotificationPermissionCard } from '$components/MacNotificationPermissionCard';
+import { MacNotificationCard } from '$components/MacNotificationCard';
 import { TimePickerModal } from '$components/modals/TimePickerModal';
 import { useNotificationContext } from '$context/notificationContext';
 import { useSettingsStore } from '$context/settingsContext';
@@ -124,7 +124,7 @@ export const NotificationSettings = () => {
       </div>
 
       {isMacPlatform() && permissionStatus !== null && (
-        <MacNotificationPermissionCard
+        <MacNotificationCard
           permissionStatus={permissionStatus}
           isCheckingPermission={isCheckingPermission}
           requestPermission={requestPermission}
