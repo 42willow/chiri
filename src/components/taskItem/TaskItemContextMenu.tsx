@@ -16,7 +16,6 @@ import { FloatingLayerFrame } from '$components/FloatingLayerFrame';
 import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
-import { SubtaskModal } from '$components/modals/SubtaskModal';
 import { PRIORITIES } from '$constants/priority';
 import { useTaskDeletion } from '$hooks/deletion/useTaskDeletion';
 import { useAccounts } from '$hooks/queries/useAccounts';
@@ -51,7 +50,6 @@ export const TaskItemContextMenu = ({
 
   const [showExportModal, setShowExportModal] = useState(false);
   const [showTagsModal, setShowTagsModal] = useState(false);
-  const [showSubtaskModal, setShowSubtaskModal] = useState(false);
   const [showMoveToCalendarModal, setShowMoveToCalendarModal] = useState(false);
   const [isMenuHidden, setIsMenuHidden] = useState(false);
   const [priorityFlyoutPos, setPriorityFlyoutPos] = useState<{
@@ -286,8 +284,23 @@ export const TaskItemContextMenu = ({
               <button
                 type="button"
                 onClick={() => {
-                  setIsMenuHidden(true);
-                  setShowSubtaskModal(true);
+                  createTaskMutation.mutate(
+                    {
+                      title: '',
+                      parentUid: task.uid,
+                      accountId: task.accountId,
+                      calendarId: task.calendarId,
+                      priority: 'none',
+                    },
+                    {
+                      onSuccess: (newTask) => {
+                        setSelectedTaskMutation.mutate(
+                          { id: newTask.id, focusTitle: true },
+                          { onSuccess: () => setContextMenu(null) },
+                        );
+                      },
+                    },
+                  );
                 }}
                 className={menuItemClass}
               >
@@ -407,25 +420,6 @@ export const TaskItemContextMenu = ({
           }}
           tasks={[task]}
           tags={tags}
-        />
-      )}
-
-      {showSubtaskModal && (
-        <SubtaskModal
-          isOpen={showSubtaskModal}
-          onClose={() => {
-            setShowSubtaskModal(false);
-            setContextMenu(null);
-          }}
-          onAdd={(title) =>
-            createTaskMutation.mutate({
-              title,
-              parentUid: task.uid,
-              accountId: task.accountId,
-              calendarId: task.calendarId,
-              priority: 'none',
-            })
-          }
         />
       )}
 
