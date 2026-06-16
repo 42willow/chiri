@@ -108,7 +108,7 @@ fn read_decoration_hint(app: &tauri::AppHandle) -> String {
 /// at which GTK's Wayland backend negotiates the `zxdg_decoration_manager_v1`
 /// mode with the compositor.  runtime calls to `set_decorated` do not reliably
 /// trigger a Wayland protocol update on KDE apparently
-
+///
 /// note: the Wayland xdg_toplevel app_id is derived from the binary name,
 /// so the Flatpak installs the binary as garden.chiri.Chiri to match the .desktop filename for KWin icon lookup
 #[cfg(target_os = "linux")]
