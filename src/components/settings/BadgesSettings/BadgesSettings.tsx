@@ -15,6 +15,7 @@ import Link from 'lucide-react/icons/link';
 import Loader from 'lucide-react/icons/loader';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Tag from 'lucide-react/icons/tag';
+import { BadgesSettingsPreview } from '$components/settings/BadgesSettings/BadgesSettingsPreview';
 import {
   type BadgeConfig,
   BadgesSettingsSortableBadges,
@@ -98,6 +99,7 @@ export const BadgesSettings = () => {
   return (
     <div className="space-y-4">
       <h3 className="font-semibold text-base text-surface-800 dark:text-surface-200">Badges</h3>
+      <BadgesSettingsPreview />
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext items={taskBadgeOrder} strategy={verticalListSortingStrategy}>
