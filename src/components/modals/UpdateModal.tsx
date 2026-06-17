@@ -1,8 +1,9 @@
+import { openUrl } from '@tauri-apps/plugin-opener';
 import ArrowRight from 'lucide-react/icons/arrow-right';
 import Download from 'lucide-react/icons/download';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import { marked } from 'marked';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ModalButton } from '$components/ModalButton';
 import { ModalWrapper } from '$components/ModalWrapper';
 import { ChangelogModal } from '$components/modals/ChangelogModal';
@@ -18,6 +19,15 @@ interface UpdateModalProps {
   downloadProgress: number;
   error: UpdateError | null;
 }
+
+const handleLinkClick = (e: MouseEvent) => {
+  const target = e.target as HTMLElement;
+  const anchor = target.closest('a');
+  if (anchor?.href) {
+    e.preventDefault();
+    openUrl(anchor.href);
+  }
+};
 
 export const UpdateModal = ({
   updateInfo,
@@ -39,6 +49,16 @@ export const UpdateModal = ({
   }, [changelogPreview]);
 
   const hasChangelog = changelogHtml.trim().length > 0;
+
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = contentRef.current;
+    if (!el) return;
+
+    el.addEventListener('click', handleLinkClick);
+    return () => el.removeEventListener('click', handleLinkClick);
+  }, []);
 
   const releaseDate = useMemo(() => {
     if (!updateInfo.date) return null;
@@ -141,8 +161,9 @@ export const UpdateModal = ({
                 <>
                   <div className="relative max-h-44 overflow-hidden">
                     <div
-                      className="prose prose-sm dark:prose-invert max-w-none text-sm [&_a]:text-primary-600 hover:[&_a]:underline dark:[&_a]:text-primary-400 [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800 [&_h2:first-child]:mt-0 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-semibold [&_h2]:text-sm [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h3]:mt-3 [&_h3]:mb-1.5 [&_h3]:font-semibold [&_h3]:text-surface-700 [&_h3]:text-xs dark:[&_h3]:text-surface-300 [&_p]:my-1.5 [&_p]:text-surface-600 dark:[&_p]:text-surface-400 [&_strong]:font-semibold [&_ul]:mt-1.5 [&_ul]:mb-0 [&_ul]:ml-4 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-600 dark:[&_ul]:text-surface-400"
-                      // biome-ignore lint/security/noDangerouslySetInnerHtml: Markdown is rendered from trusted changelog content
+                      ref={contentRef}
+                      className="prose prose-sm dark:prose-invert max-w-none text-sm [&_a]:text-primary-600 hover:[&_a]:underline dark:[&_a]:text-primary-400 [&_code]:rounded-sm [&_code]:bg-surface-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs dark:[&_code]:bg-surface-800 [&_h2:first-child]:mt-0 [&_h2]:mt-4 [&_h2]:mb-2 [&_h2]:font-semibold [&_h2]:text-sm [&_h2]:text-surface-800 dark:[&_h2]:text-surface-200 [&_h3]:mt-3 [&_h3]:mb-1.5 [&_h3]:font-semibold [&_h3]:text-surface-700 [&_h3]:text-xs dark:[&_h3]:text-surface-300 [&_p]:my-1.5 [&_p]:text-surface-600 dark:[&_p]:text-surface-400 [&_strong]:font-semibold [&_ul]:mt-1.5 [&_ul]:mb-0 [&_ul]:ml-6 [&_ul]:list-outside [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:text-surface-600 dark:[&_ul]:text-surface-400"
+                      // biome-ignore lint/security/noDangerouslySetInnerHtml: Sanitized by Rust backend
                       dangerouslySetInnerHTML={{ __html: changelogHtml }}
                     />
                     <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-linear-to-t from-white to-transparent dark:from-surface-800" />
