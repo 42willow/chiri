@@ -9,41 +9,19 @@ fi
 
 exit_code=0
 
-# Biome (TS/JS/JSON)
-biome_staged=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(tsx?|jsx?|json[c]?)$' || true)
-
-if [ -n "$biome_staged" ]; then
-  echo "🔍 Running Biome check…"
-
-  # --write:  auto-fix safe issues (formatting + safe lints)
-  # --staged: only check staged files
-  if pnpm exec biome check --write --staged .; then
-    echo "$biome_staged" | xargs git add
-    echo "✅ Biome check passed."
-  else
-    echo ""
-    echo "❌ Biome found errors that couldn't be auto-fixed."
-    echo "   Run 'pnpm run fix', review the output, re-stage and try again."
-    exit_code=1
-  fi
+echo "🔍 Running formatting checks (lint-staged)…"
+if ! pnpm exec lint-staged; then
+  echo ""
+  echo "❌ Formatting failed. See errors above."
+  exit_code=1
 fi
 
 # rustfmt + clippy (Rust)
+
+# only run clippy if there are staged Rust files
 rust_staged=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.rs$' || true)
 
 if [ -n "$rust_staged" ]; then
-  echo "🔍 Running rustfmt check…"
-
-  # auto-format rust files and restage them
-  if cargo fmt --manifest-path src-tauri/Cargo.toml; then
-    echo "$rust_staged" | xargs git add
-    echo "✅ rustfmt check passed."
-  else
-    echo ""
-    echo "❌ Rust formatting failed."
-    exit_code=1
-  fi
-
   echo "🔍 Running clippy…"
 
   # matches CI exactly: --all-targets -D warnings
