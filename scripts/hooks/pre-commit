@@ -16,8 +16,9 @@ if [ -n "$biome_staged" ]; then
   echo "🔍 Running Biome check…"
 
   # --write:  auto-fix safe issues (formatting + safe lints)
-  # --staged: only check staged files; also re-stages any files Biome modifies
+  # --staged: only check staged files
   if pnpm exec biome check --write --staged .; then
+    echo "$biome_staged" | xargs git add
     echo "✅ Biome check passed."
   else
     echo ""
