@@ -137,7 +137,7 @@ export const useFileDrop = (options: UseFileDropOptions = {}): UseFileDropReturn
     const unlisteners: Array<() => void> = [];
 
     const setup = async () => {
-      if ((await platform()) !== 'linux') return;
+      if (platform() !== 'linux') return;
 
       const unlistenEnter = await listen('tauri://drag-enter', () => {
         tauriDragActive.current = true;
