@@ -96,6 +96,7 @@ export interface SettingsState {
   notifications: boolean;
   notifyReminders: boolean;
   notifyOverdue: boolean;
+  showAppIconBadge: boolean;
   defaultCalendarId: string | null;
   defaultCalendarIdManuallyChanged: boolean;
   preferCalDAVCalendarForNewTasks: boolean;
@@ -177,6 +178,7 @@ interface SettingsActions {
   setNotifications: (enabled: boolean) => void;
   setNotifyReminders: (enabled: boolean) => void;
   setNotifyOverdue: (enabled: boolean) => void;
+  setShowAppIconBadge: (enabled: boolean) => void;
   setDefaultCalendarId: (calendarId: string | null) => void;
   setDefaultCalendarIdAutomatically: (calendarId: string | null) => void;
   setPreferCalDAVCalendarForNewTasks: (enabled: boolean) => void;

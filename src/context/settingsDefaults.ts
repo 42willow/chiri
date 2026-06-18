@@ -31,6 +31,7 @@ export const defaultState: SettingsState = {
   notifications: true,
   notifyReminders: true,
   notifyOverdue: true,
+  showAppIconBadge: true,
   defaultCalendarId: null,
   defaultCalendarIdManuallyChanged: false,
   preferCalDAVCalendarForNewTasks: true,

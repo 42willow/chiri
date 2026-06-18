@@ -30,7 +30,7 @@ export const mergeOrder = <T extends string>(storedOrder: unknown, defaultOrder:
   return [...validStoredOrder, ...missingKeys];
 };
 
-export const exportSettings = (state: SettingsState): string => {
+export const exportSettings = (state: SettingsState) => {
   const exportData = {
     version: 1,
     ...state,
@@ -71,6 +71,7 @@ export const importSettings = (json: string, defaultState: SettingsState): Setti
       'notifications',
       'notifyReminders',
       'notifyOverdue',
+      'showAppIconBadge',
       'defaultCalendarId',
       'defaultPriority',
       'defaultStatus',

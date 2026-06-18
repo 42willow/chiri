@@ -60,6 +60,8 @@
     "autostart:allow-enable",
     "autostart:allow-disable",
     "autostart:allow-is-enabled",
-    "deep-link:default"
+    "deep-link:default",
+    "core:window:allow-set-badge-count",
+    "core:window:allow-set-overlay-icon"
   ]
 }

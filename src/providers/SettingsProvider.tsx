@@ -105,6 +105,10 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     (enabled: boolean) => settingsStore.setNotifyOverdue(enabled),
     [],
   );
+  const setShowAppIconBadge = useCallback(
+    (enabled: boolean) => settingsStore.setShowAppIconBadge(enabled),
+    [],
+  );
   const setDefaultCalendarId = useCallback(
     (calendarId: string | null) => settingsStore.setDefaultCalendarId(calendarId),
     [],
@@ -340,6 +344,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     setNotifications,
     setNotifyReminders,
     setNotifyOverdue,
+    setShowAppIconBadge,
     setDefaultCalendarId,
     setDefaultCalendarIdAutomatically,
     setPreferCalDAVCalendarForNewTasks,

@@ -1,6 +1,7 @@
 import { useRecentlyDeletedCleanup } from '$hooks/deletion/useRecentlyDeletedCleanup';
 import { useWebDAVPush } from '$hooks/push/useWebDAVPush';
 import type { useSyncQuery } from '$hooks/queries/useSync';
+import { useAppBadge } from '$hooks/system/useAppBadge';
 import { useConfirmQuit } from '$hooks/system/useConfirmQuit';
 import { useDeepLink } from '$hooks/system/useDeepLink';
 import { useNotifications } from '$hooks/system/useNotifications';
@@ -50,6 +51,7 @@ export const useAppLifecycle = ({
   useDeepLink();
   useNotifications({ onOpenTaskActions });
   useRecentlyDeletedCleanup();
+  useAppBadge();
 
   useKeyboardShortcuts({
     onOpenSettings,

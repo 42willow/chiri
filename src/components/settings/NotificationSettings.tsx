@@ -21,6 +21,8 @@ export const NotificationSettings = () => {
     setNotifyReminders,
     notifyOverdue,
     setNotifyOverdue,
+    showAppIconBadge,
+    setShowAppIconBadge,
     quietHoursEnabled,
     setQuietHoursEnabled,
     quietHoursStart,
@@ -130,6 +132,23 @@ export const NotificationSettings = () => {
           requestPermission={requestPermission}
         />
       )}
+
+      <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
+        <label className="flex cursor-pointer items-center justify-between p-4">
+          <div>
+            <p className="text-sm text-surface-700 dark:text-surface-300">App icon badge count</p>
+            <p className="text-surface-500 text-xs dark:text-surface-400">
+              Show the number of overdue tasks on the app icon
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            checked={showAppIconBadge}
+            onChange={(e) => setShowAppIconBadge(e.target.checked)}
+            className="rounded-sm border-surface-300 outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:cursor-not-allowed"
+          />
+        </label>
+      </div>
 
       <div className="overflow-hidden rounded-lg border border-surface-200 bg-white dark:border-surface-700 dark:bg-surface-800">
         <label className="flex items-center justify-between p-4">

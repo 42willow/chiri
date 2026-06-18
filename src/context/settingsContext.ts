@@ -214,6 +214,7 @@ export const settingsStore = {
   setNotifications: (notifications: boolean) => setState({ notifications }),
   setNotifyReminders: (notifyReminders: boolean) => setState({ notifyReminders }),
   setNotifyOverdue: (notifyOverdue: boolean) => setState({ notifyOverdue }),
+  setShowAppIconBadge: (showAppIconBadge: boolean) => setState({ showAppIconBadge }),
   setDefaultCalendarId: (defaultCalendarId: string | null) =>
     setState({ defaultCalendarId, defaultCalendarIdManuallyChanged: true }),
   setDefaultCalendarIdAutomatically: (defaultCalendarId: string | null) =>
