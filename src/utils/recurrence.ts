@@ -57,6 +57,27 @@ export const getNextOccurrence = (rruleValue: string, after: Date, dtstart?: Dat
   }
 };
 
+/** Get up to `limit` occurrences strictly after a reference date. */
+export const getNextOccurrences = (
+  rruleValue: string,
+  after: Date,
+  dtstart: Date | undefined,
+  limit = 3,
+): Date[] => {
+  if (limit <= 0) return [];
+  const results: Date[] = [];
+  let cursor = after;
+
+  for (let index = 0; index < limit; index += 1) {
+    const next = getNextOccurrence(rruleValue, cursor, dtstart);
+    if (!next) break;
+    results.push(next);
+    cursor = next;
+  }
+
+  return results;
+};
+
 const FREQ_LABEL: Record<string, string> = {
   DAILY: 'Daily',
   WEEKLY: 'Weekly',
@@ -114,6 +135,23 @@ export const buildRRule = (parts: Record<string, string>) => {
     .map(([k, v]) => `${k}=${v}`)
     .join(';');
   return extras ? `FREQ=${FREQ};${extras}` : `FREQ=${FREQ}`;
+};
+
+/**
+ * Apply editor-owned RRULE fields without discarding fields imported from CalDAV
+ * that the editor does not understand.
+ */
+export const mergeRRuleParts = (
+  originalRrule: string | undefined,
+  managedKeys: readonly string[],
+  updates: Record<string, string | undefined>,
+) => {
+  const parts: Record<string, string> = originalRrule ? parseRRule(originalRrule) : {};
+  for (const key of managedKeys) delete parts[key.toUpperCase()];
+  for (const [key, value] of Object.entries(updates)) {
+    if (value) parts[key.toUpperCase()] = value;
+  }
+  return buildRRule(parts);
 };
 
 /**
@@ -240,6 +278,8 @@ export const rruleToDisplaySummary = (
     if (freq === 'MONTHLY' && byday) {
       const monthlyByday = formatMonthlyBydayDetail(byday);
       if (monthlyByday) details.push(monthlyByday);
+    } else if (freq === 'MONTHLY' && parts.BYMONTHDAY) {
+      details.push(`day ${parts.BYMONTHDAY}`);
     }
 
     if (count !== undefined) {
@@ -295,6 +335,8 @@ export const rruleToText = (rruleValue: string, repeatFrom?: number, dateFormat?
     if (freq === 'MONTHLY' && byday) {
       const monthlyByday = formatMonthlyByday(byday);
       if (monthlyByday) label += monthlyByday;
+    } else if (freq === 'MONTHLY' && parts.BYMONTHDAY) {
+      label += ` on day ${parts.BYMONTHDAY}`;
     }
 
     // End condition suffix

@@ -13,7 +13,9 @@ import {
   buildRRule,
   frequencyToRRule,
   getNextOccurrence,
+  getNextOccurrences,
   getRepeatPresets,
+  mergeRRuleParts,
   parseRRule,
   rruleToDisplaySummary,
   rruleToFrequency,
@@ -79,6 +81,23 @@ describe('buildRRule', () => {
   });
 });
 
+describe('mergeRRuleParts', () => {
+  it('preserves fields the editor does not manage', () => {
+    expect(
+      mergeRRuleParts('FREQ=MONTHLY;BYMONTH=6;X-CHIRI=keep', ['FREQ', 'INTERVAL'], {
+        FREQ: 'MONTHLY',
+        INTERVAL: '2',
+      }),
+    ).toBe('FREQ=MONTHLY;BYMONTH=6;X-CHIRI=keep;INTERVAL=2');
+  });
+
+  it('removes managed fields when their update is empty', () => {
+    expect(mergeRRuleParts('FREQ=DAILY;COUNT=5;X-FOO=bar', ['COUNT'], {})).toBe(
+      'FREQ=DAILY;X-FOO=bar',
+    );
+  });
+});
+
 describe('rruleToText', () => {
   it('formats simple daily', () => {
     expect(rruleToText('FREQ=DAILY')).toBe('Daily');
@@ -100,6 +119,11 @@ describe('rruleToText', () => {
     expect(rruleToText('FREQ=MONTHLY;BYDAY=3WE')).toContain('on the 3rd Wed');
     expect(rruleToText('FREQ=MONTHLY;BYDAY=4TH')).toContain('on the 4th Thu');
     expect(rruleToText('FREQ=MONTHLY;BYDAY=-1FR')).toContain('on the last Fri');
+  });
+
+  it('formats monthly day-of-month rules', () => {
+    expect(rruleToText('FREQ=MONTHLY;BYMONTHDAY=15')).toBe('Monthly on day 15');
+    expect(rruleToDisplaySummary('FREQ=MONTHLY;BYMONTHDAY=15').details).toEqual(['day 15']);
   });
 
   it('appends count suffix correctly with singular/plural', () => {
@@ -251,5 +275,19 @@ describe('getNextOccurrence', () => {
     const after = new Date(Date.UTC(2025, 1, 1));
     const result = getNextOccurrence('FREQ=DAILY;UNTIL=20250110T000000Z', after, dtstart);
     expect(result).toBeNull();
+  });
+});
+
+describe('getNextOccurrences', () => {
+  it('returns a bounded occurrence preview', () => {
+    const start = new Date(Date.UTC(2025, 0, 1));
+    expect(
+      getNextOccurrences('FREQ=DAILY', start, start, 3).map((date) => date.getUTCDate()),
+    ).toEqual([2, 3, 4]);
+  });
+
+  it('respects finite rules', () => {
+    const start = new Date(Date.UTC(2025, 0, 1));
+    expect(getNextOccurrences('FREQ=DAILY;COUNT=2', start, start, 3)).toHaveLength(1);
   });
 });

@@ -8,7 +8,14 @@ import { Select } from '$components/Select';
 import { useSettingsStore } from '$context/settingsContext';
 import type { RecurrenceFrequency } from '$types/recurrence';
 import { formatDate } from '$utils/date';
-import { buildRRule, frequencyToRRule, parseRRule, rruleToFrequency } from '$utils/recurrence';
+import {
+  frequencyToRRule,
+  getNextOccurrences,
+  mergeRRuleParts,
+  parseRRule,
+  rruleToFrequency,
+  rruleToText,
+} from '$utils/recurrence';
 
 interface RepeatModalProps {
   isOpen: boolean;
@@ -22,12 +29,17 @@ interface RepeatModalProps {
 
 type EndMode = 'never' | 'count' | 'until';
 type CustomPeriod = 'MINUTELY' | 'HOURLY' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+type MonthlyMode = 'monthday' | 'weekday';
 
 interface RepeatUIState {
   freq: RecurrenceFrequency;
   interval: number;
   byday: string[];
   customPeriod: CustomPeriod;
+  monthlyMode: MonthlyMode;
+  monthlyDay: number;
+  monthlyOrdinal: number;
+  monthlyWeekday: string;
   endMode: EndMode;
   count: number;
   until: string; // YYYY-MM-DD for <input type="date">
@@ -42,6 +54,17 @@ const WEEKDAY_OPTIONS = [
   { value: 'SA', label: 'Sa' },
   { value: 'SU', label: 'Su' },
 ];
+
+const getMonthlyDefaults = (dueDate?: Date) => {
+  const date = dueDate ?? new Date();
+  const weekdays = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  const occurrence = Math.ceil(date.getDate() / 7);
+  return {
+    monthlyDay: date.getDate(),
+    monthlyOrdinal: occurrence > 4 ? -1 : occurrence,
+    monthlyWeekday: weekdays[date.getDay()],
+  };
+};
 
 const CUSTOM_PERIOD_OPTIONS: { value: CustomPeriod; label: string; plural: string }[] = [
   { value: 'MINUTELY', label: 'minute', plural: 'minutes' },
@@ -61,6 +84,15 @@ const PRESET_PERIOD_LABEL: Partial<
   yearly: { singular: 'year', plural: 'years' },
 };
 
+const FREQUENCY_OPTIONS: { value: RecurrenceFrequency; label: string }[] = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekdays', label: 'Weekdays' },
+  { value: 'weekly', label: 'Weekly' },
+  { value: 'monthly', label: 'Monthly' },
+  { value: 'yearly', label: 'Yearly' },
+  { value: 'custom', label: 'Custom…' },
+];
+
 const parseToUIState = (
   rrule: string | undefined,
   dueDate?: Date,
@@ -71,6 +103,8 @@ const parseToUIState = (
     interval: 1,
     byday: [],
     customPeriod: 'DAILY',
+    monthlyMode: 'monthday',
+    ...getMonthlyDefaults(dueDate),
     endMode: 'never',
     count: 5,
     until: dueDate
@@ -98,6 +132,16 @@ const parseToUIState = (
     YEARLY: 'YEARLY',
   };
   const customPeriod: CustomPeriod = freqToCustomPeriod[parts.FREQ ?? ''] ?? 'DAILY';
+  const ordinalWeekday = parts.BYDAY?.match(/^(-1|[1-4])(MO|TU|WE|TH|FR|SA|SU)$/);
+  const monthlyMode: MonthlyMode = ordinalWeekday ? 'weekday' : 'monthday';
+  const monthlyDefaults = getMonthlyDefaults(dueDate);
+  const monthlyDay = parts.BYMONTHDAY
+    ? Math.max(1, Math.min(31, parseInt(parts.BYMONTHDAY, 10)))
+    : monthlyDefaults.monthlyDay;
+  const monthlyOrdinal = ordinalWeekday
+    ? parseInt(ordinalWeekday[1], 10)
+    : monthlyDefaults.monthlyOrdinal;
+  const monthlyWeekday = ordinalWeekday?.[2] ?? monthlyDefaults.monthlyWeekday;
 
   let until = defaults.until;
   if (parts.UNTIL) {
@@ -105,10 +149,24 @@ const parseToUIState = (
     until = `${u.slice(0, 4)}-${u.slice(4, 6)}-${u.slice(6, 8)}`;
   }
 
-  return { freq, interval, byday, customPeriod, endMode, count, until };
+  return {
+    freq,
+    interval,
+    byday,
+    customPeriod,
+    monthlyMode,
+    monthlyDay,
+    monthlyOrdinal,
+    monthlyWeekday,
+    endMode,
+    count,
+    until,
+  };
 };
 
-const buildFromUIState = (state: RepeatUIState) => {
+const MANAGED_RRULE_KEYS = ['FREQ', 'INTERVAL', 'BYDAY', 'BYMONTHDAY', 'COUNT', 'UNTIL'] as const;
+
+const buildFromUIState = (state: RepeatUIState, originalRrule?: string) => {
   if (state.freq === 'none') return undefined;
 
   let base: Record<string, string>;
@@ -122,6 +180,16 @@ const buildFromUIState = (state: RepeatUIState) => {
     base = parseRRule(frequencyToRRule(state.freq));
   }
 
+  const isMonthly =
+    state.freq === 'monthly' || (state.freq === 'custom' && state.customPeriod === 'MONTHLY');
+  if (isMonthly) {
+    if (state.monthlyMode === 'monthday') {
+      base.BYMONTHDAY = String(state.monthlyDay);
+    } else {
+      base.BYDAY = `${state.monthlyOrdinal}${state.monthlyWeekday}`;
+    }
+  }
+
   if (state.interval > 1) base.INTERVAL = String(state.interval);
 
   if (state.endMode === 'count' && state.count > 0) {
@@ -130,7 +198,7 @@ const buildFromUIState = (state: RepeatUIState) => {
     base.UNTIL = `${state.until.replace(/-/g, '')}T000000Z`;
   }
 
-  return buildRRule(base);
+  return mergeRRuleParts(originalRrule, MANAGED_RRULE_KEYS, base);
 };
 
 const inputCls =
@@ -164,6 +232,7 @@ export const RepeatModal = ({
   dueDate,
   initialCustom = false,
   onSave,
+  // biome-ignore lint/complexity/noExcessiveCognitiveComplexity: recurrence controls intentionally coordinate one shared draft state
 }: RepeatModalProps) => {
   const [ui, setUI] = useState<RepeatUIState>(() => parseToUIState(rrule, dueDate, initialCustom));
   const [localRepeatFrom, setLocalRepeatFrom] = useState(repeatFrom);
@@ -172,6 +241,10 @@ export const RepeatModal = ({
   );
   const [countInput, setCountInput] = useState(() => String(parseToUIState(rrule, dueDate).count));
   const [showUntilPicker, setShowUntilPicker] = useState(false);
+  const [showAdvancedFrequencies, setShowAdvancedFrequencies] = useState(() => {
+    const freq = parseRRule(rrule ?? '').FREQ;
+    return freq === 'MINUTELY' || freq === 'HOURLY';
+  });
 
   const { dateFormat, startOfWeek } = useSettingsStore();
 
@@ -195,7 +268,9 @@ export const RepeatModal = ({
   };
 
   const handleDone = () => {
-    onSave(buildFromUIState(ui), localRepeatFrom);
+    const initialState = parseToUIState(rrule, dueDate, initialCustom);
+    const ruleChanged = JSON.stringify(ui) !== JSON.stringify(initialState);
+    onSave(!ruleChanged && rrule ? rrule : buildFromUIState(ui, rrule), localRepeatFrom);
     onClose();
   };
 
@@ -212,6 +287,16 @@ export const RepeatModal = ({
   const showDayPicker =
     ui.freq === 'weekly' || (ui.freq === 'custom' && ui.customPeriod === 'WEEKLY');
   const showInterval = isRecurring && ui.freq !== 'weekdays';
+  const showMonthlyPattern =
+    ui.freq === 'monthly' || (ui.freq === 'custom' && ui.customPeriod === 'MONTHLY');
+  const initialState = parseToUIState(rrule, dueDate, initialCustom);
+  const ruleChanged = JSON.stringify(ui) !== JSON.stringify(initialState);
+  const draftRrule = !ruleChanged && rrule ? rrule : buildFromUIState(ui, rrule);
+  const previewStart = dueDate ?? new Date();
+  const occurrencePreview =
+    draftRrule && localRepeatFrom !== 1
+      ? getNextOccurrences(draftRrule, previewStart, previewStart, 3)
+      : [];
 
   // Reorder weekdays to respect the user's week start preference
   // WEEKDAY_OPTIONS is MO-first (index 0=MO, ..., 6=SU)
@@ -236,10 +321,24 @@ export const RepeatModal = ({
         isOpen={isOpen}
         onClose={onClose}
         title="Repeat"
-        size="sm"
+        className="max-w-140"
         zIndex="z-60"
         contentPadding={false}
         contentOverflow="auto"
+        footerLeft={
+          rrule ? (
+            <ModalButton
+              variant="ghost"
+              onClick={() => {
+                onSave(undefined, localRepeatFrom);
+                onClose();
+              }}
+              className="text-surface-500 hover:bg-semantic-error/10 hover:text-semantic-error"
+            >
+              Clear
+            </ModalButton>
+          ) : null
+        }
         footer={
           <>
             <ModalButton variant="ghost" onClick={onClose}>
@@ -251,192 +350,301 @@ export const RepeatModal = ({
           </>
         }
       >
-        <div className="space-y-4 p-4">
-          <Select
-            value={ui.freq}
-            onChange={(e) => {
-              const freq = e.target.value as RecurrenceFrequency;
-              const byday =
-                freq === 'weekdays'
-                  ? ['MO', 'TU', 'WE', 'TH', 'FR']
-                  : freq === 'weekly' && ui.byday.length === 0
-                    ? []
-                    : ui.byday;
-              update({ freq, byday });
-            }}
-            className={`w-full ${selectCls}`}
-          >
-            {rrule && <option value="none">Does not repeat</option>}
-            <option value="daily">Daily</option>
-            <option value="weekdays">Every weekday (Mon–Fri)</option>
-            <option value="weekly">Weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-            <option value="custom">Custom…</option>
-          </Select>
-
-          {showInterval && (
-            <div className="flex items-center gap-2">
-              <span className="shrink-0 text-sm text-surface-600 dark:text-surface-400">Every</span>
-              <input
-                type="text"
-                inputMode="numeric"
-                value={intervalInput}
-                onChange={(e) => setIntervalInput(e.target.value.replace(/[^0-9]/g, ''))}
-                onBlur={() => {
-                  const n = Math.max(1, parseInt(intervalInput, 10) || 1);
-                  setIntervalInput(String(n));
-                  update({ interval: n });
+        <div className="flex min-h-100">
+          <div className="flex w-40 shrink-0 flex-col gap-1.5 border-surface-200 border-r p-4 dark:border-surface-700">
+            {FREQUENCY_OPTIONS.map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={ui.freq === value}
+                onClick={() => {
+                  const byday =
+                    value === 'weekdays'
+                      ? ['MO', 'TU', 'WE', 'TH', 'FR']
+                      : value === 'weekly'
+                        ? (parseRRule(frequencyToRRule('weekly', dueDate)).BYDAY?.split(',') ?? [])
+                        : [];
+                  update({ freq: value, byday });
                 }}
-                className={`w-16 text-center ${inputCls}`}
-              />
-              {ui.freq === 'custom' ? (
-                <Select
-                  value={ui.customPeriod}
-                  onChange={(e) => {
-                    const customPeriod = e.target.value as CustomPeriod;
-                    const byday = customPeriod === 'WEEKLY' ? ui.byday : [];
-                    update({ customPeriod, byday });
-                  }}
-                  className={selectCls}
-                >
-                  {CUSTOM_PERIOD_OPTIONS.map(({ value, label, plural }) => (
-                    <option key={value} value={value}>
-                      {ui.interval === 1 ? label : plural}
-                    </option>
-                  ))}
-                </Select>
-              ) : (
-                <span className="text-sm text-surface-700 dark:text-surface-300">
-                  {periodLabel}
-                </span>
-              )}
-            </div>
-          )}
-
-          {showDayPicker && (
-            <fieldset aria-label="Days of week" className="m-0 flex min-w-0 gap-1.5 border-0 p-0">
-              {orderedWeekdays.map(({ value, label }) => {
-                const active = ui.byday.includes(value);
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => {
-                      const byday = active
-                        ? ui.byday.filter((d) => d !== value)
-                        : [...ui.byday, value];
-                      update({ byday });
-                    }}
-                    className={`h-9 w-9 rounded-full border font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
-                      active
-                        ? 'border-surface-300 bg-surface-200 text-surface-900 dark:border-surface-500 dark:bg-surface-700 dark:text-surface-100'
-                        : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-700'
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </fieldset>
-          )}
-
-          {isRecurring && (
-            <div className="space-y-2">
-              <p className="text-surface-500 text-xs dark:text-surface-400">Ends</p>
-              <div className="flex gap-2">
-                {(
-                  [
-                    { value: 'never', label: 'Never' },
-                    { value: 'count', label: 'After' },
-                    { value: 'until', label: 'On date' },
-                  ] as const
-                ).map(({ value, label }) => (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => update({ endMode: value })}
-                    className={`${btnBase} ${ui.endMode === value ? btnActive : btnInactive}`}
-                  >
-                    {label}
-                  </button>
-                ))}
+                className={`w-full rounded-lg px-2 py-1.5 text-left font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-inset ${
+                  ui.freq === value
+                    ? 'bg-primary-500 text-primary-contrast'
+                    : 'bg-surface-100 text-surface-700 hover:bg-surface-200 dark:bg-surface-700 dark:text-surface-300 dark:hover:bg-surface-600'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="min-w-0 flex-1 space-y-4 p-4">
+            {draftRrule && (
+              <div className="rounded-lg bg-primary-500/10 px-3 py-2.5">
+                <p className="font-medium text-sm text-surface-800 dark:text-surface-100">
+                  {rruleToText(draftRrule, localRepeatFrom, dateFormat)}
+                </p>
+                {localRepeatFrom === 1 ? (
+                  <p className="mt-1 text-surface-500 text-xs dark:text-surface-400">
+                    Future dates depend on when the task is completed.
+                  </p>
+                ) : occurrencePreview.length > 0 ? (
+                  <p className="mt-1 text-surface-500 text-xs dark:text-surface-400">
+                    Next:{' '}
+                    {occurrencePreview
+                      .map((date) => formatDate(date, true, dateFormat))
+                      .join(' · ')}
+                  </p>
+                ) : null}
               </div>
-
-              {ui.endMode === 'count' && (
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    inputMode="numeric"
-                    value={countInput}
-                    onChange={(e) => setCountInput(e.target.value.replace(/[^0-9]/g, ''))}
-                    onBlur={() => {
-                      const n = Math.max(1, parseInt(countInput, 10) || 1);
-                      setCountInput(String(n));
-                      update({ count: n });
+            )}
+            {showInterval && (
+              <div className="flex items-center gap-2">
+                <span className="shrink-0 text-sm text-surface-600 dark:text-surface-400">
+                  Every
+                </span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={intervalInput}
+                  onChange={(e) => setIntervalInput(e.target.value.replace(/[^0-9]/g, ''))}
+                  onBlur={() => {
+                    const n = Math.max(1, parseInt(intervalInput, 10) || 1);
+                    setIntervalInput(String(n));
+                    update({ interval: n });
+                  }}
+                  className={`w-16 text-center ${inputCls}`}
+                />
+                {ui.freq === 'custom' ? (
+                  <Select
+                    value={ui.customPeriod}
+                    onChange={(e) => {
+                      const customPeriod = e.target.value as CustomPeriod;
+                      const byday = customPeriod === 'WEEKLY' ? ui.byday : [];
+                      update({ customPeriod, byday });
                     }}
-                    className={`w-16 text-center ${inputCls}`}
-                  />
-                  <span className="text-sm text-surface-600 dark:text-surface-400">
-                    {ui.count === 1 ? 'time' : 'times'}
+                    className={selectCls}
+                  >
+                    {CUSTOM_PERIOD_OPTIONS.filter(
+                      ({ value }) =>
+                        showAdvancedFrequencies || (value !== 'MINUTELY' && value !== 'HOURLY'),
+                    ).map(({ value, label, plural }) => (
+                      <option key={value} value={value}>
+                        {ui.interval === 1 ? label : plural}
+                      </option>
+                    ))}
+                  </Select>
+                ) : (
+                  <span className="text-sm text-surface-700 dark:text-surface-300">
+                    {periodLabel}
                   </span>
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {ui.endMode === 'until' &&
-                (() => {
-                  const untilDate = ui.until
-                    ? (() => {
-                        const [y, m, d] = ui.until.split('-').map(Number);
-                        return new Date(y, m - 1, d);
-                      })()
-                    : undefined;
+            {ui.freq === 'custom' && !showAdvancedFrequencies && (
+              <button
+                type="button"
+                onClick={() => setShowAdvancedFrequencies(true)}
+                className="text-surface-500 text-xs outline-hidden hover:text-surface-700 focus-visible:underline dark:text-surface-400 dark:hover:text-surface-200"
+              >
+                Show minute and hour frequencies
+              </button>
+            )}
+
+            {showDayPicker && (
+              <fieldset aria-label="Days of week" className="m-0 flex min-w-0 gap-1.5 border-0 p-0">
+                {orderedWeekdays.map(({ value, label }) => {
+                  const active = ui.byday.includes(value);
                   return (
                     <button
+                      key={value}
                       type="button"
-                      onClick={() => setShowUntilPicker(true)}
-                      className="flex h-9 w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-800 dark:hover:border-surface-500"
+                      aria-pressed={active}
+                      onClick={() => {
+                        const byday = active
+                          ? ui.byday.filter((d) => d !== value)
+                          : [...ui.byday, value];
+                        update({ byday });
+                      }}
+                      className={`h-9 w-9 rounded-full border font-medium text-xs outline-hidden transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 ${
+                        active
+                          ? 'border-surface-300 bg-surface-200 text-surface-900 dark:border-surface-500 dark:bg-surface-700 dark:text-surface-100'
+                          : 'border-surface-200 text-surface-600 hover:border-surface-300 hover:bg-surface-50 dark:border-surface-700 dark:text-surface-400 dark:hover:bg-surface-700'
+                      }`}
                     >
-                      {untilDate ? (
-                        <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
-                      ) : (
-                        <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
-                      )}
-                      <span
-                        className={
-                          untilDate ? 'text-surface-700 dark:text-surface-300' : 'text-surface-400'
-                        }
-                      >
-                        {untilDate ? formatDate(untilDate, true, dateFormat) : 'Set end date...'}
-                      </span>
+                      {label}
                     </button>
                   );
-                })()}
-            </div>
-          )}
+                })}
+              </fieldset>
+            )}
 
-          {isRecurring && (
-            <div className="space-y-2">
-              <p className="text-surface-500 text-xs dark:text-surface-400">Advance from</p>
-              <div className="flex gap-2">
-                {(
-                  [
-                    { value: 0, label: 'Due date' },
-                    { value: 1, label: 'Completion date' },
-                  ] as const
-                ).map(({ value, label }) => (
+            {showMonthlyPattern && (
+              <div className="space-y-2">
+                <p className="text-surface-500 text-xs dark:text-surface-400">Repeat on</p>
+                <div className="flex gap-2">
                   <button
-                    key={value}
                     type="button"
-                    onClick={() => setLocalRepeatFrom(value)}
-                    className={`${btnBase} ${localRepeatFrom === value ? btnActive : btnInactive}`}
+                    aria-pressed={ui.monthlyMode === 'monthday'}
+                    onClick={() => update({ monthlyMode: 'monthday' })}
+                    className={`${btnBase} ${ui.monthlyMode === 'monthday' ? btnActive : btnInactive}`}
                   >
-                    {label}
+                    Day of month
                   </button>
-                ))}
+                  <button
+                    type="button"
+                    aria-pressed={ui.monthlyMode === 'weekday'}
+                    onClick={() => update({ monthlyMode: 'weekday' })}
+                    className={`${btnBase} ${ui.monthlyMode === 'weekday' ? btnActive : btnInactive}`}
+                  >
+                    Weekday
+                  </button>
+                </div>
+                {ui.monthlyMode === 'monthday' ? (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-surface-600 dark:text-surface-400">Day</span>
+                    <input
+                      type="number"
+                      min={1}
+                      max={31}
+                      value={ui.monthlyDay}
+                      onChange={(event) =>
+                        update({
+                          monthlyDay: Math.max(1, Math.min(31, Number(event.target.value))),
+                        })
+                      }
+                      className={`w-20 text-center ${inputCls}`}
+                    />
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <Select
+                      value={ui.monthlyOrdinal}
+                      onChange={(event) => update({ monthlyOrdinal: Number(event.target.value) })}
+                      className={`flex-1 ${selectCls}`}
+                    >
+                      <option value={1}>First</option>
+                      <option value={2}>Second</option>
+                      <option value={3}>Third</option>
+                      <option value={4}>Fourth</option>
+                      <option value={-1}>Last</option>
+                    </Select>
+                    <Select
+                      value={ui.monthlyWeekday}
+                      onChange={(event) => update({ monthlyWeekday: event.target.value })}
+                      className={`flex-1 ${selectCls}`}
+                    >
+                      {WEEKDAY_OPTIONS.map(({ value, label }) => (
+                        <option key={value} value={value}>
+                          {label}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            )}
+
+            {isRecurring && (
+              <div className="space-y-2">
+                <p className="text-surface-500 text-xs dark:text-surface-400">Ends</p>
+                <div className="flex gap-2">
+                  {(
+                    [
+                      { value: 'never', label: 'Never' },
+                      { value: 'count', label: 'After' },
+                      { value: 'until', label: 'On date' },
+                    ] as const
+                  ).map(({ value, label }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={ui.endMode === value}
+                      onClick={() => update({ endMode: value })}
+                      className={`${btnBase} ${ui.endMode === value ? btnActive : btnInactive}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+
+                {ui.endMode === 'count' && (
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={countInput}
+                      onChange={(e) => setCountInput(e.target.value.replace(/[^0-9]/g, ''))}
+                      onBlur={() => {
+                        const n = Math.max(1, parseInt(countInput, 10) || 1);
+                        setCountInput(String(n));
+                        update({ count: n });
+                      }}
+                      className={`w-16 text-center ${inputCls}`}
+                    />
+                    <span className="text-sm text-surface-600 dark:text-surface-400">
+                      {ui.count === 1 ? 'time' : 'times'}
+                    </span>
+                  </div>
+                )}
+
+                {ui.endMode === 'until' &&
+                  (() => {
+                    const untilDate = ui.until
+                      ? (() => {
+                          const [y, m, d] = ui.until.split('-').map(Number);
+                          return new Date(y, m - 1, d);
+                        })()
+                      : undefined;
+                    return (
+                      <button
+                        type="button"
+                        onClick={() => setShowUntilPicker(true)}
+                        className="flex h-9 w-full items-center gap-2 rounded-lg border border-transparent bg-surface-100 px-3 py-2 text-left text-sm transition-colors hover:border-surface-300 focus:border-primary-500 focus:bg-white focus:outline-hidden dark:bg-surface-700 dark:focus:bg-surface-800 dark:hover:border-surface-500"
+                      >
+                        {untilDate ? (
+                          <Calendar className="h-4 w-4 shrink-0 text-surface-400" />
+                        ) : (
+                          <CalendarPlus className="h-4 w-4 shrink-0 text-surface-400" />
+                        )}
+                        <span
+                          className={
+                            untilDate
+                              ? 'text-surface-700 dark:text-surface-300'
+                              : 'text-surface-400'
+                          }
+                        >
+                          {untilDate ? formatDate(untilDate, true, dateFormat) : 'Set end date...'}
+                        </span>
+                      </button>
+                    );
+                  })()}
+              </div>
+            )}
+
+            {isRecurring && (
+              <div className="space-y-2">
+                <p className="text-surface-500 text-xs dark:text-surface-400">Schedule next task</p>
+                <div className="flex gap-2">
+                  {(
+                    [
+                      { value: 0, label: 'Keep schedule' },
+                      { value: 1, label: 'After completion' },
+                    ] as const
+                  ).map(({ value, label }) => (
+                    <button
+                      key={value}
+                      type="button"
+                      aria-pressed={localRepeatFrom === value}
+                      onClick={() => setLocalRepeatFrom(value)}
+                      className={`${btnBase} ${localRepeatFrom === value ? btnActive : btnInactive}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </ModalWrapper>
 
