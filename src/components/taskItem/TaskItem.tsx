@@ -2,6 +2,7 @@ import type { AnimateLayoutChanges } from '@dnd-kit/sortable';
 import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable';
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from 'react';
+import { RepeatModal } from '$components/modals/RepeatModal';
 import { TaskItemBadges } from '$components/taskItem/TaskItemBadges';
 import { TaskItemCheckbox } from '$components/taskItem/TaskItemCheckbox';
 import { TaskItemContextMenu } from '$components/taskItem/TaskItemContextMenu';
@@ -9,7 +10,7 @@ import { TaskItemTitle } from '$components/taskItem/TaskItemTitle';
 import { getPriorityColor, getPriorityRingColor } from '$constants/priority';
 import { useSettingsStore } from '$context/settingsContext';
 import { useAccounts } from '$hooks/queries/useAccounts';
-import { useToggleTaskComplete } from '$hooks/queries/useTasks';
+import { useToggleTaskComplete, useUpdateTask } from '$hooks/queries/useTasks';
 import {
   useSetActiveAccount,
   useSetActiveCalendar,
@@ -95,6 +96,7 @@ export const TaskItem = ({
   const { data: uiState } = useUIState();
   const { data: accounts = [] } = useAccounts();
   const toggleTaskCompleteMutation = useToggleTaskComplete();
+  const updateTaskMutation = useUpdateTask();
   const setActiveTagMutation = useSetActiveTag();
   const setActiveCalendarMutation = useSetActiveCalendar();
   const setActiveAccountMutation = useSetActiveAccount();
@@ -171,6 +173,7 @@ export const TaskItem = ({
   };
 
   const [flashComplete, setFlashComplete] = useState(false);
+  const [showRepeatModal, setShowRepeatModal] = useState(false);
   const flashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleCheckboxClick = (e: MouseEvent) => {
@@ -246,6 +249,13 @@ export const TaskItem = ({
     showCompletedTasks,
     onTagClick: handleTagClick,
     onCalendarClick: handleCalendarClick,
+    onRepeatClick:
+      !task.deletedAt && !isOverlay
+        ? (event: MouseEvent<HTMLButtonElement>) => {
+            event.stopPropagation();
+            setShowRepeatModal(true);
+          }
+        : undefined,
     onToggleCollapsed: handleToggleCollapsed,
     badgeVisibility: taskBadgeVisibility,
     badgeOrder: taskBadgeOrder,
@@ -329,6 +339,19 @@ export const TaskItem = ({
           contextMenu={contextMenu}
           onClose={handleCloseContextMenu}
           setContextMenu={setContextMenu}
+        />
+      )}
+
+      {showRepeatModal && (
+        <RepeatModal
+          isOpen={showRepeatModal}
+          onClose={() => setShowRepeatModal(false)}
+          rrule={task.rrule}
+          repeatFrom={task.repeatFrom ?? 0}
+          dueDate={task.dueDate ? new Date(task.dueDate) : undefined}
+          onSave={(rrule, repeatFrom) =>
+            updateTaskMutation.mutate({ id: task.id, updates: { rrule, repeatFrom } })
+          }
         />
       )}
     </>

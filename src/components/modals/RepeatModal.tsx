@@ -16,6 +16,7 @@ interface RepeatModalProps {
   rrule: string | undefined;
   repeatFrom: number;
   dueDate?: Date;
+  initialCustom?: boolean;
   onSave: (rrule: string | undefined, repeatFrom: number) => void;
 }
 
@@ -60,9 +61,13 @@ const PRESET_PERIOD_LABEL: Partial<
   yearly: { singular: 'year', plural: 'years' },
 };
 
-const parseToUIState = (rrule: string | undefined, dueDate?: Date): RepeatUIState => {
+const parseToUIState = (
+  rrule: string | undefined,
+  dueDate?: Date,
+  initialCustom = false,
+): RepeatUIState => {
   const defaults: RepeatUIState = {
-    freq: 'none',
+    freq: initialCustom ? 'custom' : 'daily',
     interval: 1,
     byday: [],
     customPeriod: 'DAILY',
@@ -157,9 +162,10 @@ export const RepeatModal = ({
   rrule,
   repeatFrom,
   dueDate,
+  initialCustom = false,
   onSave,
 }: RepeatModalProps) => {
-  const [ui, setUI] = useState<RepeatUIState>(() => parseToUIState(rrule, dueDate));
+  const [ui, setUI] = useState<RepeatUIState>(() => parseToUIState(rrule, dueDate, initialCustom));
   const [localRepeatFrom, setLocalRepeatFrom] = useState(repeatFrom);
   const [intervalInput, setIntervalInput] = useState(() =>
     String(parseToUIState(rrule, dueDate).interval),
@@ -174,7 +180,7 @@ export const RepeatModal = ({
   if (isOpen !== prevIsOpen) {
     setPrevIsOpen(isOpen);
     if (isOpen) {
-      const parsed = parseToUIState(rrule, dueDate);
+      const parsed = parseToUIState(rrule, dueDate, initialCustom);
       setUI(parsed);
       setLocalRepeatFrom(repeatFrom);
       setIntervalInput(String(parsed.interval));
@@ -260,7 +266,7 @@ export const RepeatModal = ({
             }}
             className={`w-full ${selectCls}`}
           >
-            <option value="none">Does not repeat</option>
+            {rrule && <option value="none">Does not repeat</option>}
             <option value="daily">Daily</option>
             <option value="weekdays">Every weekday (Mon–Fri)</option>
             <option value="weekly">Weekly</option>

@@ -18,6 +18,8 @@ export default defineConfig({
           exclude: [
             'src/tests/lib/tauri-http.test.ts',
             'src/tests/components/TaskDefaultsSettings.test.tsx',
+            'src/tests/components/TaskEditorRepeat.test.tsx',
+            'src/tests/components/TaskItemRepeatBadge.test.tsx',
             'src/tests/hooks/ui/useContextMenu.test.ts',
             'src/tests/hooks/ui/useInitialFocusRef.test.ts',
             'src/tests/hooks/ui/usePreserveScrollOnWindowFocus.test.ts',
@@ -35,6 +37,8 @@ export default defineConfig({
           include: [
             'src/tests/lib/tauri-http.test.ts',
             'src/tests/components/TaskDefaultsSettings.test.tsx',
+            'src/tests/components/TaskEditorRepeat.test.tsx',
+            'src/tests/components/TaskItemRepeatBadge.test.tsx',
             'src/tests/hooks/ui/useContextMenu.test.ts',
             'src/tests/hooks/ui/useInitialFocusRef.test.ts',
             'src/tests/hooks/ui/usePreserveScrollOnWindowFocus.test.ts',

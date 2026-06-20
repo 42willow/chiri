@@ -13,6 +13,7 @@ import {
   buildRRule,
   frequencyToRRule,
   getNextOccurrence,
+  getRepeatPresets,
   parseRRule,
   rruleToDisplaySummary,
   rruleToFrequency,
@@ -148,6 +149,36 @@ describe('frequencyToRRule', () => {
     expect(frequencyToRRule('weekly', new Date(2025, 0, 5))).toBe('FREQ=WEEKLY;BYDAY=SU');
     // Wednesday: getDay() === 3 → WE
     expect(frequencyToRRule('weekly', new Date(2025, 0, 8))).toBe('FREQ=WEEKLY;BYDAY=WE');
+  });
+});
+
+describe('getRepeatPresets', () => {
+  it('returns generic labels without a due date', () => {
+    expect(getRepeatPresets().map(({ label }) => label)).toEqual([
+      'Daily',
+      'Weekdays',
+      'Weekly',
+      'Monthly',
+      'Yearly',
+    ]);
+  });
+
+  it('contextualizes calendar presets from the due date', () => {
+    const presets = getRepeatPresets(new Date(2025, 0, 22));
+
+    expect(presets.map(({ label }) => label)).toEqual([
+      'Daily',
+      'Weekdays',
+      'Weekly on Wednesday',
+      'Monthly on the 22nd',
+      'Yearly on January 22',
+    ]);
+    expect(presets.find(({ id }) => id === 'weekly')?.rrule).toBe('FREQ=WEEKLY;BYDAY=WE');
+  });
+
+  it('formats teen ordinals correctly', () => {
+    expect(getRepeatPresets(new Date(2025, 0, 11))[3].label).toBe('Monthly on the 11th');
+    expect(getRepeatPresets(new Date(2025, 0, 13))[3].label).toBe('Monthly on the 13th');
   });
 });
 

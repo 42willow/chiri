@@ -5,6 +5,7 @@
  * not the full "RRULE:..." line. DTSTART is derived from the task's due/start date.
  */
 
+import { format } from 'date-fns';
 import { RRuleTemporal } from 'rrule-temporal';
 import type { DateFormat } from '$types/preference';
 import type { RecurrenceFrequency } from '$types/recurrence';
@@ -169,6 +170,49 @@ export interface RRuleDisplaySummary {
 }
 
 const WEEKDAYS = 'MO,TU,WE,TH,FR';
+
+export interface RepeatPreset {
+  id: 'daily' | 'weekdays' | 'weekly' | 'monthly' | 'yearly';
+  label: string;
+  rrule: string;
+}
+
+const getOrdinal = (day: number) => {
+  const mod100 = day % 100;
+  if (mod100 >= 11 && mod100 <= 13) return `${day}th`;
+
+  switch (day % 10) {
+    case 1:
+      return `${day}st`;
+    case 2:
+      return `${day}nd`;
+    case 3:
+      return `${day}rd`;
+    default:
+      return `${day}th`;
+  }
+};
+
+/** Common repeat choices, contextualized by the task's current due date. */
+export const getRepeatPresets = (dueDate?: Date): RepeatPreset[] => [
+  { id: 'daily', label: 'Daily', rrule: frequencyToRRule('daily') },
+  { id: 'weekdays', label: 'Weekdays', rrule: frequencyToRRule('weekdays') },
+  {
+    id: 'weekly',
+    label: dueDate ? `Weekly on ${format(dueDate, 'EEEE')}` : 'Weekly',
+    rrule: frequencyToRRule('weekly', dueDate),
+  },
+  {
+    id: 'monthly',
+    label: dueDate ? `Monthly on the ${getOrdinal(dueDate.getDate())}` : 'Monthly',
+    rrule: frequencyToRRule('monthly'),
+  },
+  {
+    id: 'yearly',
+    label: dueDate ? `Yearly on ${format(dueDate, 'MMMM d')}` : 'Yearly',
+    rrule: frequencyToRRule('yearly'),
+  },
+];
 
 export const rruleToDisplaySummary = (
   rruleValue: string,

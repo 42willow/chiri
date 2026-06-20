@@ -25,6 +25,7 @@ interface TaskItemBadgesProps {
   showCompletedTasks: boolean;
   onTagClick: (tagId: string, event: MouseEvent) => void;
   onCalendarClick: (calendarId: string, event: MouseEvent) => void;
+  onRepeatClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   onToggleCollapsed: (e: MouseEvent) => void;
   compact: boolean;
   badgeVisibility: TaskBadgeVisibility;
@@ -39,6 +40,7 @@ export const TaskItemBadges = ({
   showCompletedTasks,
   onTagClick,
   onCalendarClick,
+  onRepeatClick,
   onToggleCollapsed,
   compact,
   badgeVisibility,
@@ -112,6 +114,7 @@ export const TaskItemBadges = ({
           rrule={task.rrule}
           repeatFrom={task.repeatFrom}
           dateFormat={dateFormat}
+          onClick={onRepeatClick}
         />
       ) : null,
     subtasks: () =>

@@ -116,6 +116,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
 
   // Repeat modal state
   const [showRepeatModal, setShowRepeatModal] = useState(false);
+  const [openRepeatAsCustom, setOpenRepeatAsCustom] = useState(false);
 
   // Reminder picker state
   const [showReminderPicker, setShowReminderPicker] = useState(false);
@@ -277,7 +278,16 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
       isReadOnly || editorFieldVisibility.repeat ? (
         <TaskEditorRepeat
           task={task}
-          onOpen={() => setShowRepeatModal(true)}
+          onOpen={() => {
+            setOpenRepeatAsCustom(false);
+            setShowRepeatModal(true);
+          }}
+          onOpenCustom={() => {
+            setOpenRepeatAsCustom(true);
+            setShowRepeatModal(true);
+          }}
+          onSetPreset={(rrule) => handleRepeatChange(rrule, 0)}
+          onClear={() => handleRepeatChange(undefined, 0)}
           readOnly={isReadOnly}
         />
       ) : null,
@@ -392,6 +402,7 @@ export const TaskEditor = ({ task, onOpenNotificationSettings }: TaskEditorProps
           rrule={task.rrule}
           repeatFrom={task.repeatFrom ?? 0}
           dueDate={task.dueDate ? new Date(task.dueDate) : undefined}
+          initialCustom={openRepeatAsCustom}
           onSave={handleRepeatChange}
         />
       )}
