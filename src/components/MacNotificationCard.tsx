@@ -95,7 +95,7 @@ export const MacNotificationCard = ({
           )}
         </div>
         <span className={`flex shrink-0 items-center gap-1.5 text-xs ${permissionLabelClass}`}>
-          <span className={`size-1.5 rounded-full ${permissionDotClass}`} />
+          <span className={`size-2 rounded-full ${permissionDotClass}`} />
           {permissionLabel}
         </span>
       </div>
