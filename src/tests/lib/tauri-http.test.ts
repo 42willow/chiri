@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // tauri-http imports invoke + tauriFetch at top level. Stub to no-ops so the
 // module evaluates without needing a Tauri runtime. (Logger mocks come from
@@ -6,9 +6,74 @@ import { describe, expect, it, vi } from 'vitest';
 vi.mock('@tauri-apps/api/core', () => ({ invoke: vi.fn() }));
 vi.mock('@tauri-apps/plugin-http', () => ({ fetch: vi.fn() }));
 
-import { parseMultiStatus } from '$lib/tauriHttp';
+import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
+import { parseMultiStatus, tauriRequest } from '$lib/tauriHttp';
 
 const xml = (body: string) => `<?xml version="1.0" encoding="utf-8"?>${body}`;
+
+const response = (status: number, headers: Record<string, string> = {}) =>
+  ({
+    status,
+    headers: new Headers(headers),
+    text: async () => '',
+  }) as Response;
+
+const credentials = { username: 'alice', password: 'secret' };
+
+describe('tauriRequest redirects', () => {
+  beforeEach(() => {
+    vi.mocked(tauriFetch).mockReset();
+  });
+
+  it('keeps authorization on same-origin redirects', async () => {
+    vi.mocked(tauriFetch)
+      .mockResolvedValueOnce(response(302, { Location: '/dav/' }))
+      .mockResolvedValueOnce(response(200));
+
+    await tauriRequest('https://calendar.example', 'GET', credentials);
+
+    const redirectedHeaders = vi.mocked(tauriFetch).mock.calls[1][1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(redirectedHeaders.Authorization).toMatch(/^Basic /);
+  });
+
+  it('strips authorization on cross-origin redirects', async () => {
+    vi.mocked(tauriFetch)
+      .mockResolvedValueOnce(response(302, { Location: 'https://other.example/dav/' }))
+      .mockResolvedValueOnce(response(200));
+
+    await tauriRequest('https://calendar.example', 'GET', credentials, undefined, {
+      Authorization: 'Digest sensitive',
+      Cookie: 'session=sensitive',
+    });
+
+    const redirectedHeaders = vi.mocked(tauriFetch).mock.calls[1][1]?.headers as Record<
+      string,
+      string
+    >;
+    expect(redirectedHeaders.Authorization).toBeUndefined();
+    expect(redirectedHeaders.Cookie).toBeUndefined();
+  });
+
+  it('rejects redirects to non-HTTP URLs', async () => {
+    vi.mocked(tauriFetch).mockResolvedValueOnce(response(302, { Location: 'file:///etc/passwd' }));
+
+    await expect(tauriRequest('https://calendar.example', 'GET', credentials)).rejects.toThrow(
+      /unsupported file: URL/i,
+    );
+  });
+
+  it('stops after five redirects', async () => {
+    vi.mocked(tauriFetch).mockResolvedValue(response(302, { Location: '/again' }));
+
+    await expect(tauriRequest('https://calendar.example', 'GET', credentials)).rejects.toThrow(
+      /Too many HTTP redirects/i,
+    );
+    expect(tauriFetch).toHaveBeenCalledTimes(6);
+  });
+});
 
 describe('parseMultiStatus', () => {
   it('returns empty array for empty multistatus', () => {

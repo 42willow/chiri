@@ -5,8 +5,10 @@ import { loggers } from '$lib/logger';
 
 const log = loggers.http;
 const REQUEST_TIMEOUT_MS = 15_000;
+const MAX_REDIRECTS = 5;
 const REDIRECT_STATUS_CODES = new Set([301, 302, 307, 308]);
 const HREF_PROP_NAMES = new Set(['current-user-principal', 'calendar-home-set']);
+const SENSITIVE_HEADERS = new Set(['authorization', 'cookie', 'proxy-authorization']);
 
 // Tracks which server hosts require Digest auth so we can skip the wasted
 // Basic-auth attempt on the first round-trip. Cleared on app restart (intentionally).
@@ -57,13 +59,19 @@ const getRequestHeaders = (
   credentials: CalDAVCredentials,
   headers: Record<string, string> | undefined,
   skipBasic: boolean,
+  allowAuth: boolean,
 ) => {
-  const authHeader = getAuthHeader(credentials, skipBasic);
+  const authHeader = allowAuth ? getAuthHeader(credentials, skipBasic) : undefined;
+  const safeHeaders = Object.fromEntries(
+    Object.entries(headers ?? {}).filter(
+      ([name]) => allowAuth || !SENSITIVE_HEADERS.has(name.toLowerCase()),
+    ),
+  );
 
   return {
     'User-Agent': 'Chiri',
     'Content-Type': 'application/xml; charset=utf-8',
-    ...headers,
+    ...safeHeaders,
     ...(authHeader ? { Authorization: authHeader } : {}),
   };
 };
@@ -107,7 +115,17 @@ const getRedirectUrl = (response: HttpResponse, url: string) => {
   }
 
   const location = response.headers.location ?? response.headers.Location;
-  return location ? new URL(location, url).toString() : undefined;
+  if (!location) return undefined;
+
+  const redirectUrl = new URL(location, url);
+  if (!['http:', 'https:'].includes(redirectUrl.protocol)) {
+    throw new Error(`Refusing redirect to unsupported ${redirectUrl.protocol} URL`);
+  }
+  return redirectUrl.toString();
+};
+
+const hasSameOrigin = (left: string, right: string) => {
+  return new URL(left).origin === new URL(right).origin;
 };
 
 const getDigestRetryHeader = (
@@ -180,18 +198,20 @@ export const tauriRequest = async (
   body?: string,
   headers?: Record<string, string>,
   _retried = false,
+  _redirects = 0,
+  _allowAuth = true,
 ): Promise<HttpResponse> => {
   // For known Digest-only hosts, skip sending wrong Basic auth upfront.
   // We'll still do 2 round-trips (need server's nonce), but won't waste one
   // on a credential that's guaranteed to be rejected.
-  const skipBasic = shouldSkipBasicAuth(url, credentials);
+  const skipBasic = _allowAuth && shouldSkipBasicAuth(url, credentials);
 
   // Suppress logs for the nonce-fetch leg of a known Digest handshake. Logs fire on the authenticated retry.
   const silent = skipBasic && !_retried;
 
   if (!silent) log.debug(`${method} ${url}`);
 
-  const requestHeaders = getRequestHeaders(credentials, headers, skipBasic);
+  const requestHeaders = getRequestHeaders(credentials, headers, skipBasic, _allowAuth);
 
   // route through the Rust command when:
   //  - cert validation bypass is needed (self-signed / private CA), or
@@ -204,14 +224,25 @@ export const tauriRequest = async (
   // handle redirects manually for CalDAV
   const redirectUrl = getRedirectUrl(response, url);
   if (redirectUrl) {
+    if (_redirects >= MAX_REDIRECTS) {
+      throw new Error(`Too many HTTP redirects (maximum ${MAX_REDIRECTS})`);
+    }
     if (!silent) log.debug(`Following redirect to: ${redirectUrl}`);
-    return tauriRequest(redirectUrl, method, credentials, body, headers);
+    return tauriRequest(
+      redirectUrl,
+      method,
+      credentials,
+      body,
+      headers,
+      false,
+      _redirects + 1,
+      _allowAuth && hasSameOrigin(url, redirectUrl),
+    );
   }
 
   // Retry once with Digest auth if the server requires it
-  const digestRetry = _retried
-    ? undefined
-    : getDigestRetryHeader(response, method, url, credentials);
+  const digestRetry =
+    _retried || !_allowAuth ? undefined : getDigestRetryHeader(response, method, url, credentials);
   if (digestRetry) {
     if (!silent) log.debug(`Retrying with Digest auth (realm: ${digestRetry.realm})`);
     digestHosts.add(getHostname(url));
@@ -222,6 +253,8 @@ export const tauriRequest = async (
       body,
       { ...headers, Authorization: digestRetry.header },
       true,
+      _redirects,
+      _allowAuth,
     );
   }
 
