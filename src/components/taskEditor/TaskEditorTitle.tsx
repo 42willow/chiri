@@ -134,7 +134,7 @@ export const TaskEditorTitle = ({
             <X className="h-4 w-4 text-primary-contrast" strokeWidth={3} />
           )}
           {task.status === 'in-process' && (
-            <Minus className="h-4 w-4 dark:text-primary-contrast" />
+            <Minus className="h-4 w-4 dark:text-primary-contrast" strokeWidth={3} />
           )}
         </button>
         {readOnly ? (

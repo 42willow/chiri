@@ -94,7 +94,7 @@ export const TaskItemCheckbox = ({
       {!selectionMode && isCancelled && (
         <X className="h-4 w-4 text-primary-contrast" strokeWidth={3} />
       )}
-      {!selectionMode && isInProcess && <Minus className="h-4 w-4 dark:text-primary-contrast" />}
+      {!selectionMode && isInProcess && <Minus className="h-4 w-4 dark:text-primary-contrast" strokeWidth={3} />}
     </button>
   );
 };
