@@ -41,7 +41,7 @@ export const tokyoNightColorScheme: ColorSchemeDefinition = {
       },
       statusColors: {
         needsAction: '#707280',
-        inProcess: '#2959aa',
+        inProcess: '#8f5e15',
         completed: '#33635c',
         cancelled: '#8c4351',
       },
@@ -84,7 +84,7 @@ export const tokyoNightColorScheme: ColorSchemeDefinition = {
       },
       statusColors: {
         needsAction: '#737aa2',
-        inProcess: '#7aa2f7',
+        inProcess: '#e0af68',
         completed: '#9ece6a',
         cancelled: '#f7768e',
       },
