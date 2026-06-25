@@ -8,7 +8,7 @@ import Flag from 'lucide-react/icons/flag';
 import FolderSync from 'lucide-react/icons/folder-sync';
 import History from 'lucide-react/icons/history';
 import Link from 'lucide-react/icons/link';
-import Loader from 'lucide-react/icons/loader';
+import Timer from 'lucide-react/icons/timer';
 import Network from 'lucide-react/icons/network';
 import Repeat from 'lucide-react/icons/repeat';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
@@ -49,7 +49,7 @@ const FIELD_ICONS: Record<string, LucideIcon> = {
   title: Type,
   description: AlignLeft,
   status: Activity,
-  percentComplete: Loader,
+  percentComplete: Timer,
   priority: Flag,
   startDate: Calendar,
   startDateAllDay: Calendar,
