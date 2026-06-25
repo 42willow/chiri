@@ -76,7 +76,7 @@ export const AppShell = ({
       target.tagName !== 'INPUT' &&
       target.tagName !== 'TEXTAREA'
     ) {
-      event.preventDefault();
+      // event.preventDefault();
     }
   };
 
