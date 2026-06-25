@@ -1,6 +1,7 @@
 import type { AnimateLayoutChanges } from '@dnd-kit/sortable';
 import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable';
 import ChevronRight from 'lucide-react/icons/chevron-right';
+import ChevronDown from 'lucide-react/icons/chevron-down';
 import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from 'react';
 import { RepeatModal } from '$components/modals/RepeatModal';
 import { TaskItemBadges } from '$components/taskItem/TaskItemBadges';
@@ -21,7 +22,7 @@ import { useContextMenu } from '$hooks/ui/useContextMenu';
 import { useResolvedAccentColor } from '$hooks/ui/useResolvedAccentColor';
 import { refreshStaleCursorAfterLayoutAtEventPoint } from '$hooks/ui/useStaleCursorReset';
 import { filterCalDavDescription } from '$lib/ical/vtodo';
-import { toggleTaskCollapsed } from '$lib/store/tasks';
+import { toggleTaskCollapsed, getChildTasks } from '$lib/store/tasks';
 import type { Account, Task } from '$types';
 import { getContrastTextColor } from '$utils/color';
 import { getSortableItemDisabled, getSortableItemId } from '$utils/sortable';
@@ -155,6 +156,7 @@ export const TaskItem = ({
   };
 
   const isUnstarted = !!(task.startDate && new Date(task.startDate) > new Date());
+  const hasChildren = getChildTasks(task.uid).length > 0;
 
   const handleClick = (e: MouseEvent) => {
     if (
@@ -228,10 +230,10 @@ export const TaskItem = ({
   const paddingLeft = 12 + depth * 4;
 
   const containerClass = [
-    'group relative flex items-start gap-3 pr-3 rounded-lg border transition-all outline-hidden',
-    'focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-900',
+    'group relative flex items-start gap-3 pr-3 rounded-lg transition-all outline-hidden',
+    // 'focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-surface-900',
     taskListDensity === 'compact' ? 'py-2' : 'py-3',
-    getBackgroundClass(isMultiSelected, isOverlay, contextMenu),
+    // getBackgroundClass(isMultiSelected, isOverlay, contextMenu),
     isOverlay ? 'shadow-xl' : 'shadow-xs hover:shadow-md',
     getBorderClass(isVisuallySelected, task.priority),
     getOpacityClass(task.status, isUnstarted),
@@ -330,7 +332,24 @@ export const TaskItem = ({
           )}
         </div>
 
+        {/*little number when its chevron right*/}
+        {hasChildren && (
+          <button
+            type="button"
+            onClick={handleToggleCollapsed}
+            className="collapse-button mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded text-surface-300 transition-colors hover:bg-surface-100 hover:text-surface-500 dark:text-surface-600 dark:hover:bg-surface-700 dark:hover:text-surface-400"
+          >
+            {task.isCollapsed ? (
+              <ChevronRight className="size-5 text-surface-500 dark:text-surface-400" />
+            ) : (
+              <ChevronDown className="size-5 text-surface-500 dark:text-surface-400" />
+            )}
+          </button>
+        )}
+{/*
         <ChevronRight className="h-5 w-5 shrink-0 text-surface-300 transition-colors group-hover:text-surface-500 dark:text-surface-600 dark:group-hover:text-surface-400" />
+        <ChevronDown className="h-5 w-5 shrink-0 text-surface-300 transition-colors group-hover:text-surface-500 dark:text-surface-600 dark:group-hover:text-surface-400" />
+       */}
       </div>
 
       {contextMenu && (

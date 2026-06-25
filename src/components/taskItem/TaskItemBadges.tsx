@@ -1,6 +1,5 @@
 import { Fragment, type MouseEvent, type ReactNode } from 'react';
 import { TaskItemCalendarBadge } from '$components/taskItem/badges/TaskItemCalendarBadge';
-import { TaskItemCollapseButtonBadge } from '$components/taskItem/badges/TaskItemCollapseButtonBadge';
 import { TaskItemDueDateBadge } from '$components/taskItem/badges/TaskItemDueDateBadge';
 import { TaskItemHiddenSubtasksBadge } from '$components/taskItem/badges/TaskItemHiddenSubtasksBadge';
 import { TaskItemInProgressBadge } from '$components/taskItem/badges/TaskItemInProgressBadge';
@@ -122,13 +121,6 @@ export const TaskItemBadges = ({
         <>
           {totalSubtasks > 0 && (
             <TaskItemSubtaskProgressBadge completed={completedSubtasks} total={totalSubtasks} />
-          )}
-          {childCount > 0 && (
-            <TaskItemCollapseButtonBadge
-              isCollapsed={!!task.isCollapsed}
-              childCount={childCount}
-              onToggleCollapsed={onToggleCollapsed}
-            />
           )}
           {hiddenChildCount > 0 && <TaskItemHiddenSubtasksBadge count={hiddenChildCount} />}
         </>
