@@ -63,6 +63,14 @@ describe('RepeatModal', () => {
     expect(container.textContent).not.toContain('Does not repeat');
     expect(container.textContent).not.toContain('Clear');
     expect(container.textContent).toContain('Custom…');
+    expect(Array.from(container.querySelectorAll('option')).map((option) => option.value)).toEqual([
+      'MINUTELY',
+      'HOURLY',
+      'DAILY',
+      'WEEKLY',
+      'MONTHLY',
+      'YEARLY',
+    ]);
   });
 
   it('builds an ordinal monthly weekday rule', async () => {
