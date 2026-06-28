@@ -349,7 +349,7 @@ export const TaskItem = ({
         <button
           type="button"
           onClick={handleAddSubtask}
-          className="shrink-0 text-surface-300 opacity-0 transition-colors hover:text-surface-500 group-hover:opacity-100 dark:text-surface-600 dark:hover:text-surface-400"
+          className="shrink-0 text-surface-300 opacity-0 transition-all hover:text-surface-500 group-hover:opacity-100 dark:text-surface-600 dark:hover:text-surface-400"
         >
           <Plus className="size-5" />
         </button>
