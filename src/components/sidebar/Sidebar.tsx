@@ -526,6 +526,7 @@ export const Sidebar = ({
             accounts={accounts}
             tags={tags}
             filters={filters}
+            tasks={tasks}
             activeCalendarId={activeCalendarId}
             activeTagId={activeTagId}
             activeFilterId={activeFilterId}
