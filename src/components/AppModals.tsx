@@ -3,6 +3,7 @@ import { CalendarModal } from '$components/modals/CalendarModal';
 import { ChangelogModal } from '$components/modals/ChangelogModal';
 import { ExportModal } from '$components/modals/ExportModal';
 import { ImportModal } from '$components/modals/ImportModal/ImportModal';
+import { MobileConfigImportChooserModal } from '$components/modals/MobileConfigImportChooserModal';
 import { OnboardingModal } from '$components/modals/OnboardingModal/OnboardingModal';
 import { SettingsModal } from '$components/modals/SettingsModal';
 import { TaskActionsModal } from '$components/modals/TaskActionsModal';
@@ -12,7 +13,11 @@ import type { UpdateError, UpdateInfo } from '$hooks/system/useUpdateChecker';
 import { getTasksByCalendar } from '$lib/store/tasks';
 import type { Account } from '$types';
 import type { AppModalActions, AppModalState } from '$types/controller';
-import type { MobileConfigCalDAVSettings } from '$types/mobileconfig';
+import type {
+  MobileConfigCalDAVSettings,
+  MobileConfigImportProfile,
+  MobileConfigImportSelection,
+} from '$types/mobileconfig';
 
 interface AppModalsOnboarding {
   show: boolean;
@@ -21,10 +26,15 @@ interface AppModalsOnboarding {
 
 interface AppModalsFileDrop {
   preloadedFile: FileDropResult | null;
-  preloadedConfig: MobileConfigCalDAVSettings | null;
+  preloadedConfigProfile: MobileConfigImportProfile | null;
+  preloadedConfig: MobileConfigImportSelection | null;
   handleImportClose: () => void;
   clearDragState: () => void;
   clearPreloadedConfig: () => void;
+  selectPreloadedConfig: (
+    settings: MobileConfigCalDAVSettings,
+    profile: MobileConfigImportProfile,
+  ) => void;
 }
 
 interface AppModalsUpdates {
@@ -84,10 +94,12 @@ export const AppModals = ({
   } = modalActions;
   const {
     preloadedFile,
+    preloadedConfigProfile,
     preloadedConfig,
     handleImportClose,
     clearDragState,
     clearPreloadedConfig,
+    selectPreloadedConfig,
   } = fileDrop;
   const {
     changelogData,
@@ -139,6 +151,14 @@ export const AppModals = ({
         preloadedFile={preloadedFile}
         onFileDrop={clearDragState}
       />
+
+      {preloadedConfigProfile && (
+        <MobileConfigImportChooserModal
+          profile={preloadedConfigProfile}
+          onSelect={(settings) => selectPreloadedConfig(settings, preloadedConfigProfile)}
+          onClose={clearPreloadedConfig}
+        />
+      )}
 
       {showAccountModal && (
         <AccountModal

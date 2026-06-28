@@ -2,7 +2,11 @@ import { useCallback, useMemo, useState } from 'react';
 import { type FileDropResult, useFileDrop } from '$hooks/system/useFileDrop';
 import { toastManager } from '$hooks/ui/useToast';
 import type { OpenAccountOptions } from '$types/controller';
-import type { MobileConfigCalDAVSettings } from '$types/mobileconfig';
+import type {
+  MobileConfigCalDAVSettings,
+  MobileConfigImportProfile,
+  MobileConfigImportSelection,
+} from '$types/mobileconfig';
 
 interface UseAppFileDropOptions {
   isAnyModalOpen: boolean;
@@ -20,7 +24,9 @@ export const useAppFileDrop = ({
   openAccount,
 }: UseAppFileDropOptions) => {
   const [preloadedFile, setPreloadedFile] = useState<FileDropResult | null>(null);
-  const [preloadedConfig, setPreloadedConfig] = useState<MobileConfigCalDAVSettings | null>(null);
+  const [preloadedConfigProfile, setPreloadedConfigProfile] =
+    useState<MobileConfigImportProfile | null>(null);
+  const [preloadedConfig, setPreloadedConfig] = useState<MobileConfigImportSelection | null>(null);
   const canHandleGlobalFileDrop = !isAnyModalOpen && !isImportOpen;
 
   const handleImportClose = useCallback(() => {
@@ -29,8 +35,22 @@ export const useAppFileDrop = ({
   }, [closeImport]);
 
   const clearPreloadedConfig = useCallback(() => {
+    setPreloadedConfigProfile(null);
     setPreloadedConfig(null);
   }, []);
+
+  const selectPreloadedConfig = useCallback(
+    (settings: MobileConfigCalDAVSettings, profile: MobileConfigImportProfile) => {
+      setPreloadedConfig({
+        format: profile.format,
+        signature: profile.signature,
+        settings,
+      });
+      setPreloadedConfigProfile(null);
+      openAccount({ accountId: null });
+    },
+    [openAccount],
+  );
 
   const handleDroppedFile = useCallback(
     (file: FileDropResult) => {
@@ -43,13 +63,19 @@ export const useAppFileDrop = ({
   );
 
   const handleDroppedConfigProfile = useCallback(
-    (config: MobileConfigCalDAVSettings) => {
+    (profile: MobileConfigImportProfile) => {
       if (!canHandleGlobalFileDrop) return;
 
-      setPreloadedConfig(config);
-      openAccount({ accountId: null });
+      if (profile.candidates.length === 1) {
+        const [settings] = profile.candidates;
+        selectPreloadedConfig(settings, profile);
+        return;
+      }
+
+      setPreloadedConfig(null);
+      setPreloadedConfigProfile(profile);
     },
-    [canHandleGlobalFileDrop, openAccount],
+    [canHandleGlobalFileDrop, selectPreloadedConfig],
   );
 
   const handleConfigProfileError = useCallback(
@@ -87,12 +113,14 @@ export const useAppFileDrop = ({
 
   return {
     preloadedFile,
+    preloadedConfigProfile,
     preloadedConfig,
     canHandleGlobalFileDrop,
     isDragOver,
     isUnsupportedFile,
     clearDragState,
     clearPreloadedConfig,
+    selectPreloadedConfig,
     handleImportClose,
     rootFileDropProps,
   };

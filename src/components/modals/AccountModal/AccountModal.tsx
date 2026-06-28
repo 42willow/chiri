@@ -14,6 +14,7 @@ import type {
 } from '$components/modals/AccountModal/QuickConnectFlow';
 import { QuickConnectFlow } from '$components/modals/AccountModal/QuickConnectFlow';
 import { ServerTypePicker } from '$components/modals/AccountModal/ServerTypePicker';
+import { MobileConfigSignatureWarning } from '$components/modals/MobileConfigSignatureWarning';
 import { getPredefinedServerUrl, SERVER_TYPE_OPTIONS } from '$constants/settings';
 import { useConfirmDialog } from '$context/confirmDialogContext';
 import { useAddCalendar, useCreateAccount, useUpdateAccount } from '$hooks/queries/useAccounts';
@@ -32,7 +33,7 @@ import { ensureTagExists } from '$lib/store/sync';
 import { createTask } from '$lib/store/tasks';
 import { isCertError, tauriRequest } from '$lib/tauriHttp';
 import type { Account, Calendar, ServerType } from '$types';
-import type { MobileConfigCalDAVSettings } from '$types/mobileconfig';
+import type { MobileConfigImportSelection } from '$types/mobileconfig';
 import { generateUUID } from '$utils/misc';
 
 const log = loggers.account;
@@ -50,7 +51,7 @@ const CONNECT_METHOD_SERVER_TYPES = new Set<ServerType>([
 interface AccountModalProps {
   account: Account | null;
   onClose: () => void;
-  preloadedConfig?: MobileConfigCalDAVSettings;
+  preloadedConfig?: MobileConfigImportSelection;
   zIndex?: 'z-60' | 'z-70';
 }
 
@@ -66,27 +67,30 @@ export function AccountModal({
   const createAccountMutation = useCreateAccount();
   const updateAccountMutation = useUpdateAccount();
   const addCalendarMutation = useAddCalendar();
+  const preloadedSettings = preloadedConfig?.settings;
 
   const hasInitialType = !!(account || preloadedConfig);
   const [step, setStep] = useState<Step>(hasInitialType ? 'credentials' : 'pick-type');
 
-  const [name, setName] = useState(() => preloadedConfig?.accountName || account?.name || '');
+  const [name, setName] = useState(() => preloadedSettings?.accountName || account?.name || '');
   const [icon, setIcon] = useState(() => account?.icon || 'user');
   const [emoji, setEmoji] = useState(() => account?.emoji || '');
   const [serverUrl, setServerUrl] = useState(
-    () => preloadedConfig?.serverUrl || account?.caldav?.serverUrl || '',
+    () => preloadedSettings?.serverUrl || account?.caldav?.serverUrl || '',
   );
   const [username, setUsername] = useState(
-    () => preloadedConfig?.username || account?.caldav?.username || '',
+    () => preloadedSettings?.username || account?.caldav?.username || '',
   );
-  const [password, setPassword] = useState(() => preloadedConfig?.password || '');
+  const [password, setPassword] = useState(() => preloadedSettings?.password || '');
   const [serverType, setServerType] = useState<ServerType>(
-    () => preloadedConfig?.serverType || account?.caldav?.serverType || 'generic',
+    () => preloadedSettings?.serverType || account?.caldav?.serverType || 'generic',
   );
   const [calendarHomeUrl, setCalendarHomeUrl] = useState(
     () => account?.caldav?.calendarHomeUrl || '',
   );
-  const [principalUrl, setPrincipalUrl] = useState(() => account?.caldav?.principalUrl || '');
+  const [principalUrl, setPrincipalUrl] = useState(
+    () => preloadedSettings?.principalUrl || account?.caldav?.principalUrl || '',
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [testSuccess, setTestSuccess] = useState(false);
@@ -728,32 +732,39 @@ export function AccountModal({
         )}
 
         {step === 'credentials' && (
-          <CredentialsForm
-            serverType={serverType}
-            name={name}
-            onNameChange={setName}
-            icon={icon}
-            onIconChange={setIcon}
-            emoji={emoji}
-            onEmojiChange={setEmoji}
-            serverUrl={serverUrl}
-            onServerUrlChange={setServerUrl}
-            username={username}
-            onUsernameChange={setUsername}
-            password={password}
-            onPasswordChange={setPassword}
-            principalUrl={principalUrl}
-            onPrincipalUrlChange={setPrincipalUrl}
-            calendarHomeUrl={calendarHomeUrl}
-            onCalendarHomeUrlChange={setCalendarHomeUrl}
-            account={account}
-            error={setupError}
-            setupNotice={setupNotice}
-            testSuccess={testSuccess}
-            testedCalendarCount={testedCalendars.length}
-            testedPushSupportedCount={testedCalendars.filter((c) => c.pushSupported).length}
-            onSubmit={handleSubmit}
-          />
+          <div>
+            {preloadedConfig?.signature === 'signed-unverified' && (
+              <div className="px-4 pt-4">
+                <MobileConfigSignatureWarning signature={preloadedConfig.signature} />
+              </div>
+            )}
+            <CredentialsForm
+              serverType={serverType}
+              name={name}
+              onNameChange={setName}
+              icon={icon}
+              onIconChange={setIcon}
+              emoji={emoji}
+              onEmojiChange={setEmoji}
+              serverUrl={serverUrl}
+              onServerUrlChange={setServerUrl}
+              username={username}
+              onUsernameChange={setUsername}
+              password={password}
+              onPasswordChange={setPassword}
+              principalUrl={principalUrl}
+              onPrincipalUrlChange={setPrincipalUrl}
+              calendarHomeUrl={calendarHomeUrl}
+              onCalendarHomeUrlChange={setCalendarHomeUrl}
+              account={account}
+              error={setupError}
+              setupNotice={setupNotice}
+              testSuccess={testSuccess}
+              testedCalendarCount={testedCalendars.length}
+              testedPushSupportedCount={testedCalendars.filter((c) => c.pushSupported).length}
+              onSubmit={handleSubmit}
+            />
+          </div>
         )}
       </div>
     </ModalWrapper>
