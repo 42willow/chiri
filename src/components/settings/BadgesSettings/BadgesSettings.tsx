@@ -12,9 +12,9 @@ import CheckCircle2 from 'lucide-react/icons/check-circle-2';
 import Clock from 'lucide-react/icons/clock';
 import FolderSync from 'lucide-react/icons/folder-sync';
 import Link from 'lucide-react/icons/link';
-import Timer from 'lucide-react/icons/timer';
 import RefreshCw from 'lucide-react/icons/refresh-cw';
 import Tag from 'lucide-react/icons/tag';
+import Timer from 'lucide-react/icons/timer';
 import { BadgesSettingsPreview } from '$components/settings/BadgesSettings/BadgesSettingsPreview';
 import {
   type BadgeConfig,

@@ -1,10 +1,10 @@
 import Ban from 'lucide-react/icons/ban';
 import BellRing from 'lucide-react/icons/bell-ring';
 import Check from 'lucide-react/icons/check';
-import Timer from 'lucide-react/icons/timer';
 import Plus from 'lucide-react/icons/plus';
 import Repeat from 'lucide-react/icons/repeat';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
+import Timer from 'lucide-react/icons/timer';
 import X from 'lucide-react/icons/x';
 import { type CSSProperties, useState } from 'react';
 import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';

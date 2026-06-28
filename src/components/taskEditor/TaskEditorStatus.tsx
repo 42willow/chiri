@@ -1,8 +1,8 @@
 import Activity from 'lucide-react/icons/activity';
 import Ban from 'lucide-react/icons/ban';
 import Check from 'lucide-react/icons/check';
-import Timer from 'lucide-react/icons/timer';
 import RotateCcw from 'lucide-react/icons/rotate-ccw';
+import Timer from 'lucide-react/icons/timer';
 import { type CSSProperties, useState } from 'react';
 import type { Task, TaskStatus } from '$types';
 
