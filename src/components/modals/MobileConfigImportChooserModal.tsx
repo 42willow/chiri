@@ -44,7 +44,7 @@ export const MobileConfigImportChooserModal = ({
   >
     <MobileConfigSignatureWarning signature={profile.signature} />
 
-    <div className="space-y-2">
+    <div className="space-y-3">
       {profile.candidates.map((candidate, index) => (
         <button
           key={getCandidateKey(candidate)}
@@ -62,7 +62,6 @@ export const MobileConfigImportChooserModal = ({
             <div className="mt-1 space-y-0.5 text-surface-500 text-xs dark:text-surface-400">
               <p className="truncate">{candidate.serverUrl}</p>
               {candidate.username && <p className="truncate">{candidate.username}</p>}
-              {candidate.principalUrl && <p className="truncate">{candidate.principalUrl}</p>}
             </div>
           </div>
         </button>

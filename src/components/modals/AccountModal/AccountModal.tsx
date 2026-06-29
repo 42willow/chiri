@@ -51,6 +51,7 @@ const CONNECT_METHOD_SERVER_TYPES = new Set<ServerType>([
 interface AccountModalProps {
   account: Account | null;
   onClose: () => void;
+  onBackToConfigProfileChooser?: () => void;
   preloadedConfig?: MobileConfigImportSelection;
   zIndex?: 'z-60' | 'z-70';
 }
@@ -59,6 +60,7 @@ interface AccountModalProps {
 export function AccountModal({
   account,
   onClose,
+  onBackToConfigProfileChooser,
   preloadedConfig,
   zIndex = 'z-60',
 }: AccountModalProps) {
@@ -592,13 +594,15 @@ export function AccountModal({
       <ModalButton
         variant="secondary"
         onClick={
-          step === 'credentials'
-            ? handleBack
-            : step === 'quick-connect'
-              ? handleBackFromQuickConnect
-              : step === 'fastmail-oauth'
-                ? handleBackFromOAuth
-                : handleBackToTypePicker // connect-method goes back to pick-type
+          step === 'credentials' && onBackToConfigProfileChooser
+            ? onBackToConfigProfileChooser
+            : step === 'credentials'
+              ? handleBack
+              : step === 'quick-connect'
+                ? handleBackFromQuickConnect
+                : step === 'fastmail-oauth'
+                  ? handleBackFromOAuth
+                  : handleBackToTypePicker // connect-method goes back to pick-type
         }
       >
         <ArrowLeft className="h-4 w-4" />

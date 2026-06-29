@@ -31,6 +31,7 @@ interface AppModalsFileDrop {
   handleImportClose: () => void;
   clearDragState: () => void;
   clearPreloadedConfig: () => void;
+  returnToPreloadedConfigChooser: () => void;
   selectPreloadedConfig: (
     settings: MobileConfigCalDAVSettings,
     profile: MobileConfigImportProfile,
@@ -99,6 +100,7 @@ export const AppModals = ({
     handleImportClose,
     clearDragState,
     clearPreloadedConfig,
+    returnToPreloadedConfigChooser,
     selectPreloadedConfig,
   } = fileDrop;
   const {
@@ -152,7 +154,7 @@ export const AppModals = ({
         onFileDrop={clearDragState}
       />
 
-      {preloadedConfigProfile && (
+      {preloadedConfigProfile && !preloadedConfig && (
         <MobileConfigImportChooserModal
           profile={preloadedConfigProfile}
           onSelect={(settings) => selectPreloadedConfig(settings, preloadedConfigProfile)}
@@ -165,6 +167,14 @@ export const AppModals = ({
           account={editingAccount}
           preloadedConfig={preloadedConfig ?? undefined}
           zIndex={accountModalZIndex}
+          onBackToConfigProfileChooser={
+            preloadedConfigProfile
+              ? () => {
+                  closeAccount();
+                  returnToPreloadedConfigChooser();
+                }
+              : undefined
+          }
           onClose={() => {
             closeAccount();
             clearPreloadedConfig();

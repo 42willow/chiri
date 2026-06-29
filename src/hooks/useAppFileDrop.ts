@@ -46,11 +46,15 @@ export const useAppFileDrop = ({
         signature: profile.signature,
         settings,
       });
-      setPreloadedConfigProfile(null);
+      setPreloadedConfigProfile(profile.candidates.length > 1 ? profile : null);
       openAccount({ accountId: null });
     },
     [openAccount],
   );
+
+  const returnToPreloadedConfigChooser = useCallback(() => {
+    setPreloadedConfig(null);
+  }, []);
 
   const handleDroppedFile = useCallback(
     (file: FileDropResult) => {
@@ -120,6 +124,7 @@ export const useAppFileDrop = ({
     isUnsupportedFile,
     clearDragState,
     clearPreloadedConfig,
+    returnToPreloadedConfigChooser,
     selectPreloadedConfig,
     handleImportClose,
     rootFileDropProps,
