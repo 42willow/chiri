@@ -4,7 +4,7 @@ import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
 import { DatePickerModal } from '$components/modals/DatePickerModal';
 import { MoveToCalendarModal } from '$components/modals/MoveToCalendar/MoveToCalendarModal';
 import { ReminderPickerModal } from '$components/modals/ReminderPickerModal';
-import { RepeatModal } from '$components/modals/RepeatModal';
+import { RepeatModal } from '$components/modals/RepeatModal/RepeatModal';
 import { TaskEditorCalendar } from '$components/taskEditor/TaskEditorCalendar';
 import { TaskEditorDates } from '$components/taskEditor/TaskEditorDates';
 import { TaskEditorDescription } from '$components/taskEditor/TaskEditorDescription';
