@@ -8,7 +8,7 @@ import Timer from 'lucide-react/icons/timer';
 import X from 'lucide-react/icons/x';
 import { type CSSProperties, useState } from 'react';
 import { BatchTaskTagsModal } from '$components/modals/BatchTaskTagsModal';
-import { RepeatModal } from '$components/modals/RepeatModal';
+import { RepeatModal } from '$components/modals/RepeatModal/RepeatModal';
 import { TaskDefaultsReminderPickerModal } from '$components/modals/TaskDefaultsReminderPickerModal';
 import { Select } from '$components/Select';
 import { TaskDefaultsColorPicker } from '$components/settings/TaskDefaultsSettings/TaskDefaultsColorPicker';
