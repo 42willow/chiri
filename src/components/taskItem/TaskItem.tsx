@@ -2,7 +2,7 @@ import type { AnimateLayoutChanges } from '@dnd-kit/sortable';
 import { defaultAnimateLayoutChanges, useSortable } from '@dnd-kit/sortable';
 import ChevronRight from 'lucide-react/icons/chevron-right';
 import { type CSSProperties, type MouseEvent, useEffect, useRef, useState } from 'react';
-import { RepeatModal } from '$components/modals/RepeatModal';
+import { RepeatModal } from '$components/modals/RepeatModal/RepeatModal';
 import { TaskItemBadges } from '$components/taskItem/TaskItemBadges';
 import { TaskItemCheckbox } from '$components/taskItem/TaskItemCheckbox';
 import { TaskItemContextMenu } from '$components/taskItem/TaskItemContextMenu';
